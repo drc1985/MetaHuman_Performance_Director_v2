@@ -36,7 +36,7 @@ The plugin implements an automated two-phase directorial pipeline built natively
 1. Clone or download this repository into your project's `Plugins/` folder:
    ```bash
    cd MyProject/Plugins/
-   git clone https://github.com/drc1985/MetaHumanPerformanceDirector.git
+   git clone https://github.com/drc1985/MetaHuman_Performance_Director_v2.git
    ```
 2. Enable the **Python Script Plugin** in your Unreal Engine project settings.
 3. Rebuild your C++ project and launch Unreal Editor 5.8+.
