@@ -1,9 +1,0 @@
-{
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    { "source": "/MetaHumanPerformanceDirector", "destination": "/index.html" },
-    { "source": "/MetaHumanPerformanceDirector/(.*)", "destination": "/index.html" },
-    { "source": "/metahumanperformancedirector", "destination": "/index.html" }
-  ]
-}
