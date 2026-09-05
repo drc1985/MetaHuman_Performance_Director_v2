@@ -1,0 +1,37 @@
+# Unreal Engine & C++ GitIgnore for MetaHuman Performance Director
+
+# Build & Intermediate Directories
+Binaries/
+Intermediate/
+DerivedDataCache/
+Saved/
+Build/
+
+# IDE & OS Files
+.vs/
+.idea/
+.vscode/
+*.sln
+*.suo
+*.user
+*.userosdepend
+*.userprefs
+*.xcodeproj
+*.xcworkspace
+*.DS_Store
+Thumbs.db
+
+# Python Cache & Temp Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+env/
+venv/
+
+# Local JSON plan exports & logs
+Saved/MHPD/
+*.log
+*.tmp

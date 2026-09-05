@@ -1,0 +1,29 @@
+{
+    "FileVersion":  3,
+    "Version":  1,
+    "VersionName":  "0.1.0",
+    "FriendlyName":  "MetaHuman Performance Director",
+    "Description":  "AI-assisted spoken and typed acting direction for editable MetaHuman alternate takes.",
+    "Category":  "Virtual Production",
+    "CreatedBy":  "David Cobbins",
+    "DocsURL":  "",
+    "MarketplaceURL":  "",
+    "SupportURL":  "",
+    "EnabledByDefault":  true,
+    "CanContainContent":  true,
+    "IsBetaVersion":  true,
+    "Installed":  false,
+    "Modules":  [
+                    {
+                        "Name":  "MetaHumanPerformanceDirector",
+                        "Type":  "Editor",
+                        "LoadingPhase":  "Default"
+                    }
+                ],
+    "Plugins":  [
+                    {
+                        "Name":  "ControlRig",
+                        "Enabled":  true
+                    }
+                ]
+}

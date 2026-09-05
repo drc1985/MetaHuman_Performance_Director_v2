@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaHuman Performance Director | Frontier Mindworks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0d14;
+            --bg-card: rgba(22, 27, 38, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-blue: #0070f3;
+            --accent-cyan: #00f2fe;
+            --accent-emerald: #10b981;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.15), rgba(0, 112, 243, 0.05));
+        }
+
+        .glow-2 {
+            top: 400px;
+            right: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1), transparent);
+        }
+
+        header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 900;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0070f3, #00d4ff);
+            color: #fff;
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(0, 112, 243, 0.3);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 112, 243, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.6rem 1.4rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .hero {
+            max-width: 1000px;
+            margin: 4rem auto 6rem;
+            padding: 0 1.5rem;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            color: var(--accent-cyan);
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 760px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 4rem;
+        }
+
+        .showcase-container {
+            position: relative;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: rgba(15, 20, 30, 0.8);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .showcase-header {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .showcase-body {
+            padding: 0;
+            text-align: left;
+        }
+
+        .features {
+            max-width: 1200px;
+            margin: 6rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            border-radius: 16px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 242, 254, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .arch-section {
+            max-width: 1200px;
+            margin: 6rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .arch-card {
+            background: linear-gradient(135deg, rgba(22, 27, 38, 0.9), rgba(15, 20, 30, 0.9));
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .arch-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .arch-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .arch-steps {
+            list-style: none;
+        }
+
+        .arch-steps li {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .arch-steps i {
+            color: var(--accent-emerald);
+            margin-top: 0.2rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 6rem;
+        }
+
+        footer a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .arch-card { grid-template-columns: 1fr; gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon">MH</div>
+            <span>Frontier Mindworks</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#megagrants">Epic MegaGrants</a>
+            <a href="https://github.com/drc1985/MetaHumanPerformanceDirector" target="_blank" class="btn-secondary"><i class="fab fa-github"></i> GitHub</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="badge">
+                <i class="fas fa-award"></i> Epic MegaGrants 2026 Submission
+            </div>
+            <h1>MetaHuman Performance Director</h1>
+            <p>A native C++ and Python directorial orchestration layer for Unreal Engine 5.8+. Direct cinematic MetaHuman facial and body performances using natural language notes — right inside UE5 Sequencer.</p>
+            <div class="hero-actions">
+                <a href="https://github.com/drc1985/MetaHumanPerformanceDirector" target="_blank" class="btn-primary">
+                    <i class="fab fa-github"></i> View Source Repository
+                </a>
+                <a href="#features" class="btn-secondary">
+                    <i class="fas fa-play"></i> Explore Workflow
+                </a>
+            </div>
+
+            <div class="showcase-container">
+                <div class="showcase-header">
+                    <div class="dot dot-red"></div>
+                    <div class="dot dot-yellow"></div>
+                    <div class="dot dot-green"></div>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 0.5rem;">Unreal Engine 5.8 - MetaHuman Performance Director Live Showcase Video</span>
+                </div>
+                <div class="showcase-body">
+                    <video controls preload="metadata" style="width: 100%; display: block; border-radius: 0 0 16px 16px; max-height: 560px; background: #000;">
+                        <source src="/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4" type="video/mp4">
+                        Your browser does not support HTML5 video.
+                    </video>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="section-title">
+                <h2>Empowering Filmmakers & Virtual Production</h2>
+                <p>Eliminate multi-day curve editing and expensive mocap re-shoots with automated intent orchestration.</p>
+            </div>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-comment-dots"></i></div>
+                    <h3>Natural Language Directing</h3>
+                    <p>Type or speak acting notes directly inside Unreal Engine. The system translates dramatic intent across face, cervical spine, gaze, and emotion channels instantly.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-layer-group"></i></div>
+                    <h3>Non-Destructive Take System</h3>
+                    <p>Every take generates a dedicated Level Sequence asset. A/B compare baseline and alternate iterations instantly via the takes dropdown without altering speech lip-sync.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-lock"></i></div>
+                    <h3>Selective Channel Preservation</h3>
+                    <p>Lock dialogue audio, speech phonemes, facial expressions, gaze, or body gestures. Preserve baseline lip-sync key-for-key while layering dramatic nuance.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-dna"></i></div>
+                    <h3>RigLogic DNA Synthesis</h3>
+                    <p>Directly manipulates over 200 native MetaHuman facial DNA curves through 4 universal curve patterns: Pulse, Hold, Ramp, and Oscillation.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-user-astronaut"></i></div>
+                    <h3>Body Micro-Behavior Library</h3>
+                    <p>Seamlessly layer conversational body language, shoulder tension, and cervical head turns with native Control Rig constraint blending.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-microphone"></i></div>
+                    <h3>In-Editor Voice Input</h3>
+                    <p>Press 'Hold to Talk' to speak acting notes directly to your digital actors using local, on-device voice transcription.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="arch-section" id="architecture">
+            <div class="arch-card">
+                <div class="arch-content">
+                    <h3>Two-Phase Directorial Pipeline</h3>
+                    <p>Built natively on top of Epic Games' first-party stack (MetaHuman Animator, RigLogic, and Sequencer).</p>
+                    <ul class="arch-steps">
+                        <li><i class="fas fa-arrow-right"></i> <span><strong>Phase 1: Audio-to-Face Baseline</strong><br>Ingests dialogue audio (.wav) via MetaHuman Animator, locking phoneme speech timing into an isolated baseline sequence.</span></li>
+                        <li><i class="fas fa-arrow-right"></i> <span><strong>Phase 2: Intent-Driven Take Generation</strong><br>Parses natural language notes into structured JSON plans and bakes non-destructive Control Rig layers and expression curves.</span></li>
+                    </ul>
+                </div>
+                <div style="background: rgba(0,0,0,0.4); padding: 1.5rem; border-radius: 12px; font-family: monospace; font-size: 0.85rem; color: #a7f3d0; border: 1px solid rgba(255,255,255,0.08);">
+                    <div style="color: #94a3b8; margin-bottom: 0.5rem;">// Performance Plan Contract JSON</div>
+                    <pre style="white-space: pre-wrap;">{
+  "source_take": "Take_001",
+  "direction": "She turns her head right...",
+  "locked_channels": ["dialogue_audio", "lip_sync"],
+  "instructions": [
+    { "channel": "head", "behavior": "head_turn_right" },
+    { "channel": "gaze", "behavior": "gaze_shift_down" },
+    { "channel": "face", "behavior": "express_sadness" }
+  ]
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="megagrants">
+            <div class="section-title">
+                <h2>Epic MegaGrants 2026</h2>
+                <p>Open-source distribution planned for the entire Unreal Engine filmmaking community.</p>
+            </div>
+            <div class="grid">
+                <div class="card" style="grid-column: span 3;">
+                    <h3>Grant Funding Goals & Community Impact</h3>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">
+                        With funding from Epic MegaGrants, Frontier Mindworks will expand MetaHuman Performance Director into a complete open-source virtual director's suite:
+                    </p>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary); list-style-position: inside;">
+                        <li>Production mocap studio sessions for a 150+ body micro-behavior library</li>
+                        <li>Local ONNX/LLM multi-beat subtext intent parsing</li>
+                        <li>Free open-source release on GitHub and the Epic Fab Marketplace</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Frontier Mindworks. Developed for Unreal Engine 5.8+ & MetaHuman Animator.</p>
+        <p style="margin-top: 0.5rem;"><a href="https://github.com/drc1985/MetaHumanPerformanceDirector" target="_blank">GitHub Repository</a> &bull; MIT / Apache 2.0 Open Source</p>
+    </footer>
+</body>
+</html>
