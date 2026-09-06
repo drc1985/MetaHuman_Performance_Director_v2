@@ -9,6 +9,15 @@
 
 ---
 
+## 🎬 In-Editor Demonstration
+
+[![MetaHuman Performance Director In-Editor Walkthrough](media/mhpd_demo_preview.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector)
+
+> **[▶ Watch Full Video (1080p MP4)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)** &bull; **[Interactive Project Page](https://frontiermindworks.com/MetaHumanPerformanceDirector)**  
+> *Walkthrough demonstrating automated audio-to-face baseline synthesis, natural language performance directing, non-destructive Sequencer take layering, and RigLogic curve synthesis directly in Unreal Engine 5.8.*
+
+---
+
 ## 🌟 Key Features
 
 - **Natural Language Intent Directing**: Type or speak acting directions (e.g. *"She turns her head right, glances down nervously, and frowns while speaking"*) directly into the editor panel.
