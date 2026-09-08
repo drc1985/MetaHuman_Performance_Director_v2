@@ -17,11 +17,13 @@
 > **[▶ Watch Full Video (1080p MP4)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)** &bull; **[Interactive Project Page](https://frontiermindworks.com/MetaHumanPerformanceDirector)**  
 > *Walkthrough demonstrating automated audio-to-face baseline synthesis, natural language performance directing, non-destructive Sequencer take layering, and RigLogic curve synthesis directly in Unreal Engine 5.8.*  
 >  
-> 💡 **Release Note:** *The walkthrough video above demonstrates the Phase 1 grant submission build (single intensity control). The latest codebase introduces the **Five Directorial Dials** and biological **Soft-Knee Viseme Collision Avoidance** (detailed in [Recent Updates](#-recent-updates--whats-new) below).*
+> 💡 **Release Note:** *The walkthrough video above demonstrates the Phase 1 grant submission build (single intensity control). The latest codebase introduces the **Five Directorial Dials** and biological **Soft-Knee Viseme Collision Avoidance** (detailed in [Recent Updates](#-recent-updates--devlog) below).*
 
 ---
 
-## ⚡ Recent Updates & What's New
+## ⚡ Recent Updates & Devlog
+
+### September 2026 — v0.2.0: Directorial Dials & Soft-Knee Viseme Update
 
 Following the initial grant concept submission, we expanded the directorial controls to reflect film-directing psychology and biological realism:
 
@@ -105,7 +107,7 @@ To set clear expectations for animators and technical directors:
 
 ---
 
-## 🗺️ Project Roadmap (Epic MegaGrant Milestones)
+## 🗺️ Project Roadmap
 
 - [x] **Phase 1: Working Prototype (Complete & Demonstrable in UE 5.8)**
   - Native UE 5.8 Slate director panel (voice or typed notes, directorial dials, channel locks).
@@ -115,7 +117,7 @@ To set clear expectations for animators and technical directors:
   - Non-destructive Sequencer take isolation, take A/B switching, and soft-knee viseme preservation.
   - Offline heuristic semantic parser behind an open JSON performance plan contract.
 
-- [ ] **Phase 2: Production Scale — Curated Behavior Asset Library & Local SLM (MegaGrant Core)**
+- [ ] **Phase 2: Production Scale — Curated Behavior Asset Library & Local SLM**
   - **Original Mocap Behavior Asset Library:** Commissioned motion capture sessions creating 100% original, redistributable MetaHuman additive animation assets (posture shifts, physical listening beats, conversation gestures, head-movement idioms).
   - **Modular Additive Retargeting:** Technical animation pipeline retargeting mocap to the MetaHuman rig and modularizing it into micro-behaviors that the planner blends non-destructively in Sequencer.
   - **Fine-Tuned Local Language Model:** Replace the heuristic parser with a specialized Small Language Model (SLM) running 100% offline on a single workstation GPU (DirectML / ONNX Runtime) behind the same open JSON contract.
