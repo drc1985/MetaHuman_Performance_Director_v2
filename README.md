@@ -117,9 +117,13 @@ To set clear expectations for animators and technical directors:
   - Non-destructive Sequencer take isolation, take A/B switching, and soft-knee viseme preservation.
   - Offline heuristic semantic parser behind an open JSON performance plan contract.
 
-- [ ] **Phase 2: Production Scale — Curated Behavior Asset Library & Local SLM**
-  - **Original Mocap Behavior Asset Library:** Commissioned motion capture sessions creating 100% original, redistributable MetaHuman additive animation assets (posture shifts, physical listening beats, conversation gestures, head-movement idioms).
-  - **Modular Additive Retargeting:** Technical animation pipeline retargeting mocap to the MetaHuman rig and modularizing it into micro-behaviors that the planner blends non-destructively in Sequencer.
+- [ ] **Phase 2: Production Scale — Curated Behavior Library & Data-Calibrated Proceduralism**
+  - **Full-Performance Capture Sessions:** Commissioned motion capture sessions with simultaneous optical/inertial body tracking and Head-Mounted Camera (HMC) facial capture, producing 100% original, redistributable MetaHuman assets.
+  - **Modular Additive Behavior Library:** Retarget and modularize captured takes into discrete additive micro-behaviors (posture shifts, physical listening beats, conversation gestures, head-movement idioms) that the planner blends non-destructively in Sequencer.
+  - **Data-Calibrated Procedural Synthesis:** Leverage captured actor data to biologically calibrate procedural curve generation:
+    - *Muscle Co-Activation Matrices:* Empirically derived RigLogic multi-muscle synergies (e.g., authentic smile-to-cheek and brow-to-squint co-activation ratios).
+    - *Biological Kinematic Profiles:* Empirically measured velocity and ease envelopes (e.g., asymmetric blink attack/decay, masseter tension curves).
+    - *Directorial Dial Grounding:* Calibrate the 5 Directorial Dials against ground-truth actor performances across framing scales (close-up underplay vs. theatrical projection).
   - **Fine-Tuned Local Language Model:** Replace the heuristic parser with a specialized Small Language Model (SLM) running 100% offline on a single workstation GPU (DirectML / ONNX Runtime) behind the same open JSON contract.
 
 - [ ] **Phase 3: Multi-Character Directing & Emotion Timeline**
