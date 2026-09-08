@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metahuman-performance-director.local/schemas/performance_plan.schema.json",
+  "title": "MetaHuman Performance Director Plan",
+  "type": "object",
+  "required": [
+    "plan_id",
+    "source_take",
+    "direction_text",
+    "revision_range",
+    "intensity",
+    "matched_interpretations",
+    "locked_channels",
+    "instructions",
+    "editable_output"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "description": "Unique identifier for this generated revision plan."
+    },
+    "source_take": {
+      "type": "string"
+    },
+    "direction_text": {
+      "type": "string"
+    },
+    "revision_range": {
+      "type": "object",
+      "required": ["start_seconds", "end_seconds"],
+      "properties": {
+        "start_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "end_seconds": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "intensity": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "framing_scale": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "facial_nuance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "physical_action": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "subtext_suppression": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "preparation_offset_ms": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "fallback": {
+      "type": "boolean",
+      "description": "True when the note did not confidently match a supported interpretation and the plan uses a safe neutral adjustment."
+    },
+    "matched_interpretations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "locked_channels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "dialogue_audio",
+          "lip_sync",
+          "facial_animation",
+          "body_animation",
+          "timing",
+          "gaze",
+          "gesture",
+          "body_posture",
+          "head_movement",
+          "voice_delivery"
+        ]
+      }
+    },
+    "instructions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["channel", "behavior_id", "description", "weight", "preserve_original"],
+        "properties": {
+          "channel": {
+            "type": "string"
+          },
+          "behavior_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "preserve_original": {
+            "type": "boolean"
+          },
+          "timing_offset_seconds": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "editable_output": {
+      "type": "object",
+      "required": ["target", "non_destructive"],
+      "properties": {
+        "target": {
+          "type": "string",
+          "enum": [
+            "sequencer_control_rig_layers",
+            "sequencer_additive_tracks",
+            "external_plan_only"
+          ]
+        },
+        "non_destructive": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
+

@@ -5,10 +5,11 @@
     "FriendlyName":  "MetaHuman Performance Director",
     "Description":  "AI-assisted spoken and typed acting direction for editable MetaHuman alternate takes.",
     "Category":  "Virtual Production",
-    "CreatedBy":  "David Cobbins",
-    "DocsURL":  "",
+    "CreatedBy":  "David Cobbins (Frontier Mindworks)",
+    "CreatedByURL":  "https://github.com/drc1985",
+    "DocsURL":  "https://github.com/drc1985/MetaHuman_Performance_Director_v2#readme",
     "MarketplaceURL":  "",
-    "SupportURL":  "",
+    "SupportURL":  "https://github.com/drc1985/MetaHuman_Performance_Director_v2/issues",
     "EnabledByDefault":  true,
     "CanContainContent":  true,
     "IsBetaVersion":  true,
@@ -23,6 +24,10 @@
     "Plugins":  [
                     {
                         "Name":  "ControlRig",
+                        "Enabled":  true
+                    },
+                    {
+                        "Name":  "PythonScriptPlugin",
                         "Enabled":  true
                     }
                 ]
