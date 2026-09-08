@@ -45,7 +45,7 @@ BEHAVIOR_TO_PATTERN = {
     "express_disgust":                 ("HOLD",        "disgust"),
     "clench_jaw":                      ("HOLD",        "jaw_tension"),
     "express_sadness":                 ("HOLD",        "sadness"),
-    "express_frown":                   ("HOLD",        "sadness"),
+    "express_frown":                   ("HOLD",        "frown"),
     "express_smile":                   ("HOLD",        "smile"),
 }
 
@@ -76,12 +76,12 @@ CURVE_GROUPS = {
         (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
     ],
     "brow": [
-        (("browlowerl", "browlower_l", "browdownl"), "CTRL_expressions_browLowerL"),
-        (("browlowerr", "browlower_r", "browdownr"), "CTRL_expressions_browLowerR"),
+        (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
     ],
     "tremor": [
-        (("browlowerl", "browlower_l"), "CTRL_expressions_browLowerL"),
-        (("browlowerr", "browlower_r"), "CTRL_expressions_browLowerR"),
+        (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
     ],
     "surprise": [
         (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
@@ -95,39 +95,58 @@ CURVE_GROUPS = {
     "disgust": [
         (("nosewrinklel", "nosewrinkle_l"), "CTRL_expressions_noseWrinkleL"),
         (("nosewrinkler", "nosewrinkle_r"), "CTRL_expressions_noseWrinkleR"),
+        (("nosenasolabialdeepenl", "nasolabialdeepenl"), "CTRL_expressions_noseNasolabialDeepenL"),
+        (("nosenasolabialdeepenr", "nasolabialdeepenr"), "CTRL_expressions_noseNasolabialDeepenR"),
         (("cheeksquintl", "cheeksquint_l"), "CTRL_expressions_cheekSquintL"),
         (("cheeksquintr", "cheeksquint_r"), "CTRL_expressions_cheekSquintR"),
         (("mouthupperupl", "mouthupperup_l"), "CTRL_expressions_mouthUpperUpL"),
         (("mouthupperupr", "mouthupperup_r"), "CTRL_expressions_mouthUpperUpR"),
-        (("mouthfrownl", "mouthfrown_l"), "CTRL_expressions_mouthFrownL"),
-        (("mouthfrownr", "mouthfrown_r"), "CTRL_expressions_mouthFrownR"),
-        (("browlowerl", "browlower_l"), "CTRL_expressions_browLowerL"),
-        (("browlowerr", "browlower_r"), "CTRL_expressions_browLowerR"),
+        (("mouthcornerdepressl", "mouthfrownl", "mouthfrown_l"), "CTRL_expressions_mouthCornerDepressL"),
+        (("mouthcornerdepressr", "mouthfrownr", "mouthfrown_r"), "CTRL_expressions_mouthCornerDepressR"),
+        (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
     ],
     "jaw_tension": [
-        (("jawclench", "jaw_clench"), "CTRL_expressions_jawClench"),
-        (("mouthpressl", "mouthpress_l"), "CTRL_expressions_mouthPressL"),
-        (("mouthpressr", "mouthpress_r"), "CTRL_expressions_mouthPressR"),
-        (("browlowerl", "browlower_l"), "CTRL_expressions_browLowerL"),
-        (("browlowerr", "browlower_r"), "CTRL_expressions_browLowerR"),
+        (("jawclenchl", "jawclench"), "CTRL_expressions_jawClenchL"),
+        (("jawclenchr", "jawclench"), "CTRL_expressions_jawClenchR"),
+        (("mouthlipspressl", "mouthpressl", "mouthpress_l"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr", "mouthpress_r"), "CTRL_expressions_mouthLipsPressR"),
+        (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
     ],
     "sadness": [
         (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
         (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
-        (("browlowerl", "browlower_l"), "CTRL_expressions_browLowerL"),
-        (("browlowerr", "browlower_r"), "CTRL_expressions_browLowerR"),
-        (("mouthfrownl", "mouthfrown_l"), "CTRL_expressions_mouthFrownL"),
-        (("mouthfrownr", "mouthfrown_r"), "CTRL_expressions_mouthFrownR"),
+        (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
+        (("mouthcornerdepressl", "mouthfrownl", "mouthfrown_l"), "CTRL_expressions_mouthCornerDepressL"),
+        (("mouthcornerdepressr", "mouthfrownr", "mouthfrown_r"), "CTRL_expressions_mouthCornerDepressR"),
+        (("mouthlowerlipdepressl",), "CTRL_expressions_mouthLowerLipDepressL"),
+        (("mouthlowerlipdepressr",), "CTRL_expressions_mouthLowerLipDepressR"),
+        (("jawchinraisedl", "chinraisedl"), "CTRL_expressions_jawChinRaiseDL"),
+        (("jawchinraisedr", "chinraisedr"), "CTRL_expressions_jawChinRaiseDR"),
         (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
         (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+    ],
+    "frown": [
+        (("mouthcornerdepressl", "mouthfrownl", "mouthfrown_l"), "CTRL_expressions_mouthCornerDepressL"),
+        (("mouthcornerdepressr", "mouthfrownr", "mouthfrown_r"), "CTRL_expressions_mouthCornerDepressR"),
+        (("mouthlowerlipdepressl",), "CTRL_expressions_mouthLowerLipDepressL"),
+        (("mouthlowerlipdepressr",), "CTRL_expressions_mouthLowerLipDepressR"),
+        (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
+        (("jawchinraisedl", "chinraisedl"), "CTRL_expressions_jawChinRaiseDL"),
+        (("jawchinraisedr", "chinraisedr"), "CTRL_expressions_jawChinRaiseDR"),
     ],
     "smile": [
         (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
         (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
         (("mouthcornerpulll", "mouthcornerpull_l"), "CTRL_expressions_mouthCornerPullL"),
         (("mouthcornerpullr", "mouthcornerpull_r"), "CTRL_expressions_mouthCornerPullR"),
-        (("cheekraisel", "eyecheekraisel"), "CTRL_expressions_cheekRaiseL"),
-        (("cheekraiser", "eyecheekraiser"), "CTRL_expressions_cheekRaiseR"),
+        (("mouthsharpcornerpulll", "mouthsharpcornerpull_l"), "CTRL_expressions_mouthSharpCornerPullL"),
+        (("mouthsharpcornerpullr", "mouthsharpcornerpull_r"), "CTRL_expressions_mouthSharpCornerPullR"),
+        (("cheekraisel", "eyecheekraisel"), "CTRL_expressions_eyeCheekRaiseL"),
+        (("cheekraiser", "eyecheekraiser"), "CTRL_expressions_eyeCheekRaiseR"),
         (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
         (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
     ],
@@ -179,6 +198,22 @@ def _resolve_group(group, existing_curve_names):
                 break
         resolved.append(hit if hit else fallback)
     return list(dict.fromkeys(resolved))  # unique, preserving order
+
+
+def _soft_knee_saturate(val, max_limit=1.0, knee=0.70):
+    """
+    Biological non-linear soft-knee saturation curve for RigLogic curves.
+    Prevents linear overshoot past anatomical limits (preserving mesh volume & soft skinning).
+    f(x) = x if x <= knee else knee + (max_limit - knee) * tanh((x - knee) / (max_limit - knee))
+    """
+    if val <= knee:
+        return max(0.0, float(val))
+    span = max_limit - knee
+    if span <= 0.0:
+        return knee
+    normalized = (val - knee) / span
+    saturated = knee + span * math.tanh(normalized)
+    return min(max_limit, float(saturated))
 
 
 # ------------------------------------------------------------------------------
@@ -324,19 +359,20 @@ def _curve_ops_from_plan(plan, existing_curve_names):
             unreal.log(f"MHPD: '{behavior}' has no facial curve mapping (body/timing channel) - skipped")
             continue
 
+        safe_weight = _soft_knee_saturate(weight)
         pattern, group = mapping
         for curve_name in _resolve_group(group, existing_curve_names):
             if curve_name in ops:
                 unreal.log_warning(f"MHPD: '{behavior}' also targets '{curve_name}' - keeping earlier instruction")
                 continue
-            ops[curve_name] = (pattern, weight, offset, blink_count)
+            ops[curve_name] = (pattern, safe_weight, offset, blink_count)
 
         if behavior == "express_smile":
             # Suppress conflicting brow furrow and mouth frown from fearful/distressed baseline
-            for suppress_group in ("brow", "sadness"):
+            for suppress_group in ("brow", "sadness", "frown"):
                 for curve_name in _resolve_group(suppress_group, existing_curve_names):
                     cl = curve_name.lower()
-                    if "frown" in cl or "browlower" in cl or "browdown" in cl:
+                    if "frown" in cl or "depress" in cl or "browlower" in cl or "browdown" in cl:
                         ops[curve_name] = ("HOLD", 0.0, offset, blink_count)
 
         elif behavior in ("express_sadness", "express_frown"):
@@ -446,7 +482,8 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
     if not plan_loaded and not ops and direction_text:
         pattern, targets, val = parse_pattern_and_targets(direction_text, existing_curve_names)
         count = _parse_blink_count(direction_text, blink_count)
-        ops = {curve: (pattern, val, 0.0, count) for curve in targets}
+        safe_val = _soft_knee_saturate(val)
+        ops = {curve: (pattern, safe_val, 0.0, count) for curve in targets}
         unreal.log(f"MHPD: Legacy parse -> pattern '{pattern}' on {targets}")
 
     if not ops:
@@ -483,8 +520,9 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
     # NOTE: the body-chain bake (head-follows-body) happens in C++ afterwards, in
     # BakeBodyChainIntoFaceAnim. It cannot be done here: writing bone tracks needs
     # the animation data controller, and UAnimSequenceBase::GetController() is not
-    # Ensure mouth/jaw curves cleanly settle to rest pose at the end of the sequence
-    settle_mouth_curves(duplicated_anim)
+    # Ensure mouth/jaw curves cleanly settle to rest pose at the end of the sequence,
+    # strictly protecting any curves keyed by the director's performance plan
+    settle_mouth_curves(duplicated_anim, exclude_curves=set(ops.keys()))
 
     # Save the modified take AnimSequence
     unreal.EditorAssetLibrary.save_loaded_asset(duplicated_anim)
@@ -492,11 +530,12 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
     return new_anim_path
 
 
-def settle_mouth_curves(anim_sequence, settle_duration=0.40, lead_in_duration=0.20):
+def settle_mouth_curves(anim_sequence, settle_duration=0.40, lead_in_duration=0.20, exclude_curves=None):
     """
-    Ensures ALL mouth, jaw, and lip RigLogic curves:
-    1. Start at 0.0 at frame 0 (t=0.0) with a closed mouth, smoothly easing into speech.
-    2. Settle smoothly to 0.0 at the end of the take, holding closed rest pose.
+    Ensures phonetic speech/mouth-opening RigLogic curves cleanly ease in and
+    settle to 0.0 (closed mouth rest pose) at the end of speech, avoiding open-mouth freezes.
+    NEVER touches expressive acting curves (smiles, frowning, corner pulls, cheek raises,
+    jaw clenching) or any curves explicitly keyed by the performance plan.
     """
     if not anim_sequence:
         return
@@ -509,12 +548,29 @@ def settle_mouth_curves(anim_sequence, settle_duration=0.40, lead_in_duration=0.
         anim_sequence, unreal.RawCurveTrackTypes.RCT_FLOAT
     )]
 
-    # Targets ANY curve affecting mouth, jaw, lips, or chin
-    target_keywords = ("mouth", "jaw", "lip", "chin")
+    excluded_set = {c.lower() for c in (exclude_curves or [])}
+
+    # Only target speech opening and phonetic articulator curves
+    phonetic_keywords = (
+        "jawopen", "jaw_open", "jawfwd", "jaw_fwd",
+        "mouthfunnel", "mouthpucker", "mouthrollupper", "mouthrolllower",
+        "mouthshrugupper", "mouthshruglower", "mouthclose",
+        "mouthlowerdown"
+    )
+
+    # Strictly protect expressive and directorial curves
+    protected_keywords = (
+        "smile", "cornerpull", "frown", "cheekraise", "squint",
+        "brow", "jawclench", "mouthpress", "dimple", "stretch"
+    )
 
     for curve_name in all_curves:
         cl = curve_name.lower()
-        if any(k in cl for k in target_keywords):
+        if cl in excluded_set or any(exc in cl for exc in excluded_set):
+            continue
+        if any(pk in cl for pk in protected_keywords):
+            continue
+        if any(k in cl for k in phonetic_keywords):
             times, values = unreal.AnimationLibrary.get_float_keys(anim_sequence, curve_name)
             if not times:
                 continue
@@ -563,4 +619,5 @@ def settle_mouth_curves(anim_sequence, settle_duration=0.40, lead_in_duration=0.
             )
 
     unreal.EditorAssetLibrary.save_loaded_asset(anim_sequence)
-    unreal.log(f"MHPD: Successfully settled mouth/jaw curves to closed rest pose on '{anim_sequence.get_name()}'")
+    unreal.log(f"MHPD: Successfully settled phonetic mouth curves to closed rest pose on '{anim_sequence.get_name()}'")
+

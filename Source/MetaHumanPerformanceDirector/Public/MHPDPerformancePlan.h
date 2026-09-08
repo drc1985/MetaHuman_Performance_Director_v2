@@ -72,6 +72,21 @@ struct FMHPDPerformancePlan
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director", meta = (ClampMin = "0.0", ClampMax = "1.0"))
     float Intensity = 1.0f;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+    float FramingScale = 0.5f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+    float FacialNuance = 0.5f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+    float PhysicalAction = 0.5f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+    float SubtextSuppression = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
+    float PreparationOffsetMs = 250.0f;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director")
     bool bFallback = false;
 

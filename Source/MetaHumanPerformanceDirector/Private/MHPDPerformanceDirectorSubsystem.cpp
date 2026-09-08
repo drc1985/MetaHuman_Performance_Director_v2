@@ -189,7 +189,12 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     const FString& SourceTake,
     float Intensity,
     FMHPDRevisionRange RevisionRange,
-    const TArray<FString>& LockedChannels
+    const TArray<FString>& LockedChannels,
+    float FramingScale,
+    float FacialNuance,
+    float PhysicalAction,
+    float SubtextSuppression,
+    float PreparationOffsetMs
 ) const
 {
     FMHPDPerformancePlan Plan;
@@ -197,7 +202,18 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     Plan.SourceTake = SourceTake;
     Plan.DirectionText = DirectionText;
     Plan.RevisionRange = RevisionRange;
+    Plan.FramingScale = FMath::Clamp(FramingScale, 0.0f, 1.0f);
+    Plan.FacialNuance = FMath::Clamp(FacialNuance, 0.0f, 1.0f);
+    Plan.PhysicalAction = FMath::Clamp(PhysicalAction, 0.0f, 1.0f);
+    Plan.SubtextSuppression = FMath::Clamp(SubtextSuppression, 0.0f, 1.0f);
+    Plan.PreparationOffsetMs = FMath::Clamp(PreparationOffsetMs, 0.0f, 1000.0f);
+
+    // Keep legacy composite Intensity for backward compatibility with older tools
     Plan.Intensity = FMath::Clamp(Intensity, 0.0f, 1.0f);
+    if (FMath::IsNearlyEqual(Plan.Intensity, 1.0f) && (!FMath::IsNearlyEqual(FacialNuance, 0.5f) || !FMath::IsNearlyEqual(PhysicalAction, 0.5f)))
+    {
+        Plan.Intensity = FMath::Clamp((Plan.FacialNuance + Plan.PhysicalAction) * 0.5f, 0.0f, 1.0f);
+    }
     Plan.LockedChannels = LockedChannels;
 
     const FString LowerDirection = DirectionText.ToLower();
@@ -527,6 +543,26 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         AddInstruction(Plan, EMHPDPerformanceChannel::BodyPosture, TEXT("slight_postural_rebalance"), TEXT("Adjust posture slightly to support the director note."), 0.4f);
     }
 
+    // Chekhov Guise vs Under-the-Guise: if subtext suppression is active, inject micro-leakage
+    if (Plan.SubtextSuppression > 0.25f)
+    {
+        bool bHasLeak = false;
+        for (const FMHPDChannelInstruction& Inst : Plan.Instructions)
+        {
+            const FString BStr = Inst.BehaviorId.ToString().ToLower();
+            if (BStr.Contains(TEXT("leak")) || BStr.Contains(TEXT("tension")) || BStr.Contains(TEXT("clench")))
+            {
+                bHasLeak = true;
+                break;
+            }
+        }
+        if (!bHasLeak)
+        {
+            Plan.MatchedInterpretations.Add(TEXT("Subtext suppression micro-leakage"));
+            AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("masked_expression_leak"), TEXT("Add suppressed tension leakage across masseter and brow."), 0.65f);
+        }
+    }
+
     return Plan;
 }
 
@@ -543,6 +579,11 @@ FString UMHPDPerformanceDirectorSubsystem::ExportPlanToJson(const FMHPDPerforman
     Root->SetObjectField(TEXT("revision_range"), RevisionRange);
 
     Root->SetNumberField(TEXT("intensity"), Plan.Intensity);
+    Root->SetNumberField(TEXT("framing_scale"), Plan.FramingScale);
+    Root->SetNumberField(TEXT("facial_nuance"), Plan.FacialNuance);
+    Root->SetNumberField(TEXT("physical_action"), Plan.PhysicalAction);
+    Root->SetNumberField(TEXT("subtext_suppression"), Plan.SubtextSuppression);
+    Root->SetNumberField(TEXT("preparation_offset_ms"), Plan.PreparationOffsetMs);
     Root->SetBoolField(TEXT("fallback"), Plan.bFallback);
     Root->SetArrayField(TEXT("matched_interpretations"), StringArrayToJson(Plan.MatchedInterpretations));
     Root->SetArrayField(TEXT("locked_channels"), StringArrayToJson(Plan.LockedChannels));
@@ -591,8 +632,102 @@ void UMHPDPerformanceDirectorSubsystem::AddInstruction(
     Instruction.BehaviorId = BehaviorId;
     Instruction.Description = Description;
     Instruction.bPreserveOriginal = IsChannelLocked(Channel, Plan.LockedChannels);
-    Instruction.Weight = Instruction.bPreserveOriginal ? 0.0f : FMath::Clamp(BaseWeight * Plan.Intensity, 0.0f, 1.0f);
-    Instruction.TimingOffsetSeconds = Instruction.bPreserveOriginal ? 0.0f : TimingOffsetSeconds * Plan.Intensity;
+
+    if (Instruction.bPreserveOriginal)
+    {
+        Instruction.Weight = 0.0f;
+        Instruction.TimingOffsetSeconds = 0.0f;
+        Plan.Instructions.Add(Instruction);
+        return;
+    }
+
+    // Directorial scaling by channel based on research foundations
+    float ScaledWeight = BaseWeight;
+    float ScaledTimingOffset = TimingOffsetSeconds;
+
+    // Piecewise calibration ensuring full dynamic range from subtle/deadpan (0.05)
+    // to grounded/natural (1.0) to exaggerated/theatrical projection (1.85)
+    const float NuanceMultiplier = (Plan.FacialNuance <= 0.5f)
+        ? FMath::Lerp(0.05f, 1.0f, Plan.FacialNuance / 0.5f)
+        : FMath::Lerp(1.0f, 1.85f, (Plan.FacialNuance - 0.5f) / 0.5f);
+
+    const float PhysicalMultiplier = (Plan.PhysicalAction <= 0.5f)
+        ? FMath::Lerp(0.05f, 1.0f, Plan.PhysicalAction / 0.5f)
+        : FMath::Lerp(1.0f, 1.85f, (Plan.PhysicalAction - 0.5f) / 0.5f);
+
+    // Framing Scale (Münsterberg / Bester):
+    // Close-Up (0.0): suppresses gross body/head rotation while heightening ocular & facial nuances.
+    // Theatrical (1.0): broadens physical posture, cervical pitch/yaw, and gestures.
+    const float FramingBodyFactor = (Plan.FramingScale <= 0.5f)
+        ? FMath::Lerp(0.35f, 1.0f, Plan.FramingScale / 0.5f)
+        : FMath::Lerp(1.0f, 1.5f, (Plan.FramingScale - 0.5f) / 0.5f);
+
+    const float FramingFaceFactor = (Plan.FramingScale <= 0.5f)
+        ? FMath::Lerp(1.15f, 1.0f, Plan.FramingScale / 0.5f)
+        : FMath::Lerp(1.0f, 1.15f, (Plan.FramingScale - 0.5f) / 0.5f);
+
+    switch (Channel)
+    {
+        case EMHPDPerformanceChannel::FacialExpression:
+        {
+            // Chekhov Guise / Subtext: dampens overt emotional caricature and amplifies micro-leakages
+            const FString BIdStr = BehaviorId.ToString().ToLower();
+            const bool bIsTensionOrLeak = BIdStr.Contains(TEXT("tension")) || BIdStr.Contains(TEXT("leak")) || BIdStr.Contains(TEXT("squint")) || BIdStr.Contains(TEXT("clench"));
+            float SubtextFactor = 1.0f;
+            if (Plan.SubtextSuppression > 0.01f)
+            {
+                if (bIsTensionOrLeak)
+                {
+                    SubtextFactor = FMath::Lerp(1.0f, 1.85f, Plan.SubtextSuppression);
+                }
+                else
+                {
+                    // Moderate dampening, ensuring high directorial nuance protects the intended performance
+                    const float MinDamping = FMath::Lerp(0.65f, 0.90f, Plan.FacialNuance);
+                    SubtextFactor = FMath::Lerp(1.0f, MinDamping, Plan.SubtextSuppression);
+                }
+            }
+            ScaledWeight = BaseWeight * NuanceMultiplier * FramingFaceFactor * SubtextFactor;
+            break;
+        }
+        case EMHPDPerformanceChannel::Gaze:
+        {
+            ScaledWeight = BaseWeight * NuanceMultiplier * FramingFaceFactor;
+            if (!FMath::IsNearlyZero(TimingOffsetSeconds))
+            {
+                // Anticipatory gaze leads speech based on PreparationOffsetMs (Chekhov pre-beat)
+                ScaledTimingOffset = (TimingOffsetSeconds < 0.0f)
+                    ? -(Plan.PreparationOffsetMs / 1000.0f)
+                    : (Plan.PreparationOffsetMs / 1000.0f);
+            }
+            break;
+        }
+        case EMHPDPerformanceChannel::HeadMovement:
+        case EMHPDPerformanceChannel::Gesture:
+        case EMHPDPerformanceChannel::BodyPosture:
+        {
+            ScaledWeight = BaseWeight * PhysicalMultiplier * FramingBodyFactor;
+            break;
+        }
+        case EMHPDPerformanceChannel::ReactionTiming:
+        case EMHPDPerformanceChannel::Pauses:
+        {
+            ScaledWeight = BaseWeight;
+            if (!FMath::IsNearlyZero(TimingOffsetSeconds))
+            {
+                ScaledTimingOffset = (TimingOffsetSeconds < 0.0f)
+                    ? -(Plan.PreparationOffsetMs / 1000.0f)
+                    : (Plan.PreparationOffsetMs / 1000.0f);
+            }
+            break;
+        }
+        default:
+            ScaledWeight = BaseWeight * Plan.Intensity;
+            break;
+    }
+
+    Instruction.Weight = FMath::Clamp(ScaledWeight, 0.0f, 1.0f);
+    Instruction.TimingOffsetSeconds = ScaledTimingOffset;
     Plan.Instructions.Add(Instruction);
 }
 

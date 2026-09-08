@@ -366,6 +366,11 @@ public:
     FMHPDPerformancePlan                LastPlan;
     FString                             LastGeneratedTakeName;
     float                               Intensity = 1.0f;
+    float                               FramingScale = 0.5f;
+    float                               FacialNuance = 0.5f;
+    float                               PhysicalAction = 0.5f;
+    float                               SubtextSuppression = 0.0f;
+    float                               PreparationOffsetMs = 250.0f;
 
     TArray<TSharedPtr<FGeneratedTakeInfo>>  TakeHistoryList;
     TSharedPtr<FGeneratedTakeInfo>          SelectedTake;
@@ -388,6 +393,11 @@ public:
     TSharedPtr<SMultiLineEditableTextBox> FollowUpTextBox;
     TSharedPtr<SMultiLineEditableTextBox> PlanTextBox;
     TSharedPtr<STextBlock>              IntensityLabel;
+    TSharedPtr<STextBlock>              FramingLabel;
+    TSharedPtr<STextBlock>              NuanceLabel;
+    TSharedPtr<STextBlock>              PhysicalActionLabel;
+    TSharedPtr<STextBlock>              SubtextLabel;
+    TSharedPtr<STextBlock>              PreparationLabel;
     TSharedPtr<STextBlock>              TakeStatusText;
 
     // Lock checkboxes
@@ -400,6 +410,11 @@ public:
     void Construct(const FArguments& InArgs)
     {
         Intensity = 1.0f;
+        FramingScale = 0.5f;
+        FacialNuance = 0.5f;
+        PhysicalAction = 0.5f;
+        SubtextSuppression = 0.0f;
+        PreparationOffsetMs = 250.0f;
 
         ChildSlot
         [
@@ -664,24 +679,109 @@ public:
                         ]
                     ]
 
-                    // Intensity label
+                    // --------------------------------------------------------
+                    // Performance Dynamics & Framing (Acting & Directing Dials)
+                    // --------------------------------------------------------
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 6.0f, 0.0f, 4.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("PerformanceDynamicsHeader", "Performance Dynamics & Framing"))
+                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                    ]
+
+                    // 1. Framing Scale
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                    [
+                        SAssignNew(FramingLabel, STextBlock)
+                        .Text(GetFramingScaleText())
+                    ]
                     + SVerticalBox::Slot()
                     .AutoHeight()
                     .Padding(0.0f, 0.0f, 0.0f, 6.0f)
                     [
-                        SAssignNew(IntensityLabel, STextBlock)
-                        .Text(GetIntensityText())
+                        SNew(SSlider)
+                        .Value(FramingScale)
+                        .ToolTipText(LOCTEXT("FramingTooltip", "Framing principle: Close-Up damps gross head rotation and body shifts while focusing on ocular micro-cues. Theatrical wide projects energy to the back row."))
+                        .OnValueChanged(this, &SMHPDDirectorPanel::OnFramingScaleChanged)
                     ]
 
-                    // Intensity slider
+                    // 2. Facial Nuance
                     + SVerticalBox::Slot()
                     .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
+                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                    [
+                        SAssignNew(NuanceLabel, STextBlock)
+                        .Text(GetNuanceText())
+                    ]
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
                     [
                         SNew(SSlider)
-                        .Value(Intensity)
-                        .ToolTipText(LOCTEXT("PerformanceSizeTooltip", "How big the adjustment plays — from barely perceptible to full. Scales how far the face moves, not how fast."))
-                        .OnValueChanged(this, &SMHPDDirectorPanel::OnIntensityChanged)
+                        .Value(FacialNuance)
+                        .ToolTipText(LOCTEXT("NuanceTooltip", "Controls emotional displacement across RigLogic face curves. Protected by biological soft-knee saturation."))
+                        .OnValueChanged(this, &SMHPDDirectorPanel::OnNuanceChanged)
+                    ]
+
+                    // 3. Head & Physical Action
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                    [
+                        SAssignNew(PhysicalActionLabel, STextBlock)
+                        .Text(GetPhysicalActionText())
+                    ]
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                    [
+                        SNew(SSlider)
+                        .Value(PhysicalAction)
+                        .ToolTipText(LOCTEXT("PhysicalActionTooltip", "Scales cervical spine rotation, nods, tilts, and bodily gestures independently from facial expression."))
+                        .OnValueChanged(this, &SMHPDDirectorPanel::OnPhysicalActionChanged)
+                    ]
+
+                    // 4. Subtext / Masking
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                    [
+                        SAssignNew(SubtextLabel, STextBlock)
+                        .Text(GetSubtextText())
+                    ]
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                    [
+                        SNew(SSlider)
+                        .Value(SubtextSuppression)
+                        .ToolTipText(LOCTEXT("SubtextTooltip", "Michael Chekhov's 'Guise vs. Under-the-Guise': suppresses overt facial caricature and replaces it with internal micro-leakages (jaw clench, brow asymmetry, squint)."))
+                        .OnValueChanged(this, &SMHPDDirectorPanel::OnSubtextChanged)
+                    ]
+
+                    // 5. Pre-Speech Preparation Lead
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                    [
+                        SAssignNew(PreparationLabel, STextBlock)
+                        .Text(GetPreparationText())
+                    ]
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                    [
+                        SNew(SSlider)
+                        .Value(PreparationOffsetMs / 600.0f)
+                        .ToolTipText(LOCTEXT("PreparationTooltip", "Michael Chekhov: 'The psychological gesture prepares.' Timing offset for anticipatory ocular saccades and breath before vocalization."))
+                        .OnValueChanged_Lambda([this](float Ratio)
+                        {
+                            OnPreparationOffsetChanged(Ratio * 600.0f);
+                        })
                     ]
 
                     // Body micro-behavior dropdown label & scan button
@@ -2242,7 +2342,12 @@ private:
             SourceTake.IsEmpty() ? TEXT("Current Sequencer Take") : SourceTake,
             Intensity,
             RevisionRange,
-            BuildLockedChannels()
+            BuildLockedChannels(),
+            FramingScale,
+            FacialNuance,
+            PhysicalAction,
+            SubtextSuppression,
+            PreparationOffsetMs
         );
 
         const FString Json              = Subsystem->ExportPlanToJson(Plan);
@@ -2327,6 +2432,146 @@ private:
             IntensityLabel->SetText(GetIntensityText());
         }
     }
+
+    FText GetFramingScaleText() const
+    {
+        return GetFramingScaleText(FramingScale);
+    }
+
+    static FText GetFramingScaleText(float Value)
+    {
+        if (Value < 0.35f)
+        {
+            return FText::Format(LOCTEXT("FramingCloseUp", "Framing: Cinematic Close-Up ({0}%) — Internalized & Micro-expression focus"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+        else if (Value <= 0.65f)
+        {
+            return FText::Format(LOCTEXT("FramingConversational", "Framing: Conversational ({0}%) — Grounded realism"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+        else
+        {
+            return FText::Format(LOCTEXT("FramingTheatrical", "Framing: Theatrical Wide ({0}%) — Projected head & body action"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+    }
+
+    void OnFramingScaleChanged(float NewValue)
+    {
+        FramingScale = NewValue;
+        if (FramingLabel.IsValid())
+        {
+            FramingLabel->SetText(GetFramingScaleText());
+        }
+    }
+
+    FText GetNuanceText() const
+    {
+        return GetNuanceText(FacialNuance);
+    }
+
+    static FText GetNuanceText(float Value)
+    {
+        if (Value < 0.35f)
+        {
+            return FText::Format(LOCTEXT("NuanceSubtle", "Facial Nuance: Subtle ({0}%) — Underplayed, minimal displacement"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+        else if (Value <= 0.65f)
+        {
+            return FText::Format(LOCTEXT("NuanceNatural", "Facial Nuance: Natural ({0}%) — Film-calibrated expression"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+        else
+        {
+            return FText::Format(LOCTEXT("NuanceExaggerated", "Facial Nuance: Pronounced ({0}%) — High-intensity arcs (Soft-knee protected)"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+    }
+
+    void OnNuanceChanged(float NewValue)
+    {
+        FacialNuance = NewValue;
+        Intensity = FacialNuance;
+        if (NuanceLabel.IsValid())
+        {
+            NuanceLabel->SetText(GetNuanceText());
+        }
+        if (IntensityLabel.IsValid())
+        {
+            IntensityLabel->SetText(GetIntensityText());
+        }
+    }
+
+    FText GetPhysicalActionText() const
+    {
+        return GetPhysicalActionText(PhysicalAction);
+    }
+
+    static FText GetPhysicalActionText(float Value)
+    {
+        if (Value < 0.35f)
+        {
+            return FText::Format(LOCTEXT("ActionStill", "Head & Body: Still ({0}%) — Held posture, restrained cervical movement"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+        else if (Value <= 0.65f)
+        {
+            return FText::Format(LOCTEXT("ActionGrounded", "Head & Body: Grounded ({0}%) — Natural conversational head motion"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+        else
+        {
+            return FText::Format(LOCTEXT("ActionAnimated", "Head & Body: Animated ({0}%) — Dynamic gestural & postural shifts"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+    }
+
+    void OnPhysicalActionChanged(float NewValue)
+    {
+        PhysicalAction = NewValue;
+        if (PhysicalActionLabel.IsValid())
+        {
+            PhysicalActionLabel->SetText(GetPhysicalActionText());
+        }
+    }
+
+    FText GetSubtextText() const
+    {
+        return GetSubtextText(SubtextSuppression);
+    }
+
+    static FText GetSubtextText(float Value)
+    {
+        if (Value < 0.25f)
+        {
+            return FText::Format(LOCTEXT("SubtextDirect", "Subtext Masking: Direct ({0}%) — Outwardly expressed emotions"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+        else if (Value <= 0.70f)
+        {
+            return FText::Format(LOCTEXT("SubtextContained", "Subtext Masking: Contained ({0}%) — Masked facade with micro-leakage"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+        else
+        {
+            return FText::Format(LOCTEXT("SubtextSuppressed", "Subtext Masking: High Suppression ({0}%) — Subtext tension: jaw clench & brow asymmetry"), FText::AsNumber(FMath::RoundToInt(Value * 100.0f)));
+        }
+    }
+
+    void OnSubtextChanged(float NewValue)
+    {
+        SubtextSuppression = NewValue;
+        if (SubtextLabel.IsValid())
+        {
+            SubtextLabel->SetText(GetSubtextText());
+        }
+    }
+
+    FText GetPreparationText() const
+    {
+        return FText::Format(LOCTEXT("PrepLead", "Pre-Speech Lead: {0} ms (Anticipatory breath & gaze shift)"), FText::AsNumber(FMath::RoundToInt(PreparationOffsetMs)));
+    }
+
+    void OnPreparationOffsetChanged(float NewValue)
+    {
+        PreparationOffsetMs = NewValue;
+        if (PreparationLabel.IsValid())
+        {
+            PreparationLabel->SetText(GetPreparationText());
+        }
+    }
+
 
     TSharedRef<SWidget> GenerateTakeHistoryRow(TSharedPtr<FGeneratedTakeInfo> Item)
     {
@@ -2470,7 +2715,11 @@ private:
         Output += FString::Printf(TEXT("Acting take: %s\n"), *GeneratedTakeName);
         Output += FString::Printf(TEXT("Source take: %s\n"), *Plan.SourceTake);
         Output += FString::Printf(TEXT("Timeline region: %.2fs - %.2fs\n"), Plan.RevisionRange.StartSeconds, Plan.RevisionRange.EndSeconds);
-        Output += FString::Printf(TEXT("Performance size: %d%%\n\n"), FMath::RoundToInt(Plan.Intensity * 100.0f));
+        Output += FString::Printf(TEXT("Framing / Scale: %s (%.0f%%)\n"), *GetFramingScaleText(Plan.FramingScale).ToString(), Plan.FramingScale * 100.0f);
+        Output += FString::Printf(TEXT("Facial Nuance: %s (%.0f%%)\n"), *GetNuanceText(Plan.FacialNuance).ToString(), Plan.FacialNuance * 100.0f);
+        Output += FString::Printf(TEXT("Physical Action: %s (%.0f%%)\n"), *GetPhysicalActionText(Plan.PhysicalAction).ToString(), Plan.PhysicalAction * 100.0f);
+        Output += FString::Printf(TEXT("Subtext Masking: %s (%.0f%%)\n"), *GetSubtextText(Plan.SubtextSuppression).ToString(), Plan.SubtextSuppression * 100.0f);
+        Output += FString::Printf(TEXT("Preparation Lead: %.0f ms\n\n"), Plan.PreparationOffsetMs);
 
         Output += TEXT("Interpreted director intent:\n");
         for (const FString& Interpretation : Plan.MatchedInterpretations)

@@ -17,7 +17,12 @@ public:
         const FString& SourceTake,
         float Intensity,
         FMHPDRevisionRange RevisionRange,
-        const TArray<FString>& LockedChannels
+        const TArray<FString>& LockedChannels,
+        float FramingScale = 0.5f,
+        float FacialNuance = 0.5f,
+        float PhysicalAction = 0.5f,
+        float SubtextSuppression = 0.0f,
+        float PreparationOffsetMs = 250.0f
     ) const;
 
     UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director")

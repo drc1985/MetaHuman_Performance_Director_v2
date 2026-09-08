@@ -15,7 +15,27 @@
 [![MetaHuman Performance Director In-Editor Walkthrough](media/mhpd_demo_preview.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector)
 
 > **[▶ Watch Full Video (1080p MP4)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)** &bull; **[Interactive Project Page](https://frontiermindworks.com/MetaHumanPerformanceDirector)**  
-> *Walkthrough demonstrating automated audio-to-face baseline synthesis, natural language performance directing, non-destructive Sequencer take layering, and RigLogic curve synthesis directly in Unreal Engine 5.8.*
+> *Walkthrough demonstrating automated audio-to-face baseline synthesis, natural language performance directing, non-destructive Sequencer take layering, and RigLogic curve synthesis directly in Unreal Engine 5.8.*  
+>  
+> 💡 **Release Note:** *The walkthrough video above demonstrates the Phase 1 grant submission build (single intensity control). The latest codebase introduces the **Five Directorial Dials** and biological **Soft-Knee Viseme Collision Avoidance** (detailed in [Recent Updates](#-recent-updates--whats-new) below).*
+
+---
+
+## ⚡ Recent Updates & What's New
+
+Following the initial grant concept submission, we expanded the directorial controls to reflect film-directing psychology and biological realism:
+
+### 1. The Five Directorial Dials
+Replaced the single scalar "intensity" slider with five calibrated cinematic dimensions in the Slate UI:
+- **Framing Scale:** Calibrates performance for *Cinematic Close-Up* (dampens gross head movement, accentuates ocular micro-cues) vs. *Conversational* vs. *Theatrical Wide* (projects energy to the back row).
+- **Facial Nuance:** Controls emotional displacement across RigLogic face curves with non-linear calibration (*Subtle*, *Natural*, or *Pronounced*).
+- **Head & Body (Physical Action):** Modulates cervical neck rotations and body posture independently from facial expressions.
+- **Subtext Masking (Chekhov's 'Guise vs. Under-the-Guise'):** Models intentional concealment—suppresses overt emotional caricature while injecting authentic micro-leakage (masseter jaw clench, brow asymmetry, inner squint).
+- **Pre-Speech Preparation Lead:** Injects anticipatory psychological gesture (eye saccade, breath lead) 0–1000ms prior to the first spoken word.
+
+### 2. Biological Soft-Knee Viseme Protection
+- Injected `_soft_knee_saturate()` into the Python execution pipeline, preventing linear blendshape overshoot past anatomical limits.
+- Upgraded mouth-settling routines to strictly protect expressive acting curves (smiles, frowns, jaw clenches) while ensuring speech opening phonemes cleanly return to rest pose without tearing.
 
 ---
 
