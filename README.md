@@ -82,7 +82,7 @@ Unlike cloud GenAI services or other comparable tools, MHPD runs **entirely loca
 
 MHPD decouples high-level creative intent from low-level joint and blendshape keyframing using an open intermediate representation (IR): the **Performance Plan**.
 
-- **Specification Document:** [`docs/PERFORMANCE_PLAN_SPECIFICATION.md`](docs/PERFORMANCE_PLAN_SPECIFICATION.md)
+- **Master Specification & Lexicon:** [`docs/PERFORMANCE_DIRECTOR_SPECIFICATION.md`](docs/PERFORMANCE_DIRECTOR_SPECIFICATION.md)
 - **JSON Schema:** [`schemas/performance_plan.schema.json`](schemas/performance_plan.schema.json)
 
 The specification document details the schema, the 4 mathematical curve synthesis profiles, and includes a complete worked example demonstrating how the note *"She is nervous, but trying to appear confident. Have her look away before answering"* compiles into specific RigLogic curves (`eyeLookLeftL`, `eyeSquintInnerL`, `jawClenchL`, `mouthLipsPressL`, `mouthCornerPullL`) with timing offsets and viseme preservation.
