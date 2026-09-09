@@ -63,6 +63,11 @@
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "HAL/FileManager.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonReader.h"
+#include "Dom/JsonObject.h"
+#include "Containers/Queue.h"
+#include <atomic>
 
 #define LOCTEXT_NAMESPACE "FMetaHumanPerformanceDirectorModule"
 
@@ -381,6 +386,23 @@ public:
     FBodyOptionPtr                       SelectedBodyOption;
     TSharedPtr<SComboBox<FBodyOptionPtr>> BodyLibraryComboBox;
 
+    // Text-to-Motion Generative Engine
+    TSharedPtr<SMultiLineEditableTextBox> MotionPromptTextBox;
+    TSharedPtr<SEditableTextBox>          MotionDurationTextBox;
+    TSharedPtr<SButton>                   GenerateMotionButton;
+    TSharedPtr<STextBlock>                MotionStatusText;
+    TSharedPtr<FInteractiveProcess>       MotionProcess;
+    FString                               LastGeneratedMotionPath;
+    FString                               LastGeneratedMotionJsonPath;
+
+    // Thread-safe queues for non-blocking process polling on Game Thread (avoids UE 5.8 FAppTime ensure)
+    TQueue<FString, EQueueMode::Mpsc>     MotionOutputQueue;
+    std::atomic<bool>                     bMotionProcessFinished{false};
+    std::atomic<int32>                    MotionProcessReturnCode{0};
+
+    TQueue<FString, EQueueMode::Mpsc>     VoiceOutputQueue;
+    std::atomic<bool>                     bVoiceProcessFinished{false};
+
     // Voice
     TSharedPtr<FInteractiveProcess>     VoiceProcess;
     TSharedPtr<SButton>                 RecordVoiceButton;
@@ -407,9 +429,39 @@ public:
     TSharedPtr<SCheckBox>               GazeCheckBox;
     TSharedPtr<SCheckBox>               BodyAnimationCheckBox;
     TSharedPtr<SCheckBox>               TimingCheckBox;
+
+    virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override
+    {
+        SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
+
+        // Process Motion output lines on Game Thread
+        FString MotionLine;
+        while (MotionOutputQueue.Dequeue(MotionLine))
+        {
+            HandleMotionOutputLine(MotionLine);
+        }
+
+        if (bMotionProcessFinished.exchange(false))
+        {
+            HandleMotionProcessCompleted(MotionProcessReturnCode.load());
+        }
+
+        // Process Voice output lines on Game Thread
+        FString VoiceLine;
+        while (VoiceOutputQueue.Dequeue(VoiceLine))
+        {
+            HandleVoiceOutputLine(VoiceLine);
+        }
+
+        if (bVoiceProcessFinished.exchange(false))
+        {
+            VoiceProcess.Reset();
+        }
+    }
+
     void Construct(const FArguments& InArgs)
     {
-        Intensity = 1.0f;
+        Intensity = 0.5f;
         FramingScale = 0.5f;
         FacialNuance = 0.5f;
         PhysicalAction = 0.5f;
@@ -679,9 +731,9 @@ public:
                         ]
                     ]
 
-                    // --------------------------------------------------------
+                    // ========================================================
                     // Performance Dynamics & Framing (Acting & Directing Dials)
-                    // --------------------------------------------------------
+                    // ========================================================
                     + SVerticalBox::Slot()
                     .AutoHeight()
                     .Padding(0.0f, 6.0f, 0.0f, 4.0f)
@@ -689,6 +741,16 @@ public:
                         SNew(STextBlock)
                         .Text(LOCTEXT("PerformanceDynamicsHeader", "Performance Dynamics & Framing"))
                         .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                    ]
+
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("PerformanceDynamicsDesc", "Calibrate cinematic scale, decouple facial nuance from physical movement, and control subtext masking."))
+                        .AutoWrapText(true)
+                        .ColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)))
                     ]
 
                     // 1. Framing Scale
@@ -705,7 +767,7 @@ public:
                     [
                         SNew(SSlider)
                         .Value(FramingScale)
-                        .ToolTipText(LOCTEXT("FramingTooltip", "Framing principle: Close-Up damps gross head rotation and body shifts while focusing on ocular micro-cues. Theatrical wide projects energy to the back row."))
+                        .ToolTipText(LOCTEXT("FramingTooltip", "Hugo Münsterberg & Wendy Bester framing principle: Close-Up damps gross head rotation and body shifts while focusing on ocular micro-cues. Theatrical wide projects energy to the back row."))
                         .OnValueChanged(this, &SMHPDDirectorPanel::OnFramingScaleChanged)
                     ]
 
@@ -782,6 +844,77 @@ public:
                         {
                             OnPreparationOffsetChanged(Ratio * 600.0f);
                         })
+                    ]
+
+                    // ========================================================
+                    // AI Body Motion (Text-to-Motion)
+                    // ========================================================
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 6.0f, 0.0f, 4.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("TextToMotionHeader", "AI Body Motion (Generative)"))
+                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                    ]
+
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("TextToMotionDesc", "Synthesize continuous 3D skeletal motion on local GPU and bind to the MetaHuman body."))
+                        .AutoWrapText(true)
+                        .ColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)))
+                    ]
+
+                    // Motion Prompt Box
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                    [
+                        SNew(SBox)
+                        .MinDesiredHeight(50.0f)
+                        [
+                            SAssignNew(MotionPromptTextBox, SMultiLineEditableTextBox)
+                            .HintText(LOCTEXT("MotionPromptHint", "e.g., cautious sneak forward, hesitant look around"))
+                            .AutoWrapText(true)
+                        ]
+                    ]
+
+                    // Motion Duration & Generate Button row
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                    [
+                        SNew(SHorizontalBox)
+                        + SHorizontalBox::Slot()
+                        .AutoWidth()
+                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                        [
+                            MakeTextInputRow(MotionDurationTextBox, LOCTEXT("MotionDurationLabel", "Duration (s)"), LOCTEXT("MotionDurationDefault", "3.5"), 80.0f)
+                        ]
+                        + SHorizontalBox::Slot()
+                        .FillWidth(1.0f)
+                        .VAlign(VAlign_Bottom)
+                        [
+                            SAssignNew(GenerateMotionButton, SButton)
+                            .Text(this, &SMHPDDirectorPanel::GetGenerateMotionButtonText)
+                            .HAlign(HAlign_Center)
+                            .ButtonColorAndOpacity(FLinearColor(0.2f, 0.45f, 0.85f, 1.0f))
+                            .OnClicked(this, &SMHPDDirectorPanel::OnGenerateBodyMotionClicked)
+                        ]
+                    ]
+
+                    // Motion Status text
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                    [
+                        SAssignNew(MotionStatusText, STextBlock)
+                        .Text(LOCTEXT("MotionStatusReady", "Ready to generate body motion."))
+                        .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
+                        .AutoWrapText(true)
                     ]
 
                     // Body micro-behavior dropdown label & scan button
@@ -1478,6 +1611,203 @@ private:
         return BodyAnim;
     }
 
+    UAnimSequence* CreateAnimSequenceFromMotionJson(
+        const FString& JsonFilePath,
+        const FString& OutputDir,
+        const FString& AssetName,
+        USkeleton* TargetSkeleton
+    )
+    {
+        FString JsonContent;
+        if (!FFileHelper::LoadFileToString(JsonContent, *JsonFilePath))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("MHPD: Failed to load motion JSON: %s"), *JsonFilePath);
+            return nullptr;
+        }
+
+        TSharedPtr<FJsonObject> RootObject;
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonContent);
+        if (!FJsonSerializer::Deserialize(Reader, RootObject) || !RootObject.IsValid())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("MHPD: Failed to parse motion JSON: %s"), *JsonFilePath);
+            return nullptr;
+        }
+
+        const int32 Fps = RootObject->GetIntegerField(TEXT("fps"));
+        const int32 NumFrames = RootObject->GetIntegerField(TEXT("num_frames"));
+        const TSharedPtr<FJsonObject>* TrajectoriesObjPtr = nullptr;
+        if (!RootObject->TryGetObjectField(TEXT("trajectories"), TrajectoriesObjPtr) || !TrajectoriesObjPtr || !TrajectoriesObjPtr->IsValid())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("MHPD: Motion JSON has no 'trajectories' object: %s"), *JsonFilePath);
+            return nullptr;
+        }
+
+        const TSharedPtr<FJsonObject>& TrajectoriesObj = *TrajectoriesObjPtr;
+
+        // If target skeleton is null, attempt to resolve from MetaHuman body in current world
+        if (!TargetSkeleton)
+        {
+            UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+            AActor* MHActor = FindMetaHumanActor(World);
+            if (MHActor)
+            {
+                USkeletalMeshComponent* BodyComp = FindMetaHumanBodyComponent(MHActor);
+                if (BodyComp && BodyComp->GetSkeletalMeshAsset())
+                {
+                    TargetSkeleton = BodyComp->GetSkeletalMeshAsset()->GetSkeleton();
+                }
+            }
+        }
+
+        if (!TargetSkeleton)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("MHPD: Could not resolve TargetSkeleton for generated motion '%s'"), *AssetName);
+            return nullptr;
+        }
+
+        const FReferenceSkeleton& RefSkel = TargetSkeleton->GetReferenceSkeleton();
+        const FString PkgPath = FString::Printf(TEXT("%s/%s"), *OutputDir, *AssetName);
+        UPackage* Package = CreatePackage(*PkgPath);
+        if (!Package) return nullptr;
+
+        UAnimSequence* BodyAnim = FindObject<UAnimSequence>(Package, *AssetName);
+        if (!BodyAnim)
+        {
+            BodyAnim = NewObject<UAnimSequence>(Package, *AssetName, RF_Public | RF_Standalone | RF_Transactional);
+        }
+        if (!BodyAnim) return nullptr;
+        BodyAnim->SetSkeleton(TargetSkeleton);
+
+        IAnimationDataController& Controller = BodyAnim->GetController();
+        Controller.OpenBracket(LOCTEXT("MHPDCreateMotion", "MHPD Create Motion"), false);
+        Controller.InitializeModel();
+        Controller.SetFrameRate(FFrameRate(FMath::Max(1, Fps), 1), false);
+        Controller.SetNumberOfFrames(FFrameNumber(FMath::Max(1, NumFrames)), false);
+
+        const TSharedPtr<FJsonObject>* RotationsObjPtr = nullptr;
+        const bool bHasRotations = RootObject->TryGetObjectField(TEXT("rotations"), RotationsObjPtr) && RotationsObjPtr && RotationsObjPtr->IsValid();
+        const TSharedPtr<FJsonObject>& RotationsObj = bHasRotations ? *RotationsObjPtr : TrajectoriesObj;
+
+        int32 WrittenBones = 0;
+        for (const auto& Pair : TrajectoriesObj->Values)
+        {
+            const FName BoneName(*Pair.Key);
+            const int32 BoneIdx = RefSkel.FindBoneIndex(BoneName);
+            if (BoneIdx == INDEX_NONE)
+            {
+                continue;
+            }
+
+            const TArray<TSharedPtr<FJsonValue>>* FrameList = nullptr;
+            if (!Pair.Value->TryGetArray(FrameList) || !FrameList)
+            {
+                continue;
+            }
+
+            const TArray<TSharedPtr<FJsonValue>>* RotFrameList = nullptr;
+            if (bHasRotations)
+            {
+                const TSharedPtr<FJsonValue>* RotVal = RotationsObj->Values.Find(Pair.Key);
+                if (RotVal && RotVal->IsValid())
+                {
+                    (*RotVal)->TryGetArray(RotFrameList);
+                }
+            }
+
+            const int32 ParentIdx = RefSkel.GetParentIndex(BoneIdx);
+            const FQuat ParentCS = (ParentIdx != INDEX_NONE)
+                ? GetRefPoseComponentRotation(RefSkel, ParentIdx) : FQuat::Identity;
+            const FQuat ParentCSInv = ParentCS.Inverse();
+
+            const FTransform RefLocal = RefSkel.GetRefBonePose()[BoneIdx];
+            const FVector3f RefTranslation = FVector3f(RefLocal.GetTranslation());
+            const FQuat4f RefRotation = FQuat4f(RefLocal.GetRotation());
+            const FVector3f RefScale = FVector3f(RefLocal.GetScale3D());
+
+            TArray<FVector3f> PosKeys;
+            TArray<FQuat4f> RotKeys;
+            TArray<FVector3f> ScaleKeys;
+            PosKeys.Reserve(FrameList->Num());
+            RotKeys.Reserve(FrameList->Num());
+            ScaleKeys.Reserve(FrameList->Num());
+
+            const bool bIsRootOrPelvis = (BoneName == FName(TEXT("pelvis")) || BoneName == FName(TEXT("root")));
+
+            for (int32 FrameIdx = 0; FrameIdx < FrameList->Num(); ++FrameIdx)
+            {
+                const TSharedPtr<FJsonValue>& FrameVal = (*FrameList)[FrameIdx];
+                const TArray<TSharedPtr<FJsonValue>>* Coords = nullptr;
+                if (FrameVal->TryGetArray(Coords) && Coords && Coords->Num() >= 3)
+                {
+                    // Kinematics coordinate transform: Py(X=lat, Y=up, Z=fwd) -> UE(X=fwd, Y=-lat(right), Z=up)
+                    const float PyX = static_cast<float>((*Coords)[0]->AsNumber());
+                    const float PyY = static_cast<float>((*Coords)[1]->AsNumber());
+                    const float PyZ = static_cast<float>((*Coords)[2]->AsNumber());
+
+                    if (bIsRootOrPelvis)
+                    {
+                        const float ZOffset = PyY - 95.0f;
+                        PosKeys.Add(FVector3f(RefTranslation.X + PyZ, RefTranslation.Y - PyX, RefTranslation.Z + ZOffset));
+                    }
+                    else
+                    {
+                        PosKeys.Add(RefTranslation);
+                    }
+
+                    if (RotFrameList && RotFrameList->IsValidIndex(FrameIdx))
+                    {
+                        const TArray<TSharedPtr<FJsonValue>>* RotCoords = nullptr;
+                        if ((*RotFrameList)[FrameIdx]->TryGetArray(RotCoords) && RotCoords && RotCoords->Num() >= 3)
+                        {
+                            const double Pitch = (*RotCoords)[0]->AsNumber();
+                            const double Yaw   = (*RotCoords)[1]->AsNumber();
+                            const double Roll  = (*RotCoords)[2]->AsNumber();
+
+                            const FQuat DeltaCS = FRotator(Pitch, Yaw, Roll).Quaternion();
+                            const FQuat LocalDelta = ParentCSInv * DeltaCS * ParentCS;
+                            FQuat NewRot = LocalDelta * FQuat(RefRotation);
+                            NewRot.Normalize();
+                            RotKeys.Add(FQuat4f(NewRot));
+                        }
+                        else
+                        {
+                            RotKeys.Add(RefRotation);
+                        }
+                    }
+                    else
+                    {
+                        RotKeys.Add(RefRotation);
+                    }
+
+                    ScaleKeys.Add(RefScale);
+                }
+            }
+
+            if (BodyAnim->GetDataModel() && BodyAnim->GetDataModel()->IsValidBoneTrackName(BoneName))
+            {
+                Controller.RemoveBoneTrack(BoneName, false);
+            }
+            if (Controller.AddBoneCurve(BoneName, false))
+            {
+                Controller.SetBoneTrackKeys(BoneName, PosKeys, RotKeys, ScaleKeys, false);
+                ++WrittenBones;
+            }
+        }
+
+        Controller.CloseBracket(false);
+        Controller.NotifyPopulated();
+        BodyAnim->PostEditChange();
+        FAssetRegistryModule::AssetCreated(BodyAnim);
+        Package->MarkPackageDirty();
+
+        TArray<UPackage*> PackagesToSave;
+        PackagesToSave.Add(Package);
+        FEditorFileUtils::PromptForCheckoutAndSave(PackagesToSave, /*bCheckDirty*/ false, /*bPromptToSave*/ false);
+
+        UE_LOG(LogTemp, Log, TEXT("MHPD: Successfully created native generated body anim '%s' (%d bones, %d frames)"), *AssetName, WrittenBones, NumFrames);
+        return BodyAnim;
+    }
+
     // DEPRECATED - superseded by GenerateHeadMotionBodyAnim. Keying head rotation
     // onto face-skeleton bones produces no visible movement (see the technical
     // report, approaches 3-6). Retained only for reference; no longer called.
@@ -1812,6 +2142,11 @@ private:
             {
                 TargetHeadRot.Roll = 14.0f * Inst.Weight;
             }
+            else if (Inst.BehaviorId == TEXT("head_warmth_tilt"))
+            {
+                TargetHeadRot.Pitch = 6.0f * Inst.Weight;
+                TargetHeadRot.Roll = 8.0f * Inst.Weight;
+            }
             else if (Inst.BehaviorId == TEXT("head_nod"))
             {
                 TargetHeadRot.Pitch = -14.0f * Inst.Weight;
@@ -1920,6 +2255,10 @@ private:
             if (BodyComponent && BodyAnim)
             {
                 BodyComponent->SetAnimationMode(EAnimationMode::AnimationCustomMode);
+                if (UAnimInstance* ExistingBodyAnimInst = BodyComponent->GetAnimInstance())
+                {
+                    ExistingBodyAnimInst->StopAllMontages(0.0f);
+                }
                 FaceComponent->AddTickPrerequisiteComponent(BodyComponent);
             }
 
@@ -1976,7 +2315,8 @@ private:
             }
 
             // Add Control Rig procedural head/neck motion track to BodyComponent if plan specifies head motion
-            if (BodyBinding.IsValid() && Plan)
+            // ONLY if there is no BodyAnim already driving the body, preventing Control Rig from overriding full-body animation.
+            if (BodyBinding.IsValid() && Plan && !BodyAnim)
             {
                 AddControlRigTrackToSequence(Sequence, MovieScene, BodyBinding, BodyComponent, Plan, DisplayRate, StartFrame, EndFrame);
             }
@@ -2002,6 +2342,10 @@ private:
         FAssetRegistryModule::AssetCreated(Sequence);
         Package->MarkPackageDirty();
         Sequence->MarkPackageDirty();
+
+        TArray<UPackage*> PackagesToSave;
+        PackagesToSave.Add(Package);
+        FEditorFileUtils::PromptForCheckoutAndSave(PackagesToSave, /*bCheckDirty*/ false, /*bPromptToSave*/ false);
 
         return Sequence;
     }
@@ -2572,7 +2916,6 @@ private:
         }
     }
 
-
     TSharedRef<SWidget> GenerateTakeHistoryRow(TSharedPtr<FGeneratedTakeInfo> Item)
     {
         return SNew(STextBlock).Text(FText::FromString(Item.IsValid() ? Item->TakeName : TEXT("None")));
@@ -2798,24 +3141,26 @@ private:
 
     void OnVoiceProcessOutput(const FString& Output)
     {
-        AsyncTask(ENamedThreads::GameThread, [this, Output]()
+        VoiceOutputQueue.Enqueue(Output);
+    }
+
+    void HandleVoiceOutputLine(const FString& Output)
+    {
+        if (Output.StartsWith(TEXT("MHPD_VOICE_RESULT: ")))
         {
-            if (Output.StartsWith(TEXT("MHPD_VOICE_RESULT: ")))
-            {
-                if (DirectionTextBox.IsValid())
-                    DirectionTextBox->SetText(FText::FromString(Output.Mid(19).TrimStartAndEnd()));
-            }
-            else if (Output.StartsWith(TEXT("MHPD_VOICE_STATUS: ")))
-            {
-                if (DirectionTextBox.IsValid())
-                    DirectionTextBox->SetText(FText::FromString(Output.Mid(19).TrimStartAndEnd()));
-            }
-            else if (Output.StartsWith(TEXT("MHPD_VOICE_ERROR: ")))
-            {
-                if (DirectionTextBox.IsValid())
-                    DirectionTextBox->SetText(FText::FromString(FString::Printf(TEXT("Error: %s"), *Output.Mid(18).TrimStartAndEnd())));
-            }
-        });
+            if (DirectionTextBox.IsValid())
+                DirectionTextBox->SetText(FText::FromString(Output.Mid(19).TrimStartAndEnd()));
+        }
+        else if (Output.StartsWith(TEXT("MHPD_VOICE_STATUS: ")))
+        {
+            if (DirectionTextBox.IsValid())
+                DirectionTextBox->SetText(FText::FromString(Output.Mid(19).TrimStartAndEnd()));
+        }
+        else if (Output.StartsWith(TEXT("MHPD_VOICE_ERROR: ")))
+        {
+            if (DirectionTextBox.IsValid())
+                DirectionTextBox->SetText(FText::FromString(FString::Printf(TEXT("Error: %s"), *Output.Mid(18).TrimStartAndEnd())));
+        }
     }
 
     void ScanBodyLibrary()
@@ -2832,6 +3177,7 @@ private:
 
             FARFilter Filter;
             Filter.PackagePaths.Add(TEXT("/Game/MHPD/BodyLibrary"));
+            Filter.PackagePaths.Add(TEXT("/Game/GeneratedMotions"));
             Filter.ClassPaths.Add(UAnimSequence::StaticClass()->GetClassPathName());
             Filter.bRecursivePaths = true;
 
@@ -2893,10 +3239,218 @@ private:
 
     void OnVoiceProcessCompleted(int32 ReturnCode, bool bCanceled)
     {
-        AsyncTask(ENamedThreads::GameThread, [this, ReturnCode, bCanceled]()
+        bVoiceProcessFinished = true;
+    }
+
+    // -------------------------------------------------------------------------
+    // AI Body Motion (Text-to-Motion)
+    // -------------------------------------------------------------------------
+
+    FText GetGenerateMotionButtonText() const
+    {
+        if (MotionProcess.IsValid() && MotionProcess->IsRunning())
         {
-            VoiceProcess.Reset();
-        });
+            return LOCTEXT("GeneratingMotionRunning", "⚡ Synthesizing Motion on GPU...");
+        }
+        return LOCTEXT("GenerateMotionBtn", "⚡ Generate Body Motion");
+    }
+
+    FReply OnGenerateBodyMotionClicked()
+    {
+        if (MotionProcess.IsValid() && MotionProcess->IsRunning())
+        {
+            return FReply::Handled();
+        }
+
+        const FString Prompt = MotionPromptTextBox.IsValid() ? MotionPromptTextBox->GetText().ToString().TrimStartAndEnd() : FString();
+        if (Prompt.IsEmpty())
+        {
+            if (MotionStatusText.IsValid())
+            {
+                MotionStatusText->SetText(LOCTEXT("PromptEmptyError", "Please enter a motion prompt before generating."));
+            }
+            return FReply::Handled();
+        }
+
+        const float Duration = ParseFloatTextBox(MotionDurationTextBox, 3.5f);
+
+        // Resolve Python executable: check project-relative venv first, then absolute dev path, then system Python
+        TArray<FString> PythonCandidates = {
+            FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("../../MetaHumanPerformanceDirector/text_to_motion/.venv/Scripts/python.exe")),
+            TEXT("E:/DavidCobbinsGlobal/Software/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector/text_to_motion/.venv/Scripts/python.exe"),
+            TEXT("C:\\Users\\david\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe")
+        };
+
+        FString PythonExe;
+        for (const FString& Candidate : PythonCandidates)
+        {
+            if (FPaths::FileExists(Candidate))
+            {
+                PythonExe = Candidate;
+                break;
+            }
+        }
+
+        if (PythonExe.IsEmpty())
+        {
+            if (MotionStatusText.IsValid())
+            {
+                MotionStatusText->SetText(LOCTEXT("PythonNotFoundError", "Python environment for text_to_motion not found."));
+            }
+            return FReply::Handled();
+        }
+
+        // Resolve direct_motion.py
+        TArray<FString> ScriptCandidates = {
+            FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("../../MetaHumanPerformanceDirector/text_to_motion/direct_motion.py")),
+            TEXT("E:/DavidCobbinsGlobal/Software/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector/text_to_motion/direct_motion.py")
+        };
+
+        FString ScriptPath;
+        for (const FString& Candidate : ScriptCandidates)
+        {
+            if (FPaths::FileExists(Candidate))
+            {
+                ScriptPath = Candidate;
+                break;
+            }
+        }
+
+        if (ScriptPath.IsEmpty())
+        {
+            if (MotionStatusText.IsValid())
+            {
+                MotionStatusText->SetText(LOCTEXT("ScriptNotFoundError", "direct_motion.py not found in text_to_motion."));
+            }
+            return FReply::Handled();
+        }
+
+        const FString MotionOutputDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() / TEXT("MHPD/Motions"));
+        IFileManager::Get().MakeDirectory(*MotionOutputDir, true);
+
+        const FString SafeName = TEXT("Motion_") + MakeTakeToken(Prompt);
+        const FString OutputBvh = MotionOutputDir / (SafeName + TEXT(".bvh"));
+
+        LastGeneratedMotionPath = OutputBvh;
+        LastGeneratedMotionJsonPath = MotionOutputDir / (SafeName + TEXT(".json"));
+
+        const FString Args = FString::Printf(TEXT("\"%s\" --prompt \"%s\" --duration %.2f --output \"%s\""),
+            *ScriptPath,
+            *Prompt.Replace(TEXT("\""), TEXT("\\\"")),
+            Duration,
+            *OutputBvh
+        );
+
+        if (MotionStatusText.IsValid())
+        {
+            MotionStatusText->SetText(FText::FromString(FString::Printf(TEXT("Synthesizing motion for '%s' (%.1fs) on GPU..."), *Prompt, Duration)));
+        }
+
+        MotionProcess = MakeShareable(new FInteractiveProcess(PythonExe, Args, true));
+        MotionProcess->OnOutput().BindRaw(this, &SMHPDDirectorPanel::OnMotionProcessOutput);
+        MotionProcess->OnCompleted().BindRaw(this, &SMHPDDirectorPanel::OnMotionProcessCompleted);
+        MotionProcess->Launch();
+
+        return FReply::Handled();
+    }
+
+    void OnMotionProcessOutput(const FString& Output)
+    {
+        MotionOutputQueue.Enqueue(Output);
+    }
+
+    void OnMotionProcessCompleted(int32 ReturnCode, bool bCanceled)
+    {
+        MotionProcessReturnCode = bCanceled ? -1 : ReturnCode;
+        bMotionProcessFinished = true;
+    }
+
+    void HandleMotionOutputLine(const FString& Output)
+    {
+        if (Output.StartsWith(TEXT("MHPD_MOTION_RESULT: ")))
+        {
+            const FString JsonStr = Output.Mid(20).TrimStartAndEnd();
+            TSharedPtr<FJsonObject> JsonObj;
+            TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonStr);
+            if (FJsonSerializer::Deserialize(Reader, JsonObj) && JsonObj.IsValid())
+            {
+                LastGeneratedMotionPath = JsonObj->GetStringField(TEXT("bvh_path"));
+                LastGeneratedMotionJsonPath = JsonObj->GetStringField(TEXT("json_path"));
+            }
+        }
+        else if (Output.StartsWith(TEXT("MHPD_MOTION_STATUS: ")))
+        {
+            if (MotionStatusText.IsValid())
+            {
+                MotionStatusText->SetText(FText::FromString(Output.Mid(20).TrimStartAndEnd()));
+            }
+        }
+        else if (Output.StartsWith(TEXT("MHPD_MOTION_ERROR: ")))
+        {
+            if (MotionStatusText.IsValid())
+            {
+                MotionStatusText->SetText(FText::FromString(FString::Printf(TEXT("Error: %s"), *Output.Mid(19).TrimStartAndEnd())));
+            }
+        }
+    }
+
+    void HandleMotionProcessCompleted(int32 ReturnCode)
+    {
+        MotionProcess.Reset();
+        if (ReturnCode != 0)
+        {
+            if (MotionStatusText.IsValid())
+            {
+                MotionStatusText->SetText(LOCTEXT("MotionGenFailed", "Motion generation ended with an error. Check Output Log."));
+            }
+            return;
+        }
+
+        const FString OutputPackageDir = TEXT("/Game/MHPD/BodyLibrary/Generated");
+        FString SafeAssetName = TEXT("Motion_Generated");
+        if (!LastGeneratedMotionPath.IsEmpty())
+        {
+            SafeAssetName = FPaths::GetBaseFilename(LastGeneratedMotionPath);
+        }
+
+        // Create native AnimSequence from motion JSON
+        if (FPaths::FileExists(LastGeneratedMotionJsonPath))
+        {
+            CreateAnimSequenceFromMotionJson(LastGeneratedMotionJsonPath, OutputPackageDir, SafeAssetName, nullptr);
+        }
+
+        // Also copy BVH to project content for archival
+        const FString ProjectBodyDir = FPaths::ProjectContentDir() / TEXT("MHPD/BodyLibrary/Generated");
+        IFileManager::Get().MakeDirectory(*ProjectBodyDir, true);
+        if (!LastGeneratedMotionPath.IsEmpty() && FPaths::FileExists(LastGeneratedMotionPath))
+        {
+            const FString DestFileName = FPaths::GetCleanFilename(LastGeneratedMotionPath);
+            const FString DestFilePath = ProjectBodyDir / DestFileName;
+            IFileManager::Get().Copy(*DestFilePath, *LastGeneratedMotionPath, true, true);
+        }
+
+        // Rescan Body Library to populate dropdown with the new asset
+        ScanBodyLibrary();
+
+        // Auto-select the newly created asset
+        const FString TargetAssetPath = OutputPackageDir / (SafeAssetName + TEXT(".") + SafeAssetName);
+        for (const FBodyOptionPtr& Option : BodyLibraryOptions)
+        {
+            if (Option.IsValid() && (Option->Equals(TargetAssetPath, ESearchCase::IgnoreCase) || Option->Contains(SafeAssetName)))
+            {
+                SelectedBodyOption = Option;
+                if (BodyLibraryComboBox.IsValid())
+                {
+                    BodyLibraryComboBox->SetSelectedItem(SelectedBodyOption);
+                }
+                break;
+            }
+        }
+
+        if (MotionStatusText.IsValid())
+        {
+            MotionStatusText->SetText(FText::FromString(FString::Printf(TEXT("✓ Generated: %s (Selected for Take)"), *SafeAssetName)));
+        }
     }
 
 private: 

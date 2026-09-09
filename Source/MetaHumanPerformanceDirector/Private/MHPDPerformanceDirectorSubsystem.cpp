@@ -460,6 +460,12 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
                 bMatchedIntent = true;
                 bAddedGazeInstruction = true;
             }
+
+            if (bAddedGazeInstruction && !bAddedHeadInstruction)
+            {
+                AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_tilt"), TEXT("Subtle contemplative cervical tilt accompanying gaze shift."), 0.40f);
+                bAddedHeadInstruction = true;
+            }
         }
     }
 
@@ -497,6 +503,11 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     {
         Plan.MatchedInterpretations.Add(TEXT("Surprise"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_surprise"), TEXT("Widen eyes, raise inner/outer brows, and slightly drop jaw."), 1.0f);
+        if (!bAddedHeadInstruction)
+        {
+            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_pitch_up"), TEXT("Startle reflex: rapid cervical pitch upward and cranial retraction."), 0.75f);
+            bAddedHeadInstruction = true;
+        }
         bMatchedIntent = true;
     }
 
@@ -505,6 +516,11 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     {
         Plan.MatchedInterpretations.Add(TEXT("Disgust"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_disgust"), TEXT("Wrinkle nose, squint cheeks, sneer, and lower brows."), 1.0f);
+        if (!bAddedHeadInstruction)
+        {
+            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_turn_left"), TEXT("Aversion recoil: turn and recoil head away from offensive stimulus."), 0.65f);
+            bAddedHeadInstruction = true;
+        }
         bMatchedIntent = true;
     }
 
@@ -513,6 +529,11 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     {
         Plan.MatchedInterpretations.Add(TEXT("Jaw Tension"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("clench_jaw"), TEXT("Clench jaw, press lips, and lower brows."), 1.0f);
+        if (!bAddedHeadInstruction)
+        {
+            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_pitch_down"), TEXT("Forward tense cranial lock accompanying clenched jaw."), 0.50f);
+            bAddedHeadInstruction = true;
+        }
         bMatchedIntent = true;
     }
 
@@ -522,6 +543,11 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     {
         Plan.MatchedInterpretations.Add(TEXT("Sadness / Frown"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_sadness"), TEXT("Lower mouth corners in a frown, raise inner brows, and squint inner eyes."), 1.0f);
+        if (!bAddedHeadInstruction)
+        {
+            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_pitch_down"), TEXT("Somber cervical flexion: lower chin and head downward in defeat."), 0.70f);
+            bAddedHeadInstruction = true;
+        }
         bMatchedIntent = true;
     }
 
@@ -531,6 +557,11 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     {
         Plan.MatchedInterpretations.Add(TEXT("Joy"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_smile"), TEXT("Smile broadly, pull corners, raise cheeks, and squint eyes."), 1.0f);
+        if (!bAddedHeadInstruction)
+        {
+            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_warmth_tilt"), TEXT("Subtle warm cervical tilt and chin lift accompanying smile."), 0.65f);
+            bAddedHeadInstruction = true;
+        }
         bMatchedIntent = true;
     }
 

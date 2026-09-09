@@ -350,7 +350,7 @@ def _curve_ops_from_plan(plan, existing_curve_names):
         # on the BodyComponent binding in Sequencer (Solution 3), preserving 100% skin
         # continuity with zero collar tearing. Facial curves focus on expressions/gaze.
         if behavior in ("head_turn_left", "head_turn_right", "head_pitch_up", "head_pitch_down",
-                        "head_tilt", "head_nod", "head_shake"):
+                        "head_tilt", "head_nod", "head_shake", "head_warmth_tilt"):
             unreal.log(f"MHPD: '{behavior}' is driven by MetaHuman_ControlRig on BodyComponent - facial curves preserved")
             continue
 

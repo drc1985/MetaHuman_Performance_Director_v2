@@ -128,6 +128,24 @@ Once the Performance Plan is generated, the C++ runtime evaluates each instructi
 - **Formula:** $f(t) = w \cdot \sin(2\pi f t + \phi) \cdot \exp(-\lambda t)$
 - **Typical Use:** Vocal unsteadiness, chin trembling (`mouthChinPucker`), autonomic nervousness.
 
+### 3.5 Holistic Kinetic Coupling: Face-to-Cervical Propagation
+In human biomechanics and cinematic directing, the face never acts in isolation. Emotional directives automatically couple facial blendshapes with cervical head/neck rotations:
+
+| Emotional Directive | Primary Facial Channel | Coupled HeadMovement Channel | Kinematic Arc | Biomechanical & Dramatic Rationale |
+| :--- | :--- | :--- | :--- | :--- |
+| **Smile / Joy / Warmth** | `express_smile` | `head_warmth_tilt` | Pitch +6.0°, Roll +8.0° | **Expansion:** Cervical extension (chin lift) and warm lateral head tilt opening the throat to the partner. |
+| **Sadness / Frown / Defeat** | `express_sadness` | `head_pitch_down` | Pitch -16.0° | **Contraction:** Cervical flexion (head drop) under gravity; defeat caves the neck downward. |
+| **Surprise / Shock** | `express_surprise` | `head_pitch_up` | Pitch +16.0° | **Startle Reflex:** Rapid cervical pitch upward and cranial retraction away from stimulus. |
+| **Disgust / Repulsion** | `express_disgust` | `head_turn_left` | Yaw -22.0° | **Aversion Withdrawal:** Diagonal cranial recoil turning the face away from offensive stimulus. |
+| **Jaw Tension / Clench** | `clench_jaw` | `head_pitch_down` | Pitch -6.0° | **Bracing / Advance:** Cranial forward lock; animal bracing protecting the carotid artery. |
+| **Gaze Shift / Cognitive Thinking** | `gaze_shift_*` | `head_tilt` | Roll +14.0° | **Cognitive Decoupling:** Counter-rotational head cock accompanying saccadic eye movement to access memory. |
+| **Direct Head Prompts** (nods/shakes) | Preserved | `head_nod`, `head_shake`, `head_tilt` | Multi-axis rotation | Explicit director instruction overriding default emotional coupling. |
+
+**Scale Dynamics:**  
+All coupled head movements are scaled dynamically by the directorial dials:
+$$\text{ScaledWeight} = \text{BaseWeight} \times \text{PhysicalMultiplier} \times \text{FramingBodyFactor}$$
+In a **Cinematic Close-Up** (`framing_scale` = 0.20), $\text{FramingBodyFactor} \approx 0.49\times$, dampening head motion so the actor remains within the lens frustum and focus plane. In a **Theatrical Wide** (`framing_scale` = 0.97), $\text{FramingBodyFactor} \approx 1.47\times$, amplifying head motion so the emotion projects clearly across the wide shot silhouette.
+
 ---
 
 ## 4. Worked Directorial Example
