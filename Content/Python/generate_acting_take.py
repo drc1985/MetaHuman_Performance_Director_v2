@@ -47,6 +47,34 @@ BEHAVIOR_TO_PATTERN = {
     "express_sadness":                 ("HOLD",        "sadness"),
     "express_frown":                   ("HOLD",        "frown"),
     "express_smile":                   ("HOLD",        "smile"),
+    "express_annoyance":               ("HOLD",        "annoyance"),
+    "express_pain":                    ("HOLD",        "pain"),
+    "express_frustration":             ("HOLD",        "frustration"),
+    "express_suspicion":               ("HOLD",        "suspicion"),
+    "express_guilt":                   ("HOLD",        "guilt"),
+    "express_attraction":              ("HOLD",        "attraction"),
+    "express_smugness":                ("HOLD",        "smugness"),
+    "express_fear":                    ("HOLD",        "fear"),
+    "express_exhaustion":              ("HOLD",        "exhaustion"),
+    "express_contempt":                ("HOLD",        "contempt"),
+    "express_incredulity":             ("HOLD",        "incredulity"),
+    "express_anticipation":            ("HOLD",        "anticipation"),
+    "express_warmth":                  ("HOLD",        "warmth"),
+    "express_relief":                  ("HOLD",        "relief"),
+    "express_pride":                   ("HOLD",        "pride"),
+    "express_playful":                 ("HOLD",        "playful"),
+    "express_wonder":                  ("HOLD",        "wonder"),
+    "express_serenity":                ("HOLD",        "serenity"),
+    "express_gratitude":               ("HOLD",        "gratitude"),
+    "express_listening":               ("HOLD",        "listening"),
+    "express_deliberation":            ("HOLD",        "deliberation"),
+    "express_stoic":                   ("HOLD",        "stoic"),
+    "express_casual":                  ("HOLD",        "casual"),
+    "express_daydreaming":             ("HOLD",        "daydreaming"),
+    "pupil_dilation":                  ("HOLD",        "pupil_dilate"),
+    "pupil_constriction":              ("HOLD",        "pupil_constrict"),
+    "cognitive_eye_flutter":           ("FLUTTER",     "blink"),
+    "glabella_micro_tension":          ("OSCILLATION", "tremor"),
 }
 
 # Curve group -> list of ((introspection substrings), canonical fallback)
@@ -57,7 +85,7 @@ CURVE_GROUPS = {
     ],
     "gaze_left": [
         (("eyelookleftl", "eyelookleft_l"), "CTRL_expressions_eyeLookLeftL"),
-        (("eyelookleftr", "eyelookleft_r"), "CTRL_expressions_eyeLookLeftR"),
+        (("eyelookleftr", "eyelookleft_r"), "CTRL_expressions_eyeLookRightL"),
     ],
     "gaze_right": [
         (("eyelookrightl", "eyelookright_l"), "CTRL_expressions_eyeLookRightL"),
@@ -71,6 +99,14 @@ CURVE_GROUPS = {
         (("eyelookdownl", "eyelookdown_l"), "CTRL_expressions_eyeLookDownL"),
         (("eyelookdownr", "eyelookdown_r"), "CTRL_expressions_eyeLookDownR"),
     ],
+    "pupil_dilate": [
+        (("pupildilatel", "pupildilationl", "eyepupildilatel"), "CTRL_expressions_pupilDilationL"),
+        (("pupildilater", "pupildilationr", "eyepupildilater"), "CTRL_expressions_pupilDilationR"),
+    ],
+    "pupil_constrict": [
+        (("pupilconstrictl", "pupilconstrictionl", "eyepupilconstrictl"), "CTRL_expressions_pupilConstrictL"),
+        (("pupilconstrictr", "pupilconstrictionr", "eyepupilconstrictr"), "CTRL_expressions_pupilConstrictR"),
+    ],
     "squint": [
         (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
         (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
@@ -82,6 +118,10 @@ CURVE_GROUPS = {
     "tremor": [
         (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
         (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
+        (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
+        (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
     ],
     "surprise": [
         (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
@@ -147,6 +187,184 @@ CURVE_GROUPS = {
         (("mouthsharpcornerpullr", "mouthsharpcornerpull_r"), "CTRL_expressions_mouthSharpCornerPullR"),
         (("cheekraisel", "eyecheekraisel"), "CTRL_expressions_eyeCheekRaiseL"),
         (("cheekraiser", "eyecheekraiser"), "CTRL_expressions_eyeCheekRaiseR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+    ],
+    "annoyance": [
+        (("mouthlipspressl", "mouthpressl"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr"), "CTRL_expressions_mouthLipsPressR"),
+        (("mouthupperupl",), "CTRL_expressions_mouthUpperUpL"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+    ],
+    "pain": [
+        (("browdownl", "browlowerl"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr"), "CTRL_expressions_browDownR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+        (("mouthlipspressl", "mouthpressl"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr"), "CTRL_expressions_mouthLipsPressR"),
+        (("mouthupperupl",), "CTRL_expressions_mouthUpperUpL"),
+        (("mouthupperupr",), "CTRL_expressions_mouthUpperUpR"),
+        (("jawchinraisedl", "chinraisedl"), "CTRL_expressions_jawChinRaiseDL"),
+        (("jawchinraisedr", "chinraisedr"), "CTRL_expressions_jawChinRaiseDR"),
+    ],
+    "frustration": [
+        (("mouthlipspressl", "mouthpressl"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr"), "CTRL_expressions_mouthLipsPressR"),
+        (("jawclenchl", "jawclench"), "CTRL_expressions_jawClenchL"),
+        (("jawclenchr", "jawclench"), "CTRL_expressions_jawClenchR"),
+        (("browdownl", "browlowerl"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr"), "CTRL_expressions_browDownR"),
+        (("eyelookupl", "eyelookup_l"), "CTRL_expressions_eyeLookUpL"),
+        (("eyelookupr", "eyelookupr_r"), "CTRL_expressions_eyeLookUpR"),
+    ],
+    "suspicion": [
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+        (("browdownl", "browlowerl"), "CTRL_expressions_browDownL"),
+        (("browraiseouterr", "browraiseouter_r"), "CTRL_expressions_browRaiseOuterR"),
+        (("mouthlipspressl", "mouthpressl"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr"), "CTRL_expressions_mouthLipsPressR"),
+        (("pupilconstrictl", "pupilconstrictionl", "eyepupilconstrictl"), "CTRL_expressions_pupilConstrictL"),
+        (("pupilconstrictr", "pupilconstrictionr", "eyepupilconstrictr"), "CTRL_expressions_pupilConstrictR"),
+    ],
+    "guilt": [
+        (("eyelookdownl", "eyelookdown_l"), "CTRL_expressions_eyeLookDownL"),
+        (("eyelookdownr", "eyelookdown_r"), "CTRL_expressions_eyeLookDownR"),
+        (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
+        (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
+        (("mouthcornerdepressl", "mouthfrownl"), "CTRL_expressions_mouthCornerDepressL"),
+        (("mouthcornerdepressr", "mouthfrownr"), "CTRL_expressions_mouthCornerDepressR"),
+    ],
+    "attraction": [
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+        (("cheekraisel", "eyecheekraisel"), "CTRL_expressions_eyeCheekRaiseL"),
+        (("cheekraiser", "eyecheekraiser"), "CTRL_expressions_eyeCheekRaiseR"),
+        (("pupildilatel", "pupildilationl", "eyepupildilatel"), "CTRL_expressions_pupilDilationL"),
+        (("pupildilater", "pupildilationr", "eyepupildilater"), "CTRL_expressions_pupilDilationR"),
+    ],
+    "smugness": [
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthupperupl",), "CTRL_expressions_mouthUpperUpL"),
+        (("mouthcornerpulll",), "CTRL_expressions_mouthCornerPullL"),
+        (("browraiseouterl",), "CTRL_expressions_browRaiseOuterL"),
+        (("jawchinraisedl",), "CTRL_expressions_jawChinRaiseDL"),
+    ],
+    "fear": [
+        (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
+        (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
+        (("browraiseouterl", "browraiseouter_l"), "CTRL_expressions_browRaiseOuterL"),
+        (("browraiseouterr", "browraiseouter_r"), "CTRL_expressions_browRaiseOuterR"),
+        (("eyewidenl", "eyewiden_l"), "CTRL_expressions_eyeWidenL"),
+        (("eyewidenr", "eyewiden_r"), "CTRL_expressions_eyeWidenR"),
+        (("jawopen", "jaw_open"), "CTRL_expressions_jawOpen"),
+        (("pupildilatel", "pupildilationl", "eyepupildilatel"), "CTRL_expressions_pupilDilationL"),
+        (("pupildilater", "pupildilationr", "eyepupildilater"), "CTRL_expressions_pupilDilationR"),
+    ],
+    "exhaustion": [
+        (("eyeblinkl", "eyeblink_l"), "CTRL_expressions_eyeBlinkL"),
+        (("eyeblinkr", "eyeblink_r"), "CTRL_expressions_eyeBlinkR"),
+        (("mouthcornerdepressl", "mouthfrownl"), "CTRL_expressions_mouthCornerDepressL"),
+        (("mouthcornerdepressr", "mouthfrownr"), "CTRL_expressions_mouthCornerDepressR"),
+        (("jawopen", "jaw_open"), "CTRL_expressions_jawOpen"),
+    ],
+    "contempt": [
+        (("mouthupperupl",), "CTRL_expressions_mouthUpperUpL"),
+        (("nosewrinklel",), "CTRL_expressions_noseWrinkleL"),
+        (("jawclenchl", "jawclench"), "CTRL_expressions_jawClenchL"),
+        (("mouthcornerdepressr",), "CTRL_expressions_mouthCornerDepressR"),
+    ],
+    "incredulity": [
+        (("browdownl", "browlowerl"), "CTRL_expressions_browDownL"),
+        (("browraiseouterr",), "CTRL_expressions_browRaiseOuterR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+        (("jawopen", "jaw_open"), "CTRL_expressions_jawOpen"),
+    ],
+    "anticipation": [
+        (("eyewidenl", "eyewiden_l"), "CTRL_expressions_eyeWidenL"),
+        (("eyewidenr", "eyewiden_r"), "CTRL_expressions_eyeWidenR"),
+        (("mouthlipspressl", "mouthpressl"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr"), "CTRL_expressions_mouthLipsPressR"),
+    ],
+    "warmth": [
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+        (("cheekraisel", "eyecheekraisel"), "CTRL_expressions_eyeCheekRaiseL"),
+        (("cheekraiser", "eyecheekraiser"), "CTRL_expressions_eyeCheekRaiseR"),
+    ],
+    "relief": [
+        (("eyeblinkl", "eyeblink_l"), "CTRL_expressions_eyeBlinkL"),
+        (("eyeblinkr", "eyeblink_r"), "CTRL_expressions_eyeBlinkR"),
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
+    ],
+    "pride": [
+        (("mouthcornerpulll", "mouthcornerpull_l"), "CTRL_expressions_mouthCornerPullL"),
+        (("mouthcornerpullr", "mouthcornerpull_r"), "CTRL_expressions_mouthCornerPullR"),
+        (("jawchinraisedl", "chinraisedl"), "CTRL_expressions_jawChinRaiseDL"),
+        (("jawchinraisedr", "chinraisedr"), "CTRL_expressions_jawChinRaiseDR"),
+    ],
+    "playful": [
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthcornerpulll", "mouthcornerpull_l"), "CTRL_expressions_mouthCornerPullL"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+    ],
+    "wonder": [
+        (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
+        (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
+        (("browraiseouterl", "browraiseouter_l"), "CTRL_expressions_browRaiseOuterL"),
+        (("browraiseouterr", "browraiseouter_r"), "CTRL_expressions_browRaiseOuterR"),
+        (("eyewidenl", "eyewiden_l"), "CTRL_expressions_eyeWidenL"),
+        (("eyewidenr", "eyewiden_r"), "CTRL_expressions_eyeWidenR"),
+        (("jawopen", "jaw_open"), "CTRL_expressions_jawOpen"),
+        (("pupildilatel", "pupildilationl", "eyepupildilatel"), "CTRL_expressions_pupilDilationL"),
+        (("pupildilater", "pupildilationr", "eyepupildilater"), "CTRL_expressions_pupilDilationR"),
+    ],
+    "serenity": [
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+    ],
+    "gratitude": [
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
+        (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
+        (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+    ],
+    "listening": [
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+    ],
+    "deliberation": [
+        (("browdownl", "browlowerl"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr"), "CTRL_expressions_browDownR"),
+        (("mouthlipspressl", "mouthpressl"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr"), "CTRL_expressions_mouthLipsPressR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+        (("pupilconstrictl", "pupilconstrictionl", "eyepupilconstrictl"), "CTRL_expressions_pupilConstrictL"),
+        (("pupilconstrictr", "pupilconstrictionr", "eyepupilconstrictr"), "CTRL_expressions_pupilConstrictR"),
+    ],
+    "stoic": [
+        (("mouthlipspressl", "mouthpressl"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr"), "CTRL_expressions_mouthLipsPressR"),
+    ],
+    "casual": [
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
+    ],
+    "daydreaming": [
+        (("jawopen", "jaw_open"), "CTRL_expressions_jawOpen"),
         (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
         (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
     ],
@@ -276,8 +494,44 @@ def _nod_keys(r_start, r_end, val, count=3):
     return keys
 
 
+def _flutter_keys(r_start, r_end, val=0.85):
+    """
+    Cognitive double micro-blink (eyelid flutter):
+    Two rapid blinks (~50ms down, ~60ms up, 40ms separation, 60ms down, 90ms up)
+    placed near the lead-in of the revision range. Total duration ~300ms.
+    """
+    r_dur = r_end - r_start
+    t_base = r_start + min(0.12, r_dur * 0.1)
+    k1_start = t_base
+    k1_peak  = min(r_end, t_base + 0.05)
+    k1_end   = min(r_end, t_base + 0.11)
+
+    k2_start = min(r_end, k1_end + 0.04)
+    k2_peak  = min(r_end, k2_start + 0.06)
+    k2_end   = min(r_end, k2_start + 0.15)
+
+    keys = [
+        (r_start, 0.0),
+        (k1_start, 0.0),
+        (k1_peak, val * 0.90),
+        (k1_end, 0.0),
+        (k2_start, 0.0),
+        (k2_peak, val),
+        (k2_end, 0.0),
+        (r_end, 0.0)
+    ]
+    unique_keys = []
+    seen = set()
+    for t, v in sorted(keys, key=lambda x: x[0]):
+        rt = round(t, 4)
+        if rt not in seen and t <= r_end:
+            seen.add(rt)
+            unique_keys.append((t, v))
+    return unique_keys
+
+
 def _ramp_keys(r_start, r_end, val, offset=0.0):
-    """Gaze shift: hold, fast (saccade-speed) ramp, sustain, ease back to zero."""
+    """Gaze shift: hold, fast (saccade-speed) ramp, sustain with fixational micro-drift, ease back to zero."""
     r_dur = r_end - r_start
     if r_dur < 0.6:
         # Degenerate short range: simple out-and-back
@@ -286,7 +540,26 @@ def _ramp_keys(r_start, r_end, val, offset=0.0):
     t0 = r_start + lead                      # gaze still direct until here
     t1 = min(t0 + 0.12, r_end - 0.35)        # ~120ms saccade to target
     t3 = max(t1 + 0.05, r_end - 0.25)        # sustain, then 250ms ease back
-    return [(r_start, 0.0), (t0, 0.0), (t1, val), (t3, val), (r_end, 0.0)]
+
+    keys = [(r_start, 0.0), (t0, 0.0), (t1, val)]
+
+    # Fixational micro-drift during sustained gaze hold (eliminates glass-eye mannequin stare)
+    hold_dur = t3 - t1
+    if hold_dur > 0.35:
+        step_dur = 0.28
+        n_steps = max(1, int(hold_dur / step_dur))
+        actual_step = hold_dur / (n_steps + 1)
+        for i in range(1, n_steps + 1):
+            tk = t1 + i * actual_step
+            # Organic multi-frequency micro-saccadic drift (+/- 0.025 amplitude)
+            t_rel = tk - t1
+            drift = 0.025 * math.sin(2.0 * math.pi * 1.8 * t_rel) * math.cos(2.0 * math.pi * 2.7 * t_rel)
+            val_k = max(0.0, min(1.0, val + drift))
+            keys.append((tk, val_k))
+
+    keys.append((t3, val))
+    keys.append((r_end, 0.0))
+    return sorted(keys, key=lambda kv: kv[0])
 
 
 def _oscillation_keys(r_start, r_end, val, freq=8.0):
@@ -306,6 +579,8 @@ def _oscillation_keys(r_start, r_end, val, freq=8.0):
 def _generate_keys(pattern, r_start, r_end, val, blink_count, offset):
     if pattern == "PULSE":
         return _pulse_keys(r_start, r_end, val, blink_count)
+    if pattern == "FLUTTER":
+        return _flutter_keys(r_start, r_end, val)
     if pattern == "HOLD":
         return _hold_keys(r_start, r_end, val)
     if pattern == "HEAD_SWITCH":
@@ -367,20 +642,23 @@ def _curve_ops_from_plan(plan, existing_curve_names):
                 continue
             ops[curve_name] = (pattern, safe_weight, offset, blink_count)
 
-        if behavior == "express_smile":
-            # Suppress conflicting brow furrow and mouth frown from fearful/distressed baseline
-            for suppress_group in ("brow", "sadness", "frown"):
+        positive_states = ("express_smile", "express_warmth", "express_serenity", "express_relief", "express_gratitude", "express_pride")
+        negative_states = ("express_sadness", "express_frown", "express_pain", "express_fear", "express_frustration", "express_contempt")
+
+        if behavior in positive_states:
+            # Suppress conflicting brow furrow, mouth frown, and pain markers
+            for suppress_group in ("brow", "sadness", "frown", "pain"):
                 for curve_name in _resolve_group(suppress_group, existing_curve_names):
                     cl = curve_name.lower()
-                    if "frown" in cl or "depress" in cl or "browlower" in cl or "browdown" in cl:
+                    if any(token in cl for token in ("frown", "depress", "browlower", "browdown", "upperup")):
                         ops[curve_name] = ("HOLD", 0.0, offset, blink_count)
 
-        elif behavior in ("express_sadness", "express_frown"):
+        elif behavior in negative_states:
             # Suppress conflicting smile, cheek raise, and mouth corner pull curves
-            for suppress_group in ("smile",):
+            for suppress_group in ("smile", "warmth", "serenity"):
                 for curve_name in _resolve_group(suppress_group, existing_curve_names):
                     cl = curve_name.lower()
-                    if "smile" in cl or "cornerpull" in cl or "cheekraise" in cl:
+                    if any(token in cl for token in ("smile", "cornerpull", "cheekraise")):
                         ops[curve_name] = ("HOLD", 0.0, offset, blink_count)
 
     return ops
@@ -561,7 +839,7 @@ def settle_mouth_curves(anim_sequence, settle_duration=0.40, lead_in_duration=0.
     # Strictly protect expressive and directorial curves
     protected_keywords = (
         "smile", "cornerpull", "frown", "cheekraise", "squint",
-        "brow", "jawclench", "mouthpress", "dimple", "stretch"
+        "brow", "jawclench", "mouthpress", "dimple", "stretch", "pupil"
     )
 
     for curve_name in all_curves:

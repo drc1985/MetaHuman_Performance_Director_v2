@@ -2097,17 +2097,18 @@ private:
             NeckCtrlName = FName(TEXT("neck_01_ctrl"));
         }
 
-        // Timing frames
+        // Timing frames & Sequence Duration
         const float RevisionStartSec = Plan->RevisionRange.StartSeconds;
         const float RevisionEndSec   = Plan->RevisionRange.EndSeconds;
         const float RangeDur         = FMath::Max(0.1f, RevisionEndSec - RevisionStartSec);
+        const float SeqEndSec        = static_cast<float>(DisplayRate.AsSeconds(EndFrame));
 
         const float EaseInSec  = FMath::Min(0.35f, RangeDur * 0.25f);
         const float EaseOutSec = FMath::Min(0.45f, RangeDur * 0.30f);
 
         const FFrameNumber FrameT0 = SecondsToFrame(DisplayRate, RevisionStartSec);
         const FFrameNumber FrameT1 = SecondsToFrame(DisplayRate, RevisionStartSec + EaseInSec);
-        const FFrameNumber FrameT2 = SecondsToFrame(DisplayRate, RevisionEndSec - EaseOutSec);
+        const FFrameNumber FrameT2 = SecondsToFrame(DisplayRate, FMath::Max(RevisionStartSec + EaseInSec, RevisionEndSec - EaseOutSec * 0.5f));
         const FFrameNumber FrameT3 = SecondsToFrame(DisplayRate, RevisionEndSec);
 
         for (const FMHPDChannelInstruction& Inst : Plan->Instructions)
@@ -2159,24 +2160,75 @@ private:
             const FRotator TargetNeckRot = TargetHeadRot * 0.35f;
             const FRotator PrimaryHeadRot = TargetHeadRot * 0.65f;
 
-            // Key Head control
+            const bool bIsTransientGesture = (Inst.BehaviorId == TEXT("head_nod") || Inst.BehaviorId == TEXT("head_shake"));
+
+            // Key lead-in
             RigSection->AddTransformParameterKey(HeadCtrlName, StartFrame, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(HeadCtrlName, FrameT0, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(HeadCtrlName, FrameT1, FTransform(PrimaryHeadRot), EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(HeadCtrlName, FrameT2, FTransform(PrimaryHeadRot), EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(HeadCtrlName, FrameT3, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(HeadCtrlName, EndFrame, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
-
-            // Key Neck control for organic cervical spine curvature
             RigSection->AddTransformParameterKey(NeckCtrlName, StartFrame, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(NeckCtrlName, FrameT0, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(NeckCtrlName, FrameT1, FTransform(TargetNeckRot), EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(NeckCtrlName, FrameT2, FTransform(TargetNeckRot), EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(NeckCtrlName, FrameT3, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
-            RigSection->AddTransformParameterKey(NeckCtrlName, EndFrame, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
 
-            UE_LOG(LogTemp, Log, TEXT("MHPD: Added MetaHuman_ControlRig head motion keys on Body for '%s' (Controls: '%s', '%s', Target Yaw: %.1f, Pitch: %.1f, Roll: %.1f)"),
-                *Inst.BehaviorId.ToString(), *HeadCtrlName.ToString(), *NeckCtrlName.ToString(), TargetHeadRot.Yaw, TargetHeadRot.Pitch, TargetHeadRot.Roll);
+            if (RevisionStartSec > 0.05f)
+            {
+                RigSection->AddTransformParameterKey(HeadCtrlName, FrameT0, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
+                RigSection->AddTransformParameterKey(NeckCtrlName, FrameT0, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
+            }
+
+            // Peak Hold
+            RigSection->AddTransformParameterKey(HeadCtrlName, FrameT1, FTransform(PrimaryHeadRot), EMovieSceneKeyInterpolation::SmartAuto);
+            RigSection->AddTransformParameterKey(NeckCtrlName, FrameT1, FTransform(TargetNeckRot), EMovieSceneKeyInterpolation::SmartAuto);
+
+            RigSection->AddTransformParameterKey(HeadCtrlName, FrameT2, FTransform(PrimaryHeadRot), EMovieSceneKeyInterpolation::SmartAuto);
+            RigSection->AddTransformParameterKey(NeckCtrlName, FrameT2, FTransform(TargetNeckRot), EMovieSceneKeyInterpolation::SmartAuto);
+
+            if (bIsTransientGesture)
+            {
+                // Transient gestures (nod, shake) return cleanly to neutral baseline
+                RigSection->AddTransformParameterKey(HeadCtrlName, FrameT3, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
+                RigSection->AddTransformParameterKey(NeckCtrlName, FrameT3, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
+
+                RigSection->AddTransformParameterKey(HeadCtrlName, EndFrame, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
+                RigSection->AddTransformParameterKey(NeckCtrlName, EndFrame, FTransform::Identity, EMovieSceneKeyInterpolation::SmartAuto);
+            }
+            else
+            {
+                // Postural Attitudes (warmth tilt, pitch up/down, curiosity tilt, turn):
+                // In natural biomechanics, humans settle into a soft residual posture (~28% of peak)
+                // rather than robotically springing back to mathematical origin (0,0,0).
+                const float SettleRatio = 0.28f;
+                const FRotator SettleHeadRot = PrimaryHeadRot * SettleRatio;
+                const FRotator SettleNeckRot = TargetNeckRot * SettleRatio;
+
+                RigSection->AddTransformParameterKey(HeadCtrlName, FrameT3, FTransform(SettleHeadRot), EMovieSceneKeyInterpolation::SmartAuto);
+                RigSection->AddTransformParameterKey(NeckCtrlName, FrameT3, FTransform(SettleNeckRot), EMovieSceneKeyInterpolation::SmartAuto);
+
+                // If sequence continues past revision range, carry engaged attitude across dialogue
+                // with very slow, organic relaxation rather than freezing at identity.
+                const float RemainingSec = SeqEndSec - RevisionEndSec;
+                if (RemainingSec > 0.6f)
+                {
+                    const float MidDriftSec = RevisionEndSec + FMath::Min(RemainingSec * 0.5f, 2.0f);
+                    const FFrameNumber FrameT4 = SecondsToFrame(DisplayRate, MidDriftSec);
+
+                    const FRotator MidDriftHeadRot = PrimaryHeadRot * 0.16f;
+                    const FRotator MidDriftNeckRot = TargetNeckRot * 0.16f;
+
+                    RigSection->AddTransformParameterKey(HeadCtrlName, FrameT4, FTransform(MidDriftHeadRot), EMovieSceneKeyInterpolation::SmartAuto);
+                    RigSection->AddTransformParameterKey(NeckCtrlName, FrameT4, FTransform(MidDriftNeckRot), EMovieSceneKeyInterpolation::SmartAuto);
+
+                    const FRotator EndDriftHeadRot = PrimaryHeadRot * 0.08f;
+                    const FRotator EndDriftNeckRot = TargetNeckRot * 0.08f;
+
+                    RigSection->AddTransformParameterKey(HeadCtrlName, EndFrame, FTransform(EndDriftHeadRot), EMovieSceneKeyInterpolation::SmartAuto);
+                    RigSection->AddTransformParameterKey(NeckCtrlName, EndFrame, FTransform(EndDriftNeckRot), EMovieSceneKeyInterpolation::SmartAuto);
+                }
+                else
+                {
+                    RigSection->AddTransformParameterKey(HeadCtrlName, EndFrame, FTransform(SettleHeadRot), EMovieSceneKeyInterpolation::SmartAuto);
+                    RigSection->AddTransformParameterKey(NeckCtrlName, EndFrame, FTransform(SettleNeckRot), EMovieSceneKeyInterpolation::SmartAuto);
+                }
+            }
+
+            UE_LOG(LogTemp, Log, TEXT("MHPD: Added MetaHuman_ControlRig organic head motion for '%s' (Controls: '%s', '%s', Target Yaw: %.1f, Pitch: %.1f, Roll: %.1f, Transient: %s)"),
+                *Inst.BehaviorId.ToString(), *HeadCtrlName.ToString(), *NeckCtrlName.ToString(), TargetHeadRot.Yaw, TargetHeadRot.Pitch, TargetHeadRot.Roll, bIsTransientGesture ? TEXT("True") : TEXT("False"));
         }
     }
 

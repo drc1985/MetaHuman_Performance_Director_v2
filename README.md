@@ -14,7 +14,7 @@
 
 [![MetaHuman Performance Director In-Editor Walkthrough](https://frontiermindworks.com/MetaHumanPerformanceDirector/mhpd_demo_preview.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector)
 
-> **[▶ Watch Full Video (1080p MP4)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)** &bull; **[Interactive Project Page](https://frontiermindworks.com/MetaHumanPerformanceDirector)**  
+> **[▶ Watch Full Video](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)** &bull; **[Interactive Project Page](https://frontiermindworks.com/MetaHumanPerformanceDirector)**  
 > *Walkthrough demonstrating automated audio-to-face baseline synthesis, natural language performance directing, non-destructive Sequencer take layering, and RigLogic curve synthesis directly in Unreal Engine 5.8.*  
 >  
 > 💡 **Release Note:** *The walkthrough video above demonstrates the Phase 1 grant submission build (single intensity control). The latest codebase introduces the **Five Directorial Dials** and biological **Soft-Knee Viseme Collision Avoidance** (detailed in [Recent Updates](#-recent-updates--devlog) below).*
