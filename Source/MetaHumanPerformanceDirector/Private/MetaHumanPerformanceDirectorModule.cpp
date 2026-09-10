@@ -53,6 +53,8 @@
 #include "Widgets/Input/SComboBox.h"
 #include "DesktopPlatformModule.h"
 #include "IDesktopPlatform.h"
+#include "AssetToolsModule.h"
+#include "IAssetTools.h"
 #include "IPythonScriptPlugin.h"
 #include "Sound/SoundWave.h"
 #include "Animation/AnimSequence.h"
@@ -385,6 +387,7 @@ public:
     TArray<FBodyOptionPtr>               BodyLibraryOptions;
     FBodyOptionPtr                       SelectedBodyOption;
     TSharedPtr<SComboBox<FBodyOptionPtr>> BodyLibraryComboBox;
+    FString                              LastUploadBrowsePath;
 
     // Text-to-Motion Generative Engine
     TSharedPtr<SMultiLineEditableTextBox> MotionPromptTextBox;
@@ -467,6 +470,7 @@ public:
         PhysicalAction = 0.5f;
         SubtextSuppression = 0.0f;
         PreparationOffsetMs = 250.0f;
+        LastUploadBrowsePath = FPaths::ProjectContentDir();
 
         ChildSlot
         [
@@ -936,7 +940,26 @@ public:
                         [
                             SNew(SButton)
                             .Text(LOCTEXT("ScanBodyLibBtn", "↻ Scan Library"))
+                            .ToolTipText(LOCTEXT("ScanBodyLibTooltip", "Rescan the Body Library for newly added animations"))
                             .OnClicked(this, &SMHPDDirectorPanel::OnScanBodyLibraryClicked)
+                        ]
+                        + SHorizontalBox::Slot()
+                        .AutoWidth()
+                        .Padding(4.0f, 0.0f, 0.0f, 0.0f)
+                        [
+                            SNew(SButton)
+                            .Text(LOCTEXT("UploadBodyAnimBtn", "⬆ Upload..."))
+                            .ToolTipText(LOCTEXT("UploadBodyAnimTooltip", "Upload animation files (.uasset, .fbx, .bvh, .json) from your computer into the Body Library"))
+                            .OnClicked(this, &SMHPDDirectorPanel::OnUploadBodyLibraryClicked)
+                        ]
+                        + SHorizontalBox::Slot()
+                        .AutoWidth()
+                        .Padding(4.0f, 0.0f, 0.0f, 0.0f)
+                        [
+                            SNew(SButton)
+                            .Text(LOCTEXT("UploadBodyFolderBtn", "📁 Upload Folder..."))
+                            .ToolTipText(LOCTEXT("UploadBodyFolderTooltip", "Upload all animation files from a folder on your computer into the Body Library"))
+                            .OnClicked(this, &SMHPDDirectorPanel::OnUploadBodyFolderClicked)
                         ]
                     ]
 
@@ -3227,6 +3250,11 @@ private:
             FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
             IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
+            TArray<FString> ScanPaths;
+            ScanPaths.Add(TEXT("/Game/MHPD/BodyLibrary"));
+            ScanPaths.Add(TEXT("/Game/GeneratedMotions"));
+            AssetRegistry.ScanPathsSynchronous(ScanPaths, false);
+
             FARFilter Filter;
             Filter.PackagePaths.Add(TEXT("/Game/MHPD/BodyLibrary"));
             Filter.PackagePaths.Add(TEXT("/Game/GeneratedMotions"));
@@ -3264,6 +3292,252 @@ private:
     {
         ScanBodyLibrary();
         return FReply::Handled();
+    }
+
+    FReply OnUploadBodyLibraryClicked()
+    {
+        IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+        if (!DesktopPlatform)
+        {
+            if (MotionStatusText.IsValid())
+            {
+                MotionStatusText->SetText(LOCTEXT("DesktopPlatformUnavailable", "Error: DesktopPlatform module is unavailable for file dialogs."));
+            }
+            return FReply::Handled();
+        }
+
+        const void* ParentWindowHandle = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(AsShared());
+        const FString Title = TEXT("Upload Animation Files to Body Library");
+        const FString DefaultPath = LastUploadBrowsePath.IsEmpty() ? FPaths::ProjectContentDir() : LastUploadBrowsePath;
+        const FString FileTypes = TEXT("All Supported Animations (*.uasset;*.fbx;*.bvh;*.json)|*.uasset;*.fbx;*.bvh;*.json|Unreal Animation Sequence (*.uasset)|*.uasset|FBX Animation (*.fbx)|*.fbx|BVH Motion (*.bvh)|*.bvh|MHPD Motion JSON (*.json)|*.json|All Files (*.*)|*.*");
+
+        TArray<FString> OutFilenames;
+        const bool bOpened = DesktopPlatform->OpenFileDialog(
+            ParentWindowHandle,
+            Title,
+            DefaultPath,
+            TEXT(""),
+            FileTypes,
+            EFileDialogFlags::Multiple,
+            OutFilenames
+        );
+
+        if (bOpened && OutFilenames.Num() > 0)
+        {
+            LastUploadBrowsePath = FPaths::GetPath(OutFilenames[0]);
+            ProcessUploadedAnimationFiles(OutFilenames);
+        }
+
+        return FReply::Handled();
+    }
+
+    FReply OnUploadBodyFolderClicked()
+    {
+        IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+        if (!DesktopPlatform)
+        {
+            if (MotionStatusText.IsValid())
+            {
+                MotionStatusText->SetText(LOCTEXT("DesktopPlatformUnavailable", "Error: DesktopPlatform module is unavailable for file dialogs."));
+            }
+            return FReply::Handled();
+        }
+
+        const void* ParentWindowHandle = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(AsShared());
+        const FString Title = TEXT("Select Folder to Upload Animations From");
+        const FString DefaultPath = LastUploadBrowsePath.IsEmpty() ? FPaths::ProjectContentDir() : LastUploadBrowsePath;
+
+        FString OutFolderName;
+        const bool bOpened = DesktopPlatform->OpenDirectoryDialog(
+            ParentWindowHandle,
+            Title,
+            DefaultPath,
+            OutFolderName
+        );
+
+        if (bOpened && !OutFolderName.IsEmpty())
+        {
+            LastUploadBrowsePath = OutFolderName;
+
+            TArray<FString> FoundFiles;
+            IFileManager::Get().FindFilesRecursive(FoundFiles, *OutFolderName, TEXT("*.uasset"), true, false, false);
+            IFileManager::Get().FindFilesRecursive(FoundFiles, *OutFolderName, TEXT("*.fbx"), true, false, false);
+            IFileManager::Get().FindFilesRecursive(FoundFiles, *OutFolderName, TEXT("*.bvh"), true, false, false);
+            IFileManager::Get().FindFilesRecursive(FoundFiles, *OutFolderName, TEXT("*.json"), true, false, false);
+
+            if (FoundFiles.Num() == 0)
+            {
+                if (MotionStatusText.IsValid())
+                {
+                    MotionStatusText->SetText(FText::FromString(FString::Printf(
+                        TEXT("No supported animations (.uasset, .fbx, .bvh, .json) found in '%s'."), *OutFolderName
+                    )));
+                }
+                return FReply::Handled();
+            }
+
+            ProcessUploadedAnimationFiles(FoundFiles);
+        }
+
+        return FReply::Handled();
+    }
+
+    void ProcessUploadedAnimationFiles(const TArray<FString>& Files)
+    {
+        if (Files.Num() == 0) return;
+
+        const FString DestContentDir = FPaths::ProjectContentDir() / TEXT("MHPD/BodyLibrary");
+        IFileManager::Get().MakeDirectory(*DestContentDir, true);
+        const FString DestPackageDir = TEXT("/Game/MHPD/BodyLibrary");
+
+        int32 UploadedCount = 0;
+        FString LastUploadedAssetName;
+
+        // Resolve target skeleton if possible for FBX / JSON
+        USkeleton* TargetSkeleton = nullptr;
+        UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+        AActor* MHActor = FindMetaHumanActor(World);
+        if (MHActor)
+        {
+            USkeletalMeshComponent* BodyComp = FindMetaHumanBodyComponent(MHActor);
+            if (BodyComp && BodyComp->GetSkeletalMeshAsset())
+            {
+                TargetSkeleton = BodyComp->GetSkeletalMeshAsset()->GetSkeleton();
+            }
+        }
+
+        for (const FString& SrcPath : Files)
+        {
+            if (!FPaths::FileExists(SrcPath)) continue;
+
+            const FString Ext = FPaths::GetExtension(SrcPath).ToLower();
+            const FString RawBaseName = FPaths::GetBaseFilename(SrcPath);
+            const FString SafeAssetName = MakeAssetSafeName(RawBaseName);
+
+            if (Ext == TEXT("uasset"))
+            {
+                // If already in ProjectContentDir, check if it has a long package name
+                FString ExistingPackage;
+                if (FPackageName::TryConvertFilenameToLongPackageName(SrcPath, ExistingPackage))
+                {
+                    LastUploadedAssetName = SafeAssetName;
+                    ++UploadedCount;
+                }
+                else
+                {
+                    // External .uasset: copy into ProjectContentDir/MHPD/BodyLibrary/
+                    const FString DestFilePath = DestContentDir / (SafeAssetName + TEXT(".uasset"));
+                    if (IFileManager::Get().Copy(*DestFilePath, *SrcPath, true, true) == COPY_OK)
+                    {
+                        LastUploadedAssetName = SafeAssetName;
+                        ++UploadedCount;
+                    }
+                }
+            }
+            else if (Ext == TEXT("json"))
+            {
+                UAnimSequence* CreatedAnim = CreateAnimSequenceFromMotionJson(SrcPath, DestPackageDir, SafeAssetName, TargetSkeleton);
+                if (CreatedAnim)
+                {
+                    LastUploadedAssetName = SafeAssetName;
+                    ++UploadedCount;
+                }
+            }
+            else if (Ext == TEXT("fbx") || Ext == TEXT("bvh"))
+            {
+                bool bImported = false;
+                IPythonScriptPlugin* PythonPlugin = IPythonScriptPlugin::Get();
+                if (PythonPlugin)
+                {
+                    FString SkeletonArg = TEXT("None");
+                    if (TargetSkeleton)
+                    {
+                        SkeletonArg = FString::Printf(TEXT("r'%s'"), *TargetSkeleton->GetPathName());
+                    }
+                    const FString PyCmd = FString::Printf(
+                        TEXT("import importlib, generate_acting_take; importlib.reload(generate_acting_take); generate_acting_take.import_motion_asset(r'%s', r'%s', %s)"),
+                        *SrcPath,
+                        *DestPackageDir,
+                        *SkeletonArg
+                    );
+                    PythonPlugin->ExecPythonCommand(*PyCmd);
+
+                    const FString ExpectedAssetPath = DestPackageDir / (SafeAssetName + TEXT(".") + SafeAssetName);
+                    if (StaticLoadObject(UAnimSequence::StaticClass(), nullptr, *ExpectedAssetPath))
+                    {
+                        bImported = true;
+                    }
+                }
+
+                // Fallback to IAssetTools if Python didn't handle it
+                if (!bImported)
+                {
+                    if (FModuleManager::Get().IsModuleLoaded(TEXT("AssetTools")) || FModuleManager::Get().LoadModule(TEXT("AssetTools")))
+                    {
+                        FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
+                        TArray<FString> FilesToImport = { SrcPath };
+                        TArray<UObject*> ImportedObjects = AssetToolsModule.Get().ImportAssets(FilesToImport, DestPackageDir);
+                        if (ImportedObjects.Num() > 0)
+                        {
+                            bImported = true;
+                        }
+                    }
+                }
+
+                if (bImported)
+                {
+                    LastUploadedAssetName = SafeAssetName;
+                    ++UploadedCount;
+                }
+            }
+        }
+
+        // Force synchronous asset registry scan so new assets are discovered immediately
+        if (FModuleManager::Get().IsModuleLoaded(TEXT("AssetRegistry")))
+        {
+            FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+            IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+            TArray<FString> PathsToScan;
+            PathsToScan.Add(DestPackageDir);
+            AssetRegistry.ScanPathsSynchronous(PathsToScan, true);
+        }
+
+        // Refresh dropdown
+        ScanBodyLibrary();
+
+        // Auto-select the newly uploaded animation
+        if (!LastUploadedAssetName.IsEmpty())
+        {
+            for (const FBodyOptionPtr& Option : BodyLibraryOptions)
+            {
+                if (Option.IsValid() && Option->Contains(LastUploadedAssetName))
+                {
+                    SelectedBodyOption = Option;
+                    if (BodyLibraryComboBox.IsValid())
+                    {
+                        BodyLibraryComboBox->SetSelectedItem(SelectedBodyOption);
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Feedback in UI
+        if (MotionStatusText.IsValid())
+        {
+            if (UploadedCount > 0)
+            {
+                MotionStatusText->SetText(FText::FromString(FString::Printf(
+                    TEXT("✓ Uploaded %d animation(s) to Body Library. Selected: %s"),
+                    UploadedCount,
+                    *GetSelectedBodyLibraryText().ToString()
+                )));
+            }
+            else
+            {
+                MotionStatusText->SetText(LOCTEXT("UploadFailed", "Failed to upload animation(s). Check Output Log."));
+            }
+        }
     }
 
     void OnBodyLibrarySelectionChanged(TSharedPtr<FString> NewSelection, ESelectInfo::Type SelectInfo)

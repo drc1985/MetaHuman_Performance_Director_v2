@@ -865,12 +865,36 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         bMatchedIntent = true;
     }
 
-    // Sadness / Frown / Sorrow
-    const bool bSadnessOrFrown = ContainsPattern(LowerDirection, TEXT("\\b(frown|frowns|frowning|frowned|pout|pouts|pouting|sad|sadness|sorrow|sorrowful|grief|grieving|heartbrok|mourn|mournful|upset|depressed|glum|tearful|unhappy|downcast|melancholy|cry|crying|weep|weeping|sulking|somber|grim|grimace)\\w*"));
-    if (bSadnessOrFrown)
+    // 1. Affective Mood: Upset / Distressed (Agitation, suppressed hurt)
+    const bool bUpsetMood = ContainsPattern(LowerDirection, TEXT("\\b(upset|distressed|distress|hurt|holding back tears|worked up)\\b"));
+    if (bUpsetMood)
     {
-        Plan.MatchedInterpretations.Add(TEXT("Sadness / Frown"));
-        AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_sadness"), TEXT("Lower mouth corners in a frown, raise inner brows, and squint inner eyes."), 1.0f);
+        Plan.MatchedInterpretations.Add(TEXT("Upset / Distressed"));
+        AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_upset"), TEXT("Agitated distress: glabella tension, jaw clench, avoidant gaze, and pressed lips."), 0.85f);
+        AddInstruction(Plan, EMHPDPerformanceChannel::Gaze, TEXT("avoidant_gaze_then_recover"), TEXT("Avoidant gaze aversion under emotional distress."), 0.70f);
+        bMatchedIntent = true;
+    }
+
+    // 2. Physical Action: Frown (Localized corrugator knit & slight corner pull)
+    const bool bFrownAction = ContainsPattern(LowerDirection, TEXT("\\b(frown|frowns|frowning|frowned|pout|pouts|pouting|knit(s|ting)? brows?|furrows? brows?)\\b"));
+    if (bFrownAction && !bUpsetMood)
+    {
+        Plan.MatchedInterpretations.Add(TEXT("Frown"));
+        AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_frown"), TEXT("Physical action: localized corrugator brow furrow and subtle mouth corner downturn without grief."), 0.85f);
+        if (!bAddedHeadInstruction)
+        {
+            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_pitch_down"), TEXT("Slight downward head angle."), 0.50f);
+            bAddedHeadInstruction = true;
+        }
+        bMatchedIntent = true;
+    }
+
+    // 3. Affective Mood: Sadness / Grief (Vulnerability, sorrow, melancholy)
+    const bool bSadnessMood = ContainsPattern(LowerDirection, TEXT("\\b(sad|sadly|sadness|sorrow|sorrowful|grief|grieving|heartbrok\\w*|mourn|mournful|depressed|glum|tearful|unhappy|downcast|melancholy|cry|crying|weep|weeping|somber)\\b"));
+    if (bSadnessMood && !bUpsetMood && !bFrownAction)
+    {
+        Plan.MatchedInterpretations.Add(TEXT("Sadness / Grief"));
+        AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_sadness"), TEXT("Affective sorrow: inner brow raise, downcast gaze, softened lips, and somber chin drop."), 0.85f);
         if (!bAddedHeadInstruction)
         {
             AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_pitch_down"), TEXT("Somber cervical flexion: lower chin and head downward in defeat."), 0.70f);
@@ -879,18 +903,36 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         bMatchedIntent = true;
     }
 
-    // Smile / Joy / Happiness
+    // 4. Affective Mood: Happiness / Joy (Duchenne ocular crinkle, buoyant head tilt)
+    const bool bHappyMood = ContainsPattern(LowerDirection, TEXT("\\b(happy|happily|joy|joyful|joyfully|cheerful|cheerfully|elated)\\b"));
+    // 5. Physical Action: Smile (Localized zygomaticus pull)
+    const bool bSmileAction = ContainsPattern(LowerDirection, TEXT("\\b(smile|smiles|smiling|grin|grins|grinning|beam|beaming)\\b"));
     const bool bNegativeSmile = ContainsPattern(LowerDirection, TEXT("\\b(stop(ped|ping)? smiling|don'?t smile|not smiling|no smile|without smiling|unsmiling|remove smile|less smile|cease smile)\\b"));
-    if (!bNegativeSmile && !bSadnessOrFrown && ContainsPattern(LowerDirection, TEXT("\\b(happy|smile|smiles|smiling|joy|pleased|grin|grins|grinning|cheerful|beam|beaming)\\w*")))
+
+    if (!bNegativeSmile && !bSadnessMood && !bUpsetMood && !bFrownAction)
     {
-        Plan.MatchedInterpretations.Add(TEXT("Joy"));
-        AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_smile"), TEXT("Smile broadly, pull corners, raise cheeks, and squint eyes."), 1.0f);
-        if (!bAddedHeadInstruction)
+        if (bHappyMood && !bSmileAction)
         {
-            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_warmth_tilt"), TEXT("Subtle warm cervical tilt and chin lift accompanying smile."), 0.65f);
-            bAddedHeadInstruction = true;
+            Plan.MatchedInterpretations.Add(TEXT("Happiness / Joy"));
+            AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_happy"), TEXT("Affective joy: Duchenne ocular crinkle, cheek lift, buoyant head tilt, and permeable mouth baseline."), 0.85f);
+            if (!bAddedHeadInstruction)
+            {
+                AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_warmth_tilt"), TEXT("Buoyant warm cervical tilt and head rhythm."), 0.70f);
+                bAddedHeadInstruction = true;
+            }
+            bMatchedIntent = true;
         }
-        bMatchedIntent = true;
+        else if (bSmileAction)
+        {
+            Plan.MatchedInterpretations.Add(TEXT("Smile"));
+            AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_smile"), TEXT("Physical action: localized zygomaticus smile pulling corners upward."), 0.85f);
+            if (!bAddedHeadInstruction)
+            {
+                AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_warmth_tilt"), TEXT("Subtle warm cervical tilt accompanying smile."), 0.65f);
+                bAddedHeadInstruction = true;
+            }
+            bMatchedIntent = true;
+        }
     }
 
     if (!bMatchedIntent)

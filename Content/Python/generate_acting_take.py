@@ -46,7 +46,9 @@ BEHAVIOR_TO_PATTERN = {
     "clench_jaw":                      ("HOLD",        "jaw_tension"),
     "express_sadness":                 ("HOLD",        "sadness"),
     "express_frown":                   ("HOLD",        "frown"),
+    "express_upset":                   ("HOLD",        "upset"),
     "express_smile":                   ("HOLD",        "smile"),
+    "express_happy":                   ("HOLD",        "happy"),
     "express_annoyance":               ("HOLD",        "annoyance"),
     "express_pain":                    ("HOLD",        "pain"),
     "express_frustration":             ("HOLD",        "frustration"),
@@ -157,26 +159,40 @@ CURVE_GROUPS = {
     "sadness": [
         (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
         (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
+        (("eyelookdownl", "eyelookdown_l"), "CTRL_expressions_eyeLookDownL"),
+        (("eyelookdownr", "eyelookdown_r"), "CTRL_expressions_eyeLookDownR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+        (("mouthcornerdepressl", "mouthfrownl", "mouthfrown_l"), "CTRL_expressions_mouthCornerDepressL"),
+        (("mouthcornerdepressr", "mouthfrownr", "mouthfrown_r"), "CTRL_expressions_mouthCornerDepressR"),
+    ],
+    "frown": [
         (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
         (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
         (("mouthcornerdepressl", "mouthfrownl", "mouthfrown_l"), "CTRL_expressions_mouthCornerDepressL"),
         (("mouthcornerdepressr", "mouthfrownr", "mouthfrown_r"), "CTRL_expressions_mouthCornerDepressR"),
-        (("mouthlowerlipdepressl",), "CTRL_expressions_mouthLowerLipDepressL"),
-        (("mouthlowerlipdepressr",), "CTRL_expressions_mouthLowerLipDepressR"),
-        (("jawchinraisedl", "chinraisedl"), "CTRL_expressions_jawChinRaiseDL"),
-        (("jawchinraisedr", "chinraisedr"), "CTRL_expressions_jawChinRaiseDR"),
+    ],
+    "upset": [
+        (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
+        (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
+        (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
+        (("jawclenchl", "jawclench"), "CTRL_expressions_jawClenchL"),
+        (("jawclenchr", "jawclench"), "CTRL_expressions_jawClenchR"),
+        (("mouthlipspressl", "mouthpressl", "mouthpress_l"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr", "mouthpress_r"), "CTRL_expressions_mouthLipsPressR"),
         (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
         (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
     ],
-    "frown": [
-        (("mouthcornerdepressl", "mouthfrownl", "mouthfrown_l"), "CTRL_expressions_mouthCornerDepressL"),
-        (("mouthcornerdepressr", "mouthfrownr", "mouthfrown_r"), "CTRL_expressions_mouthCornerDepressR"),
-        (("mouthlowerlipdepressl",), "CTRL_expressions_mouthLowerLipDepressL"),
-        (("mouthlowerlipdepressr",), "CTRL_expressions_mouthLowerLipDepressR"),
-        (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
-        (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
-        (("jawchinraisedl", "chinraisedl"), "CTRL_expressions_jawChinRaiseDL"),
-        (("jawchinraisedr", "chinraisedr"), "CTRL_expressions_jawChinRaiseDR"),
+    "happy": [
+        (("cheekraisel", "eyecheekraisel"), "CTRL_expressions_eyeCheekRaiseL"),
+        (("cheekraiser", "eyecheekraiser"), "CTRL_expressions_eyeCheekRaiseR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
+        (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
+        (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
+        (("mouthcornerpulll", "mouthcornerpull_l"), "CTRL_expressions_mouthCornerPullL"),
+        (("mouthcornerpullr", "mouthcornerpull_r"), "CTRL_expressions_mouthCornerPullR"),
     ],
     "smile": [
         (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
@@ -600,10 +616,20 @@ def _generate_keys(pattern, r_start, r_end, val, blink_count, offset):
 # Plan execution
 # ------------------------------------------------------------------------------
 
+# Lower-face articulators that fight against speech visemes / jaw movement during dialogue
+LOWER_FACE_SPEECH_ARTICULATORS = (
+    "mouthcornerdepress", "mouthfrown", "mouthsmile", "mouthcornerpull",
+    "mouthsharpcornerpull", "mouthlipspress", "mouthpress", "jawchinraise",
+    "chinraised", "mouthupperup", "mouthlowerlipdepress"
+)
+SPEECH_HEADROOM_CEILING = 0.35
+
+
 def _curve_ops_from_plan(plan, existing_curve_names):
     """
     Maps plan instructions to per-curve operations {curve_name: (pattern, val, offset)}.
     First instruction wins on curve conflicts (plan lists primary intent first).
+    Enforces the Speech Headroom Ceiling on lower-face curves during dialogue.
     """
     ops = {}
     direction_text = plan.get("direction_text", "")
@@ -640,14 +666,22 @@ def _curve_ops_from_plan(plan, existing_curve_names):
             if curve_name in ops:
                 unreal.log_warning(f"MHPD: '{behavior}' also targets '{curve_name}' - keeping earlier instruction")
                 continue
-            ops[curve_name] = (pattern, safe_weight, offset, blink_count)
 
-        positive_states = ("express_smile", "express_warmth", "express_serenity", "express_relief", "express_gratitude", "express_pride")
-        negative_states = ("express_sadness", "express_frown", "express_pain", "express_fear", "express_frustration", "express_contempt")
+            target_weight = safe_weight
+            cl = curve_name.lower()
+            if any(art in cl for art in LOWER_FACE_SPEECH_ARTICULATORS):
+                # Clamp to speech headroom ceiling to give the speech viseme solver
+                # 0.65 headroom to articulate syllables without open-mouthed grimaces
+                target_weight = min(target_weight, SPEECH_HEADROOM_CEILING)
+
+            ops[curve_name] = (pattern, target_weight, offset, blink_count)
+
+        positive_states = ("express_smile", "express_happy", "express_warmth", "express_serenity", "express_relief", "express_gratitude", "express_pride")
+        negative_states = ("express_sadness", "express_frown", "express_upset", "express_pain", "express_fear", "express_frustration", "express_contempt")
 
         if behavior in positive_states:
             # Suppress conflicting brow furrow, mouth frown, and pain markers
-            for suppress_group in ("brow", "sadness", "frown", "pain"):
+            for suppress_group in ("brow", "sadness", "frown", "pain", "upset"):
                 for curve_name in _resolve_group(suppress_group, existing_curve_names):
                     cl = curve_name.lower()
                     if any(token in cl for token in ("frown", "depress", "browlower", "browdown", "upperup")):
@@ -655,7 +689,7 @@ def _curve_ops_from_plan(plan, existing_curve_names):
 
         elif behavior in negative_states:
             # Suppress conflicting smile, cheek raise, and mouth corner pull curves
-            for suppress_group in ("smile", "warmth", "serenity"):
+            for suppress_group in ("smile", "happy", "warmth", "serenity"):
                 for curve_name in _resolve_group(suppress_group, existing_curve_names):
                     cl = curve_name.lower()
                     if any(token in cl for token in ("smile", "cornerpull", "cheekraise")):
@@ -693,10 +727,19 @@ def parse_pattern_and_targets(direction_text, existing_curve_names):
     if has(r"\b(clench|jaw tension|jaw clench)\b"):
         return "HOLD", _resolve_group("jaw_tension", existing_curve_names), 0.75
 
-    if has(r"\b(frown|frowns|frowning|sad|sorrow|grief|heartbrok|unhappy|pout)\w*"):
+    if (has(r"\b(upset|distressed|distress|hurt|holding back tears)\b")):
+        return "HOLD", _resolve_group("upset", existing_curve_names), 0.85
+
+    if (has(r"\b(frown|frowns|frowning|knit\w* brows?|furrow\w* brows?)\b")):
+        return "HOLD", _resolve_group("frown", existing_curve_names), 0.85
+
+    if has(r"\b(sad|sadness|sorrow|grief|heartbrok|unhappy|downcast|melancholy|mourn)\w*"):
         return "HOLD", _resolve_group("sadness", existing_curve_names), 0.85
 
-    if has(r"\b(happy|smile|smiling|joy|pleased|warmth|grin)\w*"):
+    if has(r"\b(happy|joy|joyful|cheerful|elated)\w*"):
+        return "HOLD", _resolve_group("happy", existing_curve_names), 0.85
+
+    if has(r"\b(smile|smiling|grin|grinning|beam)\w*"):
         return "HOLD", _resolve_group("smile", existing_curve_names), 0.85
 
     if has(r"\b(trembl|jitter|quiver|shiver|shak)\w*"):
@@ -761,7 +804,10 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
         pattern, targets, val = parse_pattern_and_targets(direction_text, existing_curve_names)
         count = _parse_blink_count(direction_text, blink_count)
         safe_val = _soft_knee_saturate(val)
-        ops = {curve: (pattern, safe_val, 0.0, count) for curve in targets}
+        ops = {}
+        for curve in targets:
+            c_val = min(safe_val, SPEECH_HEADROOM_CEILING) if any(art in curve.lower() for art in LOWER_FACE_SPEECH_ARTICULATORS) else safe_val
+            ops[curve] = (pattern, c_val, 0.0, count)
         unreal.log(f"MHPD: Legacy parse -> pattern '{pattern}' on {targets}")
 
     if not ops:
@@ -898,4 +944,56 @@ def settle_mouth_curves(anim_sequence, settle_duration=0.40, lead_in_duration=0.
 
     unreal.EditorAssetLibrary.save_loaded_asset(anim_sequence)
     unreal.log(f"MHPD: Successfully settled phonetic mouth curves to closed rest pose on '{anim_sequence.get_name()}'")
+
+
+def import_motion_asset(file_path: str, destination_path: str = "/Game/MHPD/BodyLibrary", skeleton_path: str = None) -> dict:
+    """Import a BVH/FBX animation file into Unreal Engine Content Browser."""
+    try:
+        import unreal
+    except ImportError:
+        return {"ok": False, "error": "unreal module not found"}
+
+    file_path = os.path.abspath(file_path)
+    if not os.path.exists(file_path):
+        return {"ok": False, "error": f"File does not exist: {file_path}"}
+
+    from pathlib import Path
+    raw_name = Path(file_path).stem
+    asset_name = re.sub(r'[^a-zA-Z0-9_]', '_', raw_name)
+    if not asset_name or asset_name[0].isdigit():
+        asset_name = f"Motion_{asset_name}"
+
+    asset_tools = unreal.AssetToolsHelpers.get_asset_tools()
+
+    task = unreal.AssetImportTask()
+    task.filename = file_path
+    task.destination_path = destination_path
+    task.destination_name = asset_name
+    task.replace_existing = True
+    task.automated = True
+    task.save = True
+
+    if skeleton_path:
+        skeleton_asset = unreal.EditorAssetLibrary.load_asset(skeleton_path)
+        if skeleton_asset:
+            factory = unreal.FbxFactory()
+            factory.import_ui.skeleton = skeleton_asset
+            factory.import_ui.b_import_animations = True
+            task.factory = factory
+
+    asset_tools.import_asset_tasks([task])
+
+    expected_asset_path = f"{destination_path}/{asset_name}"
+    imported_asset = unreal.EditorAssetLibrary.load_asset(expected_asset_path)
+    if imported_asset is None:
+        unreal.log_warning(f"MHPD: Automated asset import could not verify asset at {expected_asset_path}")
+        return {"ok": False, "error": f"Asset import failed for {file_path}"}
+
+    unreal.log(f"MHPD: Successfully imported animation '{asset_name}' into {destination_path}")
+    return {
+        "ok": True,
+        "asset_path": expected_asset_path,
+        "asset_name": asset_name,
+        "asset_class": imported_asset.get_class().get_name()
+    }
 

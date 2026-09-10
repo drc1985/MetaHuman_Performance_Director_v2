@@ -34,7 +34,8 @@ public class MetaHumanPerformanceDirector : ModuleRules
                 "AnimationCore",
                 "InputCore",
                 "DesktopPlatform",
-                "PythonScriptPlugin"
+                "PythonScriptPlugin",
+                "AssetTools"
             }
         );
     }
