@@ -1,3 +1,6 @@
+// Copyright (c) 2026 David Cobbins / Frontier Mindworks. All Rights Reserved.
+// MetaHuman Performance Director (MHPD) — Architected & Developed by David Cobbins.
+
 #pragma once
 
 #include "CoreMinimal.h"

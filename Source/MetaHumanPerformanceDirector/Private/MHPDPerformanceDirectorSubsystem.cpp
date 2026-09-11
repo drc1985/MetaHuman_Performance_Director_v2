@@ -1,3 +1,6 @@
+// Copyright (c) 2026 David Cobbins / Frontier Mindworks. All Rights Reserved.
+// MetaHuman Performance Director (MHPD) — Architected & Developed by David Cobbins.
+
 #include "MHPDPerformanceDirectorSubsystem.h"
 
 #include "Dom/JsonObject.h"
@@ -897,7 +900,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_sadness"), TEXT("Affective sorrow: inner brow raise, downcast gaze, softened lips, and somber chin drop."), 0.85f);
         if (!bAddedHeadInstruction)
         {
-            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_pitch_down"), TEXT("Somber cervical flexion: lower chin and head downward in defeat."), 0.70f);
+            AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_pitch_down"), TEXT("Somber cervical flexion: lower chin and head downward in defeat."), 0.45f);
             bAddedHeadInstruction = true;
         }
         bMatchedIntent = true;

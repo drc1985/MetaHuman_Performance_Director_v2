@@ -1,0 +1,21 @@
+﻿cff-version: 1.2.0
+message: "If you use this software in your research, virtual production, or creative workflows, please cite it as below."
+authors:
+  - family-names: "Cobbins"
+    given-names: "David"
+    affiliation: "Frontier Mindworks / USC Institute for Creative Technologies"
+title: "MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans"
+version: 0.3.0
+date-released: 2026-09-11
+url: "https://github.com/drc1985/MetaHuman_Performance_Director_v2"
+repository-code: "https://github.com/drc1985/MetaHuman_Performance_Director_v2"
+keywords:
+  - "unreal-engine"
+  - "metahuman"
+  - "virtual-production"
+  - "performance-capture"
+  - "directing"
+  - "facial-animation"
+  - "slate"
+  - "riglogic"
+license: MIT

@@ -1,3 +1,6 @@
+# Copyright (c) 2026 David Cobbins / Frontier Mindworks. All Rights Reserved.
+# MetaHuman Performance Director (MHPD) — Architected & Developed by David Cobbins.
+
 import unreal
 import os
 import re
@@ -624,6 +627,11 @@ LOWER_FACE_SPEECH_ARTICULATORS = (
 )
 SPEECH_HEADROOM_CEILING = 0.35
 
+# In affective sorrow/melancholy/guilt, downward ocular rotation must remain subtle (0.28)
+# so the eyeballs do not roll into the floor and drag the upper eyelids into complete closure.
+AFFECTIVE_GAZE_DOWN_CEILING = 0.28
+AFFECTIVE_SQUINT_CEILING = 0.35
+
 
 def _curve_ops_from_plan(plan, existing_curve_names):
     """
@@ -673,6 +681,12 @@ def _curve_ops_from_plan(plan, existing_curve_names):
                 # Clamp to speech headroom ceiling to give the speech viseme solver
                 # 0.65 headroom to articulate syllables without open-mouthed grimaces
                 target_weight = min(target_weight, SPEECH_HEADROOM_CEILING)
+
+            if "lookdown" in cl and behavior in ("express_sadness", "express_guilt", "express_shame", "express_exhaustion"):
+                target_weight = min(target_weight, AFFECTIVE_GAZE_DOWN_CEILING)
+
+            if "squint" in cl and behavior in ("express_sadness", "express_guilt", "express_shame"):
+                target_weight = min(target_weight, AFFECTIVE_SQUINT_CEILING)
 
             ops[curve_name] = (pattern, target_weight, offset, blink_count)
 
@@ -804,9 +818,13 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
         pattern, targets, val = parse_pattern_and_targets(direction_text, existing_curve_names)
         count = _parse_blink_count(direction_text, blink_count)
         safe_val = _soft_knee_saturate(val)
-        ops = {}
         for curve in targets:
             c_val = min(safe_val, SPEECH_HEADROOM_CEILING) if any(art in curve.lower() for art in LOWER_FACE_SPEECH_ARTICULATORS) else safe_val
+            cl = curve.lower()
+            if "lookdown" in cl:
+                c_val = min(c_val, AFFECTIVE_GAZE_DOWN_CEILING)
+            if "squint" in cl:
+                c_val = min(c_val, AFFECTIVE_SQUINT_CEILING)
             ops[curve] = (pattern, c_val, 0.0, count)
         unreal.log(f"MHPD: Legacy parse -> pattern '{pattern}' on {targets}")
 

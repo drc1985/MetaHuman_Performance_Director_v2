@@ -1,10 +1,18 @@
 # MetaHuman Performance Director
 
-![Unreal Engine 5.8](https://img.shields.io/badge/Unreal%20Engine-5.8%2B-blue?logo=unrealengine)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Compute](https://img.shields.io/badge/Compute-100%25%20Local%20%26%20Offline-success)
-![Status](https://img.shields.io/badge/Status-Prototype-orange)
-![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)
+[![Unreal Engine 5.8](https://img.shields.io/badge/Unreal%20Engine-5.8%2B-blue?logo=unrealengine)](https://www.unrealengine.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Compute](https://img.shields.io/badge/Compute-100%25%20Local%20%26%20Offline-success)](https://frontiermindworks.com)
+[![Status](https://img.shields.io/badge/Status-v0.3.0--Production%20Ready-brightgreen)](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
+[![Author](https://img.shields.io/badge/Author-David%20Cobbins-blue.svg)](https://frontiermindworks.com)
+[![Affiliation](https://img.shields.io/badge/USC--ICT-Research%20Project%20Leader-maroon.svg)](https://ict.usc.edu)
+[![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
+[![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
+
+**Created & Architected by [David Cobbins](https://github.com/drc1985) • [Frontier Mindworks](https://frontiermindworks.com)**  
+*Research Project Leader at the USC Institute for Creative Technologies (USC-ICT)*
+
+---
 
 **MetaHuman Performance Director (MHPD)** is a native C++ and Python editor plugin for Unreal Engine 5.8+ that enables directors and creators to generate, layer, and direct nuance-rich MetaHuman facial and body performances using natural language notes — directly inside UE5 Sequencer.
 
@@ -17,11 +25,19 @@
 > **[▶ Watch Full Video](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)** &bull; **[Interactive Project Page](https://frontiermindworks.com/MetaHumanPerformanceDirector)**  
 > *Walkthrough demonstrating automated audio-to-face baseline synthesis, natural language performance directing, non-destructive Sequencer take layering, and RigLogic curve synthesis directly in Unreal Engine 5.8.*  
 >  
-> 💡 **Release Note:** *The walkthrough video above demonstrates the Phase 1 grant submission build (single intensity control). The latest codebase introduces the **Five Directorial Dials** and biological **Soft-Knee Viseme Collision Avoidance** (detailed in [Recent Updates](#-recent-updates--devlog) below).*
+> 💡 **Release Note:** *The walkthrough video above demonstrates the Phase 1 grant submission build (single intensity control). The latest codebase introduces the **Three-Tab Director Slate UI**, **Five Directorial Dials**, and biological **Sustained Head Posture & Soft-Knee Viseme Collision Avoidance** (detailed in [Recent Updates](#-recent-updates--devlog) below).*
 
 ---
 
 ## ⚡ Recent Updates & Devlog
+
+### September 2026 — v0.3.0: 3-Tab Director Slate UI & Sustained Posture Update
+- **3-Tab Directorial Slate (`SWidgetSwitcher`):** Re-architected editor UX into a high-ergonomics 3-stage filmmaking pipeline:
+  1. **Generate Baseline Take:** Setup audio file, automated Sequencer binding, and AI generative body motion staging.
+  2. **Direct the Performance:** Streamlined note prompting with Hold-to-Talk voice capture, 5 calibrated cinematic dials, optional follow-up iteration, and channel preservation locks.
+  3. **Review Performance:** Clean take selector, A/B review, take deletion, and transparent structured performance plan JSON inspection.
+- **Sustained Head & Gaze Posture:** Replaced abrupt return-to-rest drift with natural posture-holding dynamics. MetaHumans maintain directed physical attitude across speech beats with organic micro-settling.
+- **Academic & Research Citation:** Added official GitHub citation support via [`CITATION.cff`](CITATION.cff) for standard BibTeX and APA attribution.
 
 ### September 2026 — v0.2.0: Directorial Dials & Soft-Knee Viseme Update
 
@@ -184,17 +200,44 @@ Generate project files and rebuild your C++ project in Visual Studio or Rider, t
 
 ---
 
-## 👤 Author & Credits
+## 📖 Citation & Attribution
 
-Created by **David Cobbins** ([Frontier Mindworks](https://frontiermindworks.com))  
-*Research Project Leader at the USC Institute for Creative Technologies (USC-ICT)*
+If you use **MetaHuman Performance Director** in your academic research, virtual production pipeline, game development, or creative workflows, please cite it using the metadata below:
 
-- **GitHub:** [@drc1985](https://github.com/drc1985)
-- **Project Website:** [frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
-- **Epic MegaGrants 2026:** Submission Candidate
+### BibTeX
+```bibtex
+@software{Cobbins_MetaHuman_Performance_Director_2026,
+  author = {Cobbins, David},
+  title = {{MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans}},
+  year = {2026},
+  month = {9},
+  version = {0.3.0},
+  organization = {Frontier Mindworks / USC Institute for Creative Technologies},
+  url = {https://github.com/drc1985/MetaHuman_Performance_Director_v2}
+}
+```
+
+### APA
+> Cobbins, D. (2026). *MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans* (Version 0.3.0) [Computer software]. Frontier Mindworks / USC Institute for Creative Technologies. https://github.com/drc1985/MetaHuman_Performance_Director_v2
+
+*(You can also use GitHub's native **"Cite this repository"** button in the sidebar to export APA or BibTeX directly).*
 
 ---
 
-## 📄 License
+## 👤 Author & Studio
 
-Released under the permissive [MIT License](LICENSE).
+**David Cobbins**  
+Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com)  
+*Research Project Leader at the USC Institute for Creative Technologies (USC-ICT)*
+
+- **GitHub:** [@drc1985](https://github.com/drc1985)
+- **Portfolio & Lab:** [frontiermindworks.com](https://frontiermindworks.com)
+- **Project Showcase:** [frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
+- **Epic MegaGrants 2026:** Official Submission
+
+---
+
+## 📄 License & Intellectual Property
+
+Released under the permissive [MIT License](LICENSE).  
+Copyright © 2026 David Cobbins. All rights reserved. Permission is hereby granted under the terms of the MIT License, provided that the above copyright notice and this permission notice are included in all copies or substantial portions of the Software.

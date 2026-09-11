@@ -1,4 +1,5 @@
-// Copyright MetaHuman Performance Director. All Rights Reserved.
+// Copyright (c) 2026 David Cobbins / Frontier Mindworks. All Rights Reserved.
+// MetaHuman Performance Director (MHPD) — Architected & Developed by David Cobbins.
 
 #include "Modules/ModuleManager.h"
 
@@ -47,6 +48,7 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SSeparator.h"
 #include "Widgets/Layout/SScrollBox.h"
+#include "Widgets/Layout/SWidgetSwitcher.h"
 #include "Widgets/Text/STextBlock.h"
 #include "Misc/InteractiveProcess.h"
 #include "Async/Async.h"
@@ -424,6 +426,9 @@ public:
     TSharedPtr<STextBlock>              SubtextLabel;
     TSharedPtr<STextBlock>              PreparationLabel;
     TSharedPtr<STextBlock>              TakeStatusText;
+    int32                               ActiveTabIndex = 0;
+    TSharedPtr<SWidgetSwitcher>         TabSwitcher;
+    TSharedPtr<STextBlock>              DirectTabStatusText;
 
     // Lock checkboxes
     TSharedPtr<SCheckBox>               DialogueAudioCheckBox;
@@ -470,667 +475,57 @@ public:
         PhysicalAction = 0.5f;
         SubtextSuppression = 0.0f;
         PreparationOffsetMs = 250.0f;
-        LastUploadBrowsePath = FPaths::ProjectContentDir();
+        ActiveTabIndex = 0;
 
         ChildSlot
         [
             SNew(SBorder)
-            .Padding(12.0f)
+            .Padding(10.0f)
             .BorderImage(FAppStyle::GetBrush("Brushes.Panel"))
             [
-                SNew(SScrollBox)
-                + SScrollBox::Slot()
+                SNew(SVerticalBox)
+
+                // --------------------------------------------------------
+                // Panel Title Header
+                // --------------------------------------------------------
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 8.0f)
                 [
-                    SNew(SVerticalBox)
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("PanelTitle", "MetaHuman Performance Director"))
+                    .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                ]
 
-                    // --------------------------------------------------------
-                    // Title
-                    // --------------------------------------------------------
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("PanelTitle", "MetaHuman Performance Director"))
-                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
-                    ]
+                // --------------------------------------------------------
+                // 3-Tab Header Navigation Bar
+                // --------------------------------------------------------
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                [
+                    CreateTabHeader()
+                ]
 
-                    // ========================================================
-                    // PHASE 1 — GENERATE BASELINE TAKE
-                    // ========================================================
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                // --------------------------------------------------------
+                // Tab Content Switcher
+                // --------------------------------------------------------
+                + SVerticalBox::Slot()
+                .FillHeight(1.0f)
+                [
+                    SAssignNew(TabSwitcher, SWidgetSwitcher)
+                    .WidgetIndex_Lambda([this]() { return ActiveTabIndex; })
+                    + SWidgetSwitcher::Slot()
                     [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("Phase1Label", "1  —  Generate Baseline Take"))
-                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                        BuildTab1_BaselineTake()
                     ]
-
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                    + SWidgetSwitcher::Slot()
                     [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("Phase1Desc", "Import audio and generate a MetaHuman facial animation baseline. This creates a Level Sequence with audio and lip-sync tracks ready for acting direction."))
-                        .AutoWrapText(true)
+                        BuildTab2_DirectPerformance()
                     ]
-
-                    // Take name field
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                    + SWidgetSwitcher::Slot()
                     [
-                        MakeTextInputRow(BaselineTakeNameTextBox, LOCTEXT("TakeNameLabel", "Take name"), LOCTEXT("TakeNameDefault", "Take_001"))
-                    ]
-
-                    // Audio file row
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 8.0f)
-                    [
-                        SNew(SVerticalBox)
-                        + SVerticalBox::Slot()
-                        .AutoHeight()
-                        .Padding(0.0f, 0.0f, 0.0f, 4.0f)
-                        [
-                            SNew(STextBlock)
-                            .Text(LOCTEXT("AudioFileLabel", "Audio file (.wav)"))
-                        ]
-                        + SVerticalBox::Slot()
-                        .AutoHeight()
-                        [
-                            SNew(SHorizontalBox)
-                            + SHorizontalBox::Slot()
-                            .FillWidth(1.0f)
-                            .VAlign(VAlign_Center)
-                            .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                            [
-                                SAssignNew(AudioFilePathText, STextBlock)
-                                .Text(LOCTEXT("AudioFilePlaceholder", "No file selected"))
-                                .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
-                                .AutoWrapText(true)
-                            ]
-                            + SHorizontalBox::Slot()
-                            .AutoWidth()
-                            [
-                                SNew(SButton)
-                                .Text(LOCTEXT("BrowseButton", "Browse..."))
-                                .OnClicked(this, &SMHPDDirectorPanel::OnBrowseAudioClicked)
-                            ]
-                        ]
-                    ]
-
-                    // Generate Baseline button
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SButton)
-                        .Text(LOCTEXT("GenerateBaseline", "▶  Generate Baseline Take"))
-                        .HAlign(HAlign_Center)
-                        .ButtonColorAndOpacity(FLinearColor(0.18f, 0.55f, 0.28f, 1.0f))
-                        .OnClicked(this, &SMHPDDirectorPanel::OnGenerateBaselineTakeClicked)
-                    ]
-
-                    // Baseline status text
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 4.0f)
-                    [
-                        SAssignNew(BaselineStatusText, STextBlock)
-                        .Text(LOCTEXT("BaselineStatusReady", "Select a .wav file and click Generate."))
-                        .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
-                        .AutoWrapText(true)
-                    ]
-
-                    // Open in Sequencer + Reset Actor utility row
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 4.0f, 0.0f, 12.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .FillWidth(1.0f)
-                        .Padding(0.0f, 0.0f, 6.0f, 0.0f)
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("OpenInSequencer", "Open Take in Sequencer"))
-                            .HAlign(HAlign_Center)
-                            .OnClicked(this, &SMHPDDirectorPanel::OnOpenInSequencerClicked)
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("ResetActorBtn", "↻ Reset Actor Instance"))
-                            .ToolTipText(LOCTEXT("ResetActorTooltip", "Respawns a clean instance of the level MetaHuman at the exact same location with stock Blueprint defaults, clearing any bad socket attachments or instance overrides."))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnResetMetaHumanActorClicked)
-                        ]
-                    ]
-
-                    // ========================================================
-                    // Divider
-                    // ========================================================
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 4.0f, 0.0f, 12.0f)
-                    [
-                        SNew(SSeparator)
-                    ]
-
-                    // ========================================================
-                    // PHASE 2 — DIRECT THE PERFORMANCE
-                    // ========================================================
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("Phase2Label", "2  —  Direct the Performance"))
-                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
-                    ]
-
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("Phase2Desc", "Type an acting direction. Each take generates an isolated Level Sequence so you can A/B compare instantly from the take dropdown."))
-                        .AutoWrapText(true)
-                    ]
-
-                    // Timeline range row
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("TimelineRangeLabel", "Timeline range"))
-                    ]
-
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 10.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .FillWidth(1.0f)
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            MakeTextInputRow(SourceTakeTextBox, LOCTEXT("SourceTakeLabel", "Source take"), LOCTEXT("SourceTakeDefault", "Current Sequencer Take"))
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            MakeTextInputRow(RangeStartTextBox, LOCTEXT("RangeStartLabel", "Start seconds"), LOCTEXT("RangeStartDefault", "0.0"), 120.0f)
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        [
-                            MakeTextInputRow(RangeEndTextBox, LOCTEXT("RangeEndLabel", "End seconds"), LOCTEXT("RangeEndDefault", "10.0"), 120.0f)
-                        ]
-                    ]
-
-                    // Director note label + voice button row
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        .VAlign(VAlign_Center)
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            SNew(STextBlock)
-                            .Text(LOCTEXT("DirectionLabel", "Director note"))
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        [
-                            SAssignNew(RecordVoiceButton, SButton)
-                            .Text(this, &SMHPDDirectorPanel::GetRecordVoiceButtonText)
-                            .OnPressed(this, &SMHPDDirectorPanel::OnRecordVoicePressed)
-                            .OnReleased(this, &SMHPDDirectorPanel::OnRecordVoiceReleased)
-                            .ButtonColorAndOpacity(FLinearColor(0.8f, 0.2f, 0.2f))
-                        ]
-                    ]
-
-                    // Direction text box
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SNew(SBox)
-                        .MinDesiredHeight(96.0f)
-                        [
-                            SAssignNew(DirectionTextBox, SMultiLineEditableTextBox)
-                            .Text(LOCTEXT("DirectionPlaceholder", "She is nervous, but trying to appear confident. Have her briefly look away before answering."))
-                            .AutoWrapText(true)
-                        ]
-                    ]
-
-                    // Follow-up label
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("FollowUpLabel", "Optional follow-up note"))
-                    ]
-
-                    // Follow-up text box
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SNew(SBox)
-                        .MinDesiredHeight(54.0f)
-                        [
-                            SAssignNew(FollowUpTextBox, SMultiLineEditableTextBox)
-                            .HintText(LOCTEXT("FollowUpHint", "Example: That is close. Keep the gaze change, but make the facial tension less obvious."))
-                            .AutoWrapText(true)
-                        ]
-                    ]
-
-                    // ========================================================
-                    // Performance Dynamics & Framing (Acting & Directing Dials)
-                    // ========================================================
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 6.0f, 0.0f, 4.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("PerformanceDynamicsHeader", "Performance Dynamics & Framing"))
-                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
-                    ]
-
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("PerformanceDynamicsDesc", "Calibrate cinematic scale, decouple facial nuance from physical movement, and control subtext masking."))
-                        .AutoWrapText(true)
-                        .ColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)))
-                    ]
-
-                    // 1. Framing Scale
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
-                    [
-                        SAssignNew(FramingLabel, STextBlock)
-                        .Text(GetFramingScaleText())
-                    ]
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SSlider)
-                        .Value(FramingScale)
-                        .ToolTipText(LOCTEXT("FramingTooltip", "Hugo Münsterberg & Wendy Bester framing principle: Close-Up damps gross head rotation and body shifts while focusing on ocular micro-cues. Theatrical wide projects energy to the back row."))
-                        .OnValueChanged(this, &SMHPDDirectorPanel::OnFramingScaleChanged)
-                    ]
-
-                    // 2. Facial Nuance
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
-                    [
-                        SAssignNew(NuanceLabel, STextBlock)
-                        .Text(GetNuanceText())
-                    ]
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SSlider)
-                        .Value(FacialNuance)
-                        .ToolTipText(LOCTEXT("NuanceTooltip", "Controls emotional displacement across RigLogic face curves. Protected by biological soft-knee saturation."))
-                        .OnValueChanged(this, &SMHPDDirectorPanel::OnNuanceChanged)
-                    ]
-
-                    // 3. Head & Physical Action
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
-                    [
-                        SAssignNew(PhysicalActionLabel, STextBlock)
-                        .Text(GetPhysicalActionText())
-                    ]
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SSlider)
-                        .Value(PhysicalAction)
-                        .ToolTipText(LOCTEXT("PhysicalActionTooltip", "Scales cervical spine rotation, nods, tilts, and bodily gestures independently from facial expression."))
-                        .OnValueChanged(this, &SMHPDDirectorPanel::OnPhysicalActionChanged)
-                    ]
-
-                    // 4. Subtext / Masking
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
-                    [
-                        SAssignNew(SubtextLabel, STextBlock)
-                        .Text(GetSubtextText())
-                    ]
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SSlider)
-                        .Value(SubtextSuppression)
-                        .ToolTipText(LOCTEXT("SubtextTooltip", "Michael Chekhov's 'Guise vs. Under-the-Guise': suppresses overt facial caricature and replaces it with internal micro-leakages (jaw clench, brow asymmetry, squint)."))
-                        .OnValueChanged(this, &SMHPDDirectorPanel::OnSubtextChanged)
-                    ]
-
-                    // 5. Pre-Speech Preparation Lead
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 2.0f, 0.0f, 2.0f)
-                    [
-                        SAssignNew(PreparationLabel, STextBlock)
-                        .Text(GetPreparationText())
-                    ]
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 10.0f)
-                    [
-                        SNew(SSlider)
-                        .Value(PreparationOffsetMs / 600.0f)
-                        .ToolTipText(LOCTEXT("PreparationTooltip", "Michael Chekhov: 'The psychological gesture prepares.' Timing offset for anticipatory ocular saccades and breath before vocalization."))
-                        .OnValueChanged_Lambda([this](float Ratio)
-                        {
-                            OnPreparationOffsetChanged(Ratio * 600.0f);
-                        })
-                    ]
-
-                    // ========================================================
-                    // AI Body Motion (Text-to-Motion)
-                    // ========================================================
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 6.0f, 0.0f, 4.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("TextToMotionHeader", "AI Body Motion (Generative)"))
-                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
-                    ]
-
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("TextToMotionDesc", "Synthesize continuous 3D skeletal motion on local GPU and bind to the MetaHuman body."))
-                        .AutoWrapText(true)
-                        .ColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)))
-                    ]
-
-                    // Motion Prompt Box
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SBox)
-                        .MinDesiredHeight(50.0f)
-                        [
-                            SAssignNew(MotionPromptTextBox, SMultiLineEditableTextBox)
-                            .HintText(LOCTEXT("MotionPromptHint", "e.g., cautious sneak forward, hesitant look around"))
-                            .AutoWrapText(true)
-                        ]
-                    ]
-
-                    // Motion Duration & Generate Button row
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            MakeTextInputRow(MotionDurationTextBox, LOCTEXT("MotionDurationLabel", "Duration (s)"), LOCTEXT("MotionDurationDefault", "3.5"), 80.0f)
-                        ]
-                        + SHorizontalBox::Slot()
-                        .FillWidth(1.0f)
-                        .VAlign(VAlign_Bottom)
-                        [
-                            SAssignNew(GenerateMotionButton, SButton)
-                            .Text(this, &SMHPDDirectorPanel::GetGenerateMotionButtonText)
-                            .HAlign(HAlign_Center)
-                            .ButtonColorAndOpacity(FLinearColor(0.2f, 0.45f, 0.85f, 1.0f))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnGenerateBodyMotionClicked)
-                        ]
-                    ]
-
-                    // Motion Status text
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 10.0f)
-                    [
-                        SAssignNew(MotionStatusText, STextBlock)
-                        .Text(LOCTEXT("MotionStatusReady", "Ready to generate body motion."))
-                        .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
-                        .AutoWrapText(true)
-                    ]
-
-                    // Body micro-behavior dropdown label & scan button
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        .VAlign(VAlign_Center)
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            SNew(STextBlock)
-                            .Text(LOCTEXT("BodyLibraryLabel", "Body micro-behavior (optional)"))
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("ScanBodyLibBtn", "↻ Scan Library"))
-                            .ToolTipText(LOCTEXT("ScanBodyLibTooltip", "Rescan the Body Library for newly added animations"))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnScanBodyLibraryClicked)
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        .Padding(4.0f, 0.0f, 0.0f, 0.0f)
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("UploadBodyAnimBtn", "⬆ Upload..."))
-                            .ToolTipText(LOCTEXT("UploadBodyAnimTooltip", "Upload animation files (.uasset, .fbx, .bvh, .json) from your computer into the Body Library"))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnUploadBodyLibraryClicked)
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        .Padding(4.0f, 0.0f, 0.0f, 0.0f)
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("UploadBodyFolderBtn", "📁 Upload Folder..."))
-                            .ToolTipText(LOCTEXT("UploadBodyFolderTooltip", "Upload all animation files from a folder on your computer into the Body Library"))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnUploadBodyFolderClicked)
-                        ]
-                    ]
-
-                    // Body micro-behavior dropdown
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .FillWidth(1.0f)
-                        [
-                            SAssignNew(BodyLibraryComboBox, SComboBox<FBodyOptionPtr>)
-                            .OptionsSource(&BodyLibraryOptions)
-                            .OnGenerateWidget(this, &SMHPDDirectorPanel::GenerateBodyLibraryRow)
-                            .OnSelectionChanged(this, &SMHPDDirectorPanel::OnBodyLibrarySelectionChanged)
-                            .ContentPadding(4.0f)
-                            [
-                                SNew(STextBlock)
-                                .Text(this, &SMHPDDirectorPanel::GetSelectedBodyLibraryText)
-                            ]
-                        ]
-                    ]
-
-                    // Preserve channels label
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("LocksLabel", "Preserve channels"))
-                    ]
-
-                    // Lock checkboxes
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .FillWidth(1.0f)
-                        [
-                            MakeLockColumn(true)
-                        ]
-                        + SHorizontalBox::Slot()
-                        .FillWidth(1.0f)
-                        [
-                            MakeLockColumn(false)
-                        ]
-                    ]
-
-                    // Action buttons row
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .FillWidth(1.0f)
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("AddActingTake", "✦  Add Acting Take"))
-                            .HAlign(HAlign_Center)
-                            .ButtonColorAndOpacity(FLinearColor(0.12f, 0.45f, 0.90f, 1.0f))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnGenerateAndCreateClicked)
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("GeneratePlan", "Generate Plan Only"))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnGeneratePlanClicked)
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("ClearFollowUp", "Clear Follow-Up"))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnClearFollowUpClicked)
-                        ]
-                    ]
-
-                    // Take history row
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SNew(SHorizontalBox)
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        .VAlign(VAlign_Center)
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            SNew(STextBlock)
-                            .Text(LOCTEXT("TakeHistoryLabel", "Acting takes:"))
-                        ]
-                        + SHorizontalBox::Slot()
-                        .FillWidth(1.0f)
-                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                        [
-                            SAssignNew(TakeHistoryComboBox, SComboBox<TSharedPtr<FGeneratedTakeInfo>>)
-                            .OptionsSource(&TakeHistoryList)
-                            .OnGenerateWidget(this, &SMHPDDirectorPanel::GenerateTakeHistoryRow)
-                            .OnSelectionChanged(this, &SMHPDDirectorPanel::OnTakeSelectionChanged)
-                            .ContentPadding(4.0f)
-                            [
-                                SNew(STextBlock)
-                                .Text(this, &SMHPDDirectorPanel::GetSelectedTakeText)
-                            ]
-                        ]
-                        + SHorizontalBox::Slot()
-                        .AutoWidth()
-                        [
-                            SNew(SButton)
-                            .Text(LOCTEXT("RemoveTakeBtn", "Delete Take"))
-                            .ToolTipText(LOCTEXT("RemoveTakeTooltip", "Remove the currently selected take from the dropdown list."))
-                            .OnClicked(this, &SMHPDDirectorPanel::OnRemoveTakeClicked)
-                            .IsEnabled(this, &SMHPDDirectorPanel::CanRemoveSelectedTake)
-                        ]
-                    ]
-
-                    // Divider
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 8.0f)
-                    [
-                        SNew(SSeparator)
-                    ]
-
-                    // Take status label
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("TakeStatusLabel", "Take status"))
-                    ]
-
-                    // Take status text
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                    [
-                        SAssignNew(TakeStatusText, STextBlock)
-                        .Text(LOCTEXT("TakeStatusPlaceholder", "Generate a baseline, then add acting takes to layer performances non-destructively."))
-                        .AutoWrapText(true)
-                    ]
-
-                    // Plan label
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                    [
-                        SNew(STextBlock)
-                        .Text(LOCTEXT("PlanLabel", "Structured performance plan"))
-                    ]
-
-                    // Plan text box
-                    + SVerticalBox::Slot()
-                    .AutoHeight()
-                    [
-                        SNew(SBox)
-                        .MinDesiredHeight(260.0f)
-                        [
-                            SAssignNew(PlanTextBox, SMultiLineEditableTextBox)
-                            .Text(LOCTEXT("PlanPlaceholder", "Generate a plan to preview interpreted intent, locked channels, timeline region, and editable output instructions."))
-                            .AutoWrapText(true)
-                            .IsReadOnly(true)
-                        ]
+                        BuildTab3_ReviewPerformance()
                     ]
                 ]
             ]
@@ -1140,6 +535,842 @@ public:
     }
 
 private:
+
+    // -------------------------------------------------------------------------
+    // 3-Tab Navigation & Builders
+    // -------------------------------------------------------------------------
+
+    void SetActiveTab(int32 NewIndex)
+    {
+        ActiveTabIndex = FMath::Clamp(NewIndex, 0, 2);
+        if (TabSwitcher.IsValid())
+        {
+            TabSwitcher->SetActiveWidgetIndex(ActiveTabIndex);
+        }
+    }
+
+    TSharedRef<SWidget> CreateTabHeader()
+    {
+        return SNew(SBorder)
+            .BorderImage(FAppStyle::GetBrush("Brushes.Header"))
+            .Padding(FMargin(2.0f, 2.0f, 2.0f, 0.0f))
+            [
+                SNew(SHorizontalBox)
+                + SHorizontalBox::Slot()
+                .FillWidth(1.0f)
+                [
+                    CreateTabButton(0, LOCTEXT("Tab1Label", "1  —  Generate Baseline"), LOCTEXT("Tab1Tooltip", "Ingest dialogue audio, generate lip-sync baseline, and configure physical body staging."))
+                ]
+                + SHorizontalBox::Slot()
+                .FillWidth(1.0f)
+                [
+                    CreateTabButton(1, LOCTEXT("Tab2Label", "2  —  Direct Performance"), LOCTEXT("Tab2Tooltip", "Direct facial nuance, emotional subtext, cervical head motion, and layer isolated acting takes."))
+                ]
+                + SHorizontalBox::Slot()
+                .FillWidth(1.0f)
+                [
+                    CreateTabButton(2, LOCTEXT("Tab3Label", "3  —  Review Performance"), LOCTEXT("Tab3Tooltip", "A/B compare takes, manage take history, inspect structured performance plans, and examine curve data."))
+                ]
+            ];
+    }
+
+    TSharedRef<SWidget> CreateTabButton(int32 TabIndex, const FText& Label, const FText& Tooltip)
+    {
+        return SNew(SButton)
+            .ButtonStyle(FAppStyle::Get(), "SimpleButton")
+            .ToolTipText(Tooltip)
+            .OnClicked_Lambda([this, TabIndex]()
+            {
+                SetActiveTab(TabIndex);
+                return FReply::Handled();
+            })
+            [
+                SNew(SVerticalBox)
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(FMargin(8.0f, 8.0f, 8.0f, 6.0f))
+                .HAlign(HAlign_Center)
+                [
+                    SNew(STextBlock)
+                    .Text(Label)
+                    .Font_Lambda([this, TabIndex]()
+                    {
+                        return FAppStyle::GetFontStyle(ActiveTabIndex == TabIndex ? "DetailsView.CategoryFontStyle" : "NormalFont");
+                    })
+                    .ColorAndOpacity_Lambda([this, TabIndex]()
+                    {
+                        return ActiveTabIndex == TabIndex
+                            ? FSlateColor(FLinearColor::White)
+                            : FSlateColor(FLinearColor(0.65f, 0.65f, 0.65f));
+                    })
+                ]
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                [
+                    SNew(SBox)
+                    .HeightOverride(3.0f)
+                    [
+                        SNew(SBorder)
+                        .BorderImage(FAppStyle::GetBrush("WhiteBrush"))
+                        .BorderBackgroundColor_Lambda([this, TabIndex]()
+                        {
+                            return ActiveTabIndex == TabIndex
+                                ? FLinearColor(0.12f, 0.55f, 0.95f, 1.0f)
+                                : FLinearColor::Transparent;
+                        })
+                    ]
+                ]
+            ];
+    }
+
+    TSharedRef<SWidget> BuildTab1_BaselineTake()
+    {
+        return SNew(SScrollBox)
+            + SScrollBox::Slot()
+            [
+                SNew(SVerticalBox)
+
+                // Description
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 4.0f, 0.0f, 8.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("Phase1Desc", "Import audio and generate a MetaHuman facial animation baseline. This creates a Level Sequence with audio and lip-sync tracks ready for acting direction."))
+                    .AutoWrapText(true)
+                ]
+
+                // Take name field
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                [
+                    MakeTextInputRow(BaselineTakeNameTextBox, LOCTEXT("TakeNameLabel", "Take name"), LOCTEXT("TakeNameDefault", "Take_001"))
+                ]
+
+                // Audio file row
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                [
+                    SNew(SVerticalBox)
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    .Padding(0.0f, 0.0f, 0.0f, 4.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("AudioFileLabel", "Audio file (.wav)"))
+                    ]
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    [
+                        SNew(SHorizontalBox)
+                        + SHorizontalBox::Slot()
+                        .FillWidth(1.0f)
+                        .VAlign(VAlign_Center)
+                        .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                        [
+                            SAssignNew(AudioFilePathText, STextBlock)
+                            .Text(LOCTEXT("AudioFilePlaceholder", "No file selected"))
+                            .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
+                            .AutoWrapText(true)
+                        ]
+                        + SHorizontalBox::Slot()
+                        .AutoWidth()
+                        [
+                            SNew(SButton)
+                            .Text(LOCTEXT("BrowseButton", "Browse..."))
+                            .OnClicked(this, &SMHPDDirectorPanel::OnBrowseAudioClicked)
+                        ]
+                    ]
+                ]
+
+                // Generate Baseline button
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SButton)
+                    .Text(LOCTEXT("GenerateBaseline", "▶  Generate Baseline Take"))
+                    .HAlign(HAlign_Center)
+                    .ButtonColorAndOpacity(FLinearColor(0.18f, 0.55f, 0.28f, 1.0f))
+                    .OnClicked(this, &SMHPDDirectorPanel::OnGenerateBaselineTakeClicked)
+                ]
+
+                // Baseline status text
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 4.0f)
+                [
+                    SAssignNew(BaselineStatusText, STextBlock)
+                    .Text(LOCTEXT("BaselineStatusReady", "Select a .wav file and click Generate."))
+                    .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
+                    .AutoWrapText(true)
+                ]
+
+                // Open in Sequencer + Reset Actor utility row
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 4.0f, 0.0f, 12.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    .Padding(0.0f, 0.0f, 6.0f, 0.0f)
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("OpenInSequencer", "Open Take in Sequencer"))
+                        .HAlign(HAlign_Center)
+                        .OnClicked(this, &SMHPDDirectorPanel::OnOpenInSequencerClicked)
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("ResetActorBtn", "↻ Reset Actor Instance"))
+                        .ToolTipText(LOCTEXT("ResetActorTooltip", "Respawns a clean instance of the level MetaHuman at the exact same location with stock Blueprint defaults, clearing any bad socket attachments or instance overrides."))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnResetMetaHumanActorClicked)
+                    ]
+                ]
+
+                // Divider
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 4.0f, 0.0f, 12.0f)
+                [
+                    SNew(SSeparator)
+                ]
+
+                // ========================================================
+                // AI Body Motion (Generative)
+                // ========================================================
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 4.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("TextToMotionHeader", "AI Body Motion (Generative)"))
+                    .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                ]
+
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("TextToMotionDesc", "Synthesize continuous 3D skeletal motion on local GPU and bind to the MetaHuman body."))
+                    .AutoWrapText(true)
+                    .ColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)))
+                ]
+
+                // Motion Prompt Box
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SBox)
+                    .MinDesiredHeight(50.0f)
+                    [
+                        SAssignNew(MotionPromptTextBox, SMultiLineEditableTextBox)
+                        .HintText(LOCTEXT("MotionPromptHint", "e.g., cautious sneak forward, hesitant look around"))
+                        .AutoWrapText(true)
+                    ]
+                ]
+
+                // Motion Duration & Generate Button row
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        MakeTextInputRow(MotionDurationTextBox, LOCTEXT("MotionDurationLabel", "Duration (s)"), LOCTEXT("MotionDurationDefault", "3.5"), 80.0f)
+                    ]
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    .VAlign(VAlign_Bottom)
+                    [
+                        SAssignNew(GenerateMotionButton, SButton)
+                        .Text(this, &SMHPDDirectorPanel::GetGenerateMotionButtonText)
+                        .HAlign(HAlign_Center)
+                        .ButtonColorAndOpacity(FLinearColor(0.2f, 0.45f, 0.85f, 1.0f))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnGenerateBodyMotionClicked)
+                    ]
+                ]
+
+                // Motion Status text
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 12.0f)
+                [
+                    SAssignNew(MotionStatusText, STextBlock)
+                    .Text(LOCTEXT("MotionStatusReady", "Ready to generate body motion."))
+                    .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
+                    .AutoWrapText(true)
+                ]
+
+                // Divider
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 12.0f)
+                [
+                    SNew(SSeparator)
+                ]
+
+                // ========================================================
+                // Body Library Asset Ingestion
+                // ========================================================
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .VAlign(VAlign_Center)
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("BodyLibraryHeader", "Body Library Asset Ingestion"))
+                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("ScanBodyLibBtn", "↻ Scan Library"))
+                        .ToolTipText(LOCTEXT("ScanBodyLibTooltip", "Rescan the Body Library for newly added animations"))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnScanBodyLibraryClicked)
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .Padding(4.0f, 0.0f, 0.0f, 0.0f)
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("UploadBodyAnimBtn", "⬆ Upload..."))
+                        .ToolTipText(LOCTEXT("UploadBodyAnimTooltip", "Upload animation files (.uasset, .fbx, .bvh, .json) from your computer into the Body Library"))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnUploadBodyLibraryClicked)
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .Padding(4.0f, 0.0f, 0.0f, 0.0f)
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("UploadBodyFolderBtn", "📁 Upload Folder..."))
+                        .ToolTipText(LOCTEXT("UploadBodyFolderTooltip", "Upload all animation files from a folder on your computer into the Body Library"))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnUploadBodyFolderClicked)
+                    ]
+                ]
+
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("BodyLibraryIngestDesc", "Import or scan external animations into /Game/MHPD/BodyLibrary for use as character physical behavior."))
+                    .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
+                    .AutoWrapText(true)
+                ]
+            ];
+    }
+
+    TSharedRef<SWidget> BuildTab2_DirectPerformance()
+    {
+        return SNew(SScrollBox)
+            + SScrollBox::Slot()
+            [
+                SNew(SVerticalBox)
+
+                // Timeline range row
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("TimelineRangeLabel", "Timeline range"))
+                    .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                ]
+
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        MakeTextInputRow(SourceTakeTextBox, LOCTEXT("SourceTakeLabel", "Source take"), LOCTEXT("SourceTakeDefault", "Current Sequencer Take"))
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        MakeTextInputRow(RangeStartTextBox, LOCTEXT("RangeStartLabel", "Start seconds"), LOCTEXT("RangeStartDefault", "0.0"), 120.0f)
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    [
+                        MakeTextInputRow(RangeEndTextBox, LOCTEXT("RangeEndLabel", "End seconds"), LOCTEXT("RangeEndDefault", "10.0"), 120.0f)
+                    ]
+                ]
+
+                // Directorial Intent (Director note + Voice button)
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .VAlign(VAlign_Center)
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("DirectionLabel", "Director note"))
+                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    [
+                        SAssignNew(RecordVoiceButton, SButton)
+                        .Text(this, &SMHPDDirectorPanel::GetRecordVoiceButtonText)
+                        .OnPressed(this, &SMHPDDirectorPanel::OnRecordVoicePressed)
+                        .OnReleased(this, &SMHPDDirectorPanel::OnRecordVoiceReleased)
+                        .ButtonColorAndOpacity(FLinearColor(0.8f, 0.2f, 0.2f))
+                    ]
+                ]
+
+                // Direction text box
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                [
+                    SNew(SBox)
+                    .MinDesiredHeight(80.0f)
+                    [
+                        SAssignNew(DirectionTextBox, SMultiLineEditableTextBox)
+                        .Text(LOCTEXT("DirectionPlaceholder", "She is nervous, but trying to appear confident. Have her briefly look away before answering."))
+                        .AutoWrapText(true)
+                    ]
+                ]
+
+                // Follow-up header + Clear Follow-Up button right next to it
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .VAlign(VAlign_Center)
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("FollowUpLabel", "Optional follow-up note"))
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("ClearFollowUp", "⌫ Clear Follow-Up"))
+                        .ButtonStyle(FAppStyle::Get(), "SimpleButton")
+                        .ToolTipText(LOCTEXT("ClearFollowUpTooltip", "Clear the follow-up note text box"))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnClearFollowUpClicked)
+                    ]
+                ]
+
+                // Follow-up text box
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 12.0f)
+                [
+                    SNew(SBox)
+                    .MinDesiredHeight(48.0f)
+                    [
+                        SAssignNew(FollowUpTextBox, SMultiLineEditableTextBox)
+                        .HintText(LOCTEXT("FollowUpHint", "Example: That is close. Keep the gaze change, but make the facial tension less obvious."))
+                        .AutoWrapText(true)
+                    ]
+                ]
+
+                // Divider
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                [
+                    SNew(SSeparator)
+                ]
+
+                // ========================================================
+                // Performance Dynamics & Framing (Acting Dials)
+                // ========================================================
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 4.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("PerformanceDynamicsHeader", "Performance Dynamics & Framing"))
+                    .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                ]
+
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("PerformanceDynamicsDesc", "Calibrate cinematic scale, decouple facial nuance from physical movement, and control subtext masking."))
+                    .AutoWrapText(true)
+                    .ColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)))
+                ]
+
+                // 1. Framing Scale
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                [
+                    SAssignNew(FramingLabel, STextBlock)
+                    .Text(GetFramingScaleText())
+                ]
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SSlider)
+                    .Value(FramingScale)
+                    .ToolTipText(LOCTEXT("FramingTooltip", "Close-Up damps gross head rotation and body shifts while focusing on ocular micro-cues. Theatrical wide projects energy."))
+                    .OnValueChanged(this, &SMHPDDirectorPanel::OnFramingScaleChanged)
+                ]
+
+                // 2. Facial Nuance
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                [
+                    SAssignNew(NuanceLabel, STextBlock)
+                    .Text(GetNuanceText())
+                ]
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SSlider)
+                    .Value(FacialNuance)
+                    .ToolTipText(LOCTEXT("NuanceTooltip", "Controls emotional displacement across RigLogic face curves."))
+                    .OnValueChanged(this, &SMHPDDirectorPanel::OnNuanceChanged)
+                ]
+
+                // 3. Head & Physical Action
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                [
+                    SAssignNew(PhysicalActionLabel, STextBlock)
+                    .Text(GetPhysicalActionText())
+                ]
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SSlider)
+                    .Value(PhysicalAction)
+                    .ToolTipText(LOCTEXT("PhysicalActionTooltip", "Scales cervical spine rotation, nods, tilts, and bodily gestures independently from facial expression."))
+                    .OnValueChanged(this, &SMHPDDirectorPanel::OnPhysicalActionChanged)
+                ]
+
+                // 4. Subtext / Masking
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                [
+                    SAssignNew(SubtextLabel, STextBlock)
+                    .Text(GetSubtextText())
+                ]
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SSlider)
+                    .Value(SubtextSuppression)
+                    .ToolTipText(LOCTEXT("SubtextTooltip", "Suppresses overt facial caricature and replaces it with internal micro-leakages."))
+                    .OnValueChanged(this, &SMHPDDirectorPanel::OnSubtextChanged)
+                ]
+
+                // 5. Pre-Speech Preparation Lead
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 2.0f, 0.0f, 2.0f)
+                [
+                    SAssignNew(PreparationLabel, STextBlock)
+                    .Text(GetPreparationText())
+                ]
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                [
+                    SNew(SSlider)
+                    .Value(PreparationOffsetMs / 600.0f)
+                    .ToolTipText(LOCTEXT("PreparationTooltip", "Timing offset for anticipatory ocular saccades and breath before vocalization."))
+                    .OnValueChanged_Lambda([this](float Ratio)
+                    {
+                        OnPreparationOffsetChanged(Ratio * 600.0f);
+                    })
+                ]
+
+                // Divider
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                [
+                    SNew(SSeparator)
+                ]
+
+                // ========================================================
+                // Staging & Body Micro-Behavior Selection
+                // ========================================================
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .VAlign(VAlign_Center)
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("BodyLibraryLabel", "Body micro-behavior (optional)"))
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("ScanBodyLibMiniBtn", "↻"))
+                        .ToolTipText(LOCTEXT("ScanBodyLibMiniTooltip", "Refresh Body Library"))
+                        .ButtonStyle(FAppStyle::Get(), "SimpleButton")
+                        .OnClicked(this, &SMHPDDirectorPanel::OnScanBodyLibraryClicked)
+                    ]
+                ]
+
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    [
+                        SAssignNew(BodyLibraryComboBox, SComboBox<FBodyOptionPtr>)
+                        .OptionsSource(&BodyLibraryOptions)
+                        .OnGenerateWidget(this, &SMHPDDirectorPanel::GenerateBodyLibraryRow)
+                        .OnSelectionChanged(this, &SMHPDDirectorPanel::OnBodyLibrarySelectionChanged)
+                        .ContentPadding(4.0f)
+                        [
+                            SNew(STextBlock)
+                            .Text(this, &SMHPDDirectorPanel::GetSelectedBodyLibraryText)
+                        ]
+                    ]
+                ]
+
+                // Preserve channels label
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("LocksLabel", "Preserve channels"))
+                ]
+
+                // Lock checkboxes
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 12.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    [
+                        MakeLockColumn(true)
+                    ]
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    [
+                        MakeLockColumn(false)
+                    ]
+                ]
+
+                // Action buttons row
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("AddActingTake", "✦  Add Acting Take"))
+                        .HAlign(HAlign_Center)
+                        .ButtonColorAndOpacity(FLinearColor(0.12f, 0.45f, 0.90f, 1.0f))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnGenerateAndCreateClicked)
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("GeneratePlan", "Generate Plan Only"))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnGeneratePlanClicked)
+                    ]
+                ]
+
+                // Direct Tab feedback row (stays in Tab 2, with button to switch to Tab 3)
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 4.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    .VAlign(VAlign_Center)
+                    [
+                        SAssignNew(DirectTabStatusText, STextBlock)
+                        .Text(LOCTEXT("DirectTabReady", "Ready. Click '✦ Add Acting Take' to layer the performance."))
+                        .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.8f, 0.6f)))
+                        .AutoWrapText(true)
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .VAlign(VAlign_Center)
+                    .Padding(8.0f, 0.0f, 0.0f, 0.0f)
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("JumpToReviewBtn", "Review Tab ➔"))
+                        .ButtonStyle(FAppStyle::Get(), "SimpleButton")
+                        .ToolTipText(LOCTEXT("JumpToReviewTooltip", "Switch to Tab 3 (Review Performance) to inspect takes and plans"))
+                        .OnClicked_Lambda([this]()
+                        {
+                            SetActiveTab(2);
+                            return FReply::Handled();
+                        })
+                    ]
+                ]
+            ];
+    }
+
+    TSharedRef<SWidget> BuildTab3_ReviewPerformance()
+    {
+        return SNew(SScrollBox)
+            + SScrollBox::Slot()
+            [
+                SNew(SVerticalBox)
+
+                // Description
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 4.0f, 0.0f, 8.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("ReviewTabDesc", "Inspect generated takes, compare performances non-destructively, and review structured intent and channel breakdowns."))
+                    .AutoWrapText(true)
+                ]
+
+                // Take history row
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                [
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .VAlign(VAlign_Center)
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("TakeHistoryLabel", "Acting takes:"))
+                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                    ]
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+                    [
+                        SAssignNew(TakeHistoryComboBox, SComboBox<TSharedPtr<FGeneratedTakeInfo>>)
+                        .OptionsSource(&TakeHistoryList)
+                        .OnGenerateWidget(this, &SMHPDDirectorPanel::GenerateTakeHistoryRow)
+                        .OnSelectionChanged(this, &SMHPDDirectorPanel::OnTakeSelectionChanged)
+                        .ContentPadding(4.0f)
+                        [
+                            SNew(STextBlock)
+                            .Text(this, &SMHPDDirectorPanel::GetSelectedTakeText)
+                        ]
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("RemoveTakeBtn", "Delete Take"))
+                        .ToolTipText(LOCTEXT("RemoveTakeTooltip", "Remove the currently selected take from the dropdown list."))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnRemoveTakeClicked)
+                        .IsEnabled(this, &SMHPDDirectorPanel::CanRemoveSelectedTake)
+                    ]
+                ]
+
+                // Divider
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 8.0f)
+                [
+                    SNew(SSeparator)
+                ]
+
+                // Take status label
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 4.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("TakeStatusLabel", "Take status"))
+                    .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                ]
+
+                // Take status text
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 10.0f)
+                [
+                    SAssignNew(TakeStatusText, STextBlock)
+                    .Text(LOCTEXT("TakeStatusPlaceholder", "Generate a baseline, then add acting takes to layer performances non-destructively."))
+                    .AutoWrapText(true)
+                ]
+
+                // Plan label
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(0.0f, 0.0f, 0.0f, 4.0f)
+                [
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("PlanLabel", "Structured performance plan"))
+                    .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                ]
+
+                // Plan text box
+                + SVerticalBox::Slot()
+                .FillHeight(1.0f)
+                [
+                    SNew(SBox)
+                    .MinDesiredHeight(280.0f)
+                    [
+                        SAssignNew(PlanTextBox, SMultiLineEditableTextBox)
+                        .Text(LOCTEXT("PlanPlaceholder", "Generate a plan to preview interpreted intent, locked channels, timeline region, and editable output instructions."))
+                        .AutoWrapText(true)
+                        .IsReadOnly(true)
+                    ]
+                ]
+            ];
+    }
 
     // -------------------------------------------------------------------------
     // Helper UI builders & handlers
@@ -1275,6 +1506,12 @@ private:
         if (bSuccess)
         {
             SetBaselineStatus(FString::Printf(TEXT("✓ Baseline generated: %s\nSequencer opened automatically."), *OutputDir), false);
+            SetActiveTab(1);
+            if (DirectTabStatusText.IsValid())
+            {
+                DirectTabStatusText->SetText(FText::FromString(FString::Printf(TEXT("✓ Baseline '%s' active in Sequencer. Directing session ready."), *TakeName)));
+                DirectTabStatusText->SetColorAndOpacity(FSlateColor(FLinearColor(0.2f, 0.85f, 0.3f)));
+            }
         }
         else
         {
@@ -1557,43 +1794,65 @@ private:
                 }
 
                 double Yaw = 0.0, Pitch = 0.0, Roll = 0.0;
-                if (ChainWeight > 0.0f && RangeDur > 0.0
-                    && TimeSeconds >= RangeStart && TimeSeconds <= RangeEnd)
+                if (ChainWeight > 0.0f && RangeDur > 0.0 && TimeSeconds >= RangeStart)
                 {
-                    // Smoothstep ease in/out so the move starts and ends at rest
                     const double RelTime = TimeSeconds - RangeStart;
-                    const double Lead = FMath::Min(0.25, RangeDur * 0.15);
-                    double Env = 1.0;
-                    if (Lead > 0.0 && RelTime < Lead)                   Env = RelTime / Lead;
-                    else if (Lead > 0.0 && RelTime > (RangeDur - Lead)) Env = (RangeDur - RelTime) / Lead;
-                    Env = FMath::Clamp(Env, 0.0, 1.0);
-                    Env = Env * Env * (3.0 - 2.0 * Env);
+
+                    // Postural shift: smoothstep ease-in and SUSTAIN (holds posture without rubber-banding back)
+                    const double PosturalLead = FMath::Min(0.40, RangeDur * 0.20);
+                    double PosturalEnv = (PosturalLead > 0.0) ? FMath::Clamp(RelTime / PosturalLead, 0.0, 1.0) : 1.0;
+                    PosturalEnv = PosturalEnv * PosturalEnv * (3.0 - 2.0 * PosturalEnv);
+
+                    // Transient gestures (nod, shake): pulse envelope that eases in and eases out inside the range
+                    double TransientEnv = 0.0;
+                    if (TimeSeconds <= RangeEnd)
+                    {
+                        const double TransientLead = FMath::Min(0.25, RangeDur * 0.15);
+                        TransientEnv = 1.0;
+                        if (TransientLead > 0.0 && RelTime < TransientLead)
+                            TransientEnv = RelTime / TransientLead;
+                        else if (TransientLead > 0.0 && RelTime > (RangeDur - TransientLead))
+                            TransientEnv = (RangeDur - RelTime) / TransientLead;
+                        TransientEnv = FMath::Clamp(TransientEnv, 0.0, 1.0);
+                        TransientEnv = TransientEnv * TransientEnv * (3.0 - 2.0 * TransientEnv);
+                    }
 
                     for (const FMHPDChannelInstruction& Inst : HeadInstructions)
                     {
-                        const double W = static_cast<double>(Inst.Weight) * ChainWeight * Env;
-
-                        // UE convention: +Yaw turns to the character's RIGHT,
-                        // +Pitch raises the chin. Flip these if a take reads mirrored.
-                        if (Inst.BehaviorId == FName(TEXT("head_turn_left")))        Yaw   -= 32.0 * W;
-                        else if (Inst.BehaviorId == FName(TEXT("head_turn_right")))  Yaw   += 32.0 * W;
-                        else if (Inst.BehaviorId == FName(TEXT("head_pitch_up")))    Pitch += 20.0 * W;
-                        else if (Inst.BehaviorId == FName(TEXT("head_pitch_down")))  Pitch -= 20.0 * W;
-                        else if (Inst.BehaviorId == FName(TEXT("head_tilt")))        Roll  += 18.0 * W;
-                        else if (Inst.BehaviorId == FName(TEXT("head_nod")))
+                        if (Inst.BehaviorId == FName(TEXT("head_nod")))
                         {
-                            const double Phase = (RelTime / RangeDur) * 4.0 * PI;
-                            Pitch -= 22.0 * ChainWeight * Env * FMath::Max(0.0, FMath::Sin(Phase));
+                            if (TransientEnv > 0.0)
+                            {
+                                const double Phase = (RelTime / RangeDur) * 4.0 * PI;
+                                Pitch -= 22.0 * ChainWeight * TransientEnv * FMath::Max(0.0, FMath::Sin(Phase));
+                            }
                         }
                         else if (Inst.BehaviorId == FName(TEXT("head_shake")))
                         {
-                            const double Phase = RelTime * 3.0 * 2.0 * PI;
-                            Yaw += 18.0 * ChainWeight * Env * FMath::Sin(Phase);
+                            if (TransientEnv > 0.0)
+                            {
+                                const double Phase = RelTime * 3.0 * 2.0 * PI;
+                                Yaw += 18.0 * ChainWeight * TransientEnv * FMath::Sin(Phase);
+                            }
                         }
                         else if (Inst.BehaviorId == FName(TEXT("small_recoil_then_reset")))
                         {
-                            const double Phase = (RelTime / RangeDur) * 2.0 * PI;
-                            Pitch += 10.0 * ChainWeight * Env * FMath::Sin(Phase);
+                            if (TransientEnv > 0.0)
+                            {
+                                const double Phase = (RelTime / RangeDur) * 2.0 * PI;
+                                Pitch += 10.0 * ChainWeight * TransientEnv * FMath::Sin(Phase);
+                            }
+                        }
+                        else
+                        {
+                            const double W = static_cast<double>(Inst.Weight) * ChainWeight * PosturalEnv;
+
+                            if (Inst.BehaviorId == FName(TEXT("head_turn_left")))        Yaw   -= 32.0 * W;
+                            else if (Inst.BehaviorId == FName(TEXT("head_turn_right")))  Yaw   += 32.0 * W;
+                            else if (Inst.BehaviorId == FName(TEXT("head_pitch_up")))    Pitch += 20.0 * W;
+                            else if (Inst.BehaviorId == FName(TEXT("head_pitch_down")))  Pitch -= 20.0 * W;
+                            else if (Inst.BehaviorId == FName(TEXT("head_tilt")))        Roll  += 18.0 * W;
+                            else if (Inst.BehaviorId == FName(TEXT("head_warmth_tilt"))) Roll  += 14.0 * W;
                         }
                     }
                 }
@@ -2499,6 +2758,7 @@ private:
     {
         OnGeneratePlanClicked();
         CreateActingTakeSequence();
+        SetActiveTab(1); // Keep user in Tab 2 (Direct Performance) during take iteration!
         return FReply::Handled();
     }
 
@@ -2697,6 +2957,12 @@ private:
             TakeStatusText->SetText(FText::FromString(NewTake->StatusText));
         }
 
+        if (DirectTabStatusText.IsValid())
+        {
+            DirectTabStatusText->SetText(FText::FromString(FString::Printf(TEXT("✓ Created take '%s' and loaded into Sequencer."), *TakeSeqName)));
+            DirectTabStatusText->SetColorAndOpacity(FSlateColor(FLinearColor(0.2f, 0.85f, 0.3f)));
+        }
+
         // Open the new take in Sequencer for immediate preview
         if (UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>())
         {
@@ -2786,6 +3052,7 @@ private:
         }
 
         PlanTextBox->SetText(FText::FromString(FormatPlanForDisplay(Plan, GeneratedTakeName, Json)));
+        SetActiveTab(2);
         return FReply::Handled();
     }
 
