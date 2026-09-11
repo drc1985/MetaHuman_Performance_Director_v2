@@ -5,12 +5,10 @@
 [![Compute](https://img.shields.io/badge/Compute-100%25%20Local%20%26%20Offline-success)](https://frontiermindworks.com)
 [![Status](https://img.shields.io/badge/Status-v0.3.0--Production%20Ready-brightgreen)](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
 [![Author](https://img.shields.io/badge/Author-David%20Cobbins-blue.svg)](https://frontiermindworks.com)
-[![Affiliation](https://img.shields.io/badge/USC--ICT-Research%20Project%20Leader-maroon.svg)](https://ict.usc.edu)
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
 
-**Created & Architected by [David Cobbins](https://github.com/drc1985) • [Frontier Mindworks](https://frontiermindworks.com)**  
-*Research Project Leader at the USC Institute for Creative Technologies (USC-ICT)*
+**Created & Architected by [David Cobbins](https://github.com/drc1985) • [Frontier Mindworks](https://frontiermindworks.com)**
 
 ---
 
@@ -212,13 +210,13 @@ If you use **MetaHuman Performance Director** in your academic research, virtual
   year = {2026},
   month = {9},
   version = {0.3.0},
-  organization = {Frontier Mindworks / USC Institute for Creative Technologies},
+  organization = {Frontier Mindworks},
   url = {https://github.com/drc1985/MetaHuman_Performance_Director_v2}
 }
 ```
 
 ### APA
-> Cobbins, D. (2026). *MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans* (Version 0.3.0) [Computer software]. Frontier Mindworks / USC Institute for Creative Technologies. https://github.com/drc1985/MetaHuman_Performance_Director_v2
+> Cobbins, D. (2026). *MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans* (Version 0.3.0) [Computer software]. Frontier Mindworks. https://github.com/drc1985/MetaHuman_Performance_Director_v2
 
 *(You can also use GitHub's native **"Cite this repository"** button in the sidebar to export APA or BibTeX directly).*
 
@@ -227,8 +225,7 @@ If you use **MetaHuman Performance Director** in your academic research, virtual
 ## 👤 Author & Studio
 
 **David Cobbins**  
-Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com)  
-*Research Project Leader at the USC Institute for Creative Technologies (USC-ICT)*
+Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com)
 
 - **GitHub:** [@drc1985](https://github.com/drc1985)
 - **Portfolio & Lab:** [frontiermindworks.com](https://frontiermindworks.com)

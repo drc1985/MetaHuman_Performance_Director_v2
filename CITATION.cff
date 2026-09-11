@@ -1,9 +1,9 @@
-﻿cff-version: 1.2.0
+cff-version: 1.2.0
 message: "If you use this software in your research, virtual production, or creative workflows, please cite it as below."
 authors:
   - family-names: "Cobbins"
     given-names: "David"
-    affiliation: "Frontier Mindworks / USC Institute for Creative Technologies"
+    affiliation: "Frontier Mindworks"
 title: "MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans"
 version: 0.3.0
 date-released: 2026-09-11
