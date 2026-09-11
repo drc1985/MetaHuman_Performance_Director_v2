@@ -31,6 +31,16 @@ public:
     UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director")
     FString ExportPlanToJson(const FMHPDPerformancePlan& Plan) const;
 
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director")
+    void AutoCalibrateDials(
+        const FString& DirectionText,
+        float& OutFramingScale,
+        float& OutFacialNuance,
+        float& OutPhysicalAction,
+        float& OutSubtextSuppression,
+        float& OutPreparationOffsetMs
+    ) const;
+
 private:
     void AddInstruction(
         FMHPDPerformancePlan& Plan,

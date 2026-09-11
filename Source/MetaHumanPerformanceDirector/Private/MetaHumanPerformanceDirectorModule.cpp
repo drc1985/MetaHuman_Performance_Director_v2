@@ -1012,9 +1012,24 @@ private:
                 .AutoHeight()
                 .Padding(0.0f, 0.0f, 0.0f, 4.0f)
                 [
-                    SNew(STextBlock)
-                    .Text(LOCTEXT("PerformanceDynamicsHeader", "Performance Dynamics & Framing"))
-                    .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                    SNew(SHorizontalBox)
+                    + SHorizontalBox::Slot()
+                    .FillWidth(1.0f)
+                    .VAlign(VAlign_Center)
+                    [
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("PerformanceDynamicsHeader", "Performance Dynamics & Framing"))
+                        .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
+                    ]
+                    + SHorizontalBox::Slot()
+                    .AutoWidth()
+                    .VAlign(VAlign_Center)
+                    [
+                        SNew(SButton)
+                        .Text(LOCTEXT("AutoCalibrateBtn", "✨ Auto-Calibrate Dials"))
+                        .ToolTipText(LOCTEXT("AutoCalibrateTooltip", "Analyze current director note and calibrate dials to cinematic baseline. You can still adjust any slider manually."))
+                        .OnClicked(this, &SMHPDDirectorPanel::OnAutoCalibrateDialsClicked)
+                    ]
                 ]
 
                 + SVerticalBox::Slot()
@@ -1040,7 +1055,7 @@ private:
                 .Padding(0.0f, 0.0f, 0.0f, 6.0f)
                 [
                     SNew(SSlider)
-                    .Value(FramingScale)
+                    .Value_Lambda([this]() { return FramingScale; })
                     .ToolTipText(LOCTEXT("FramingTooltip", "Close-Up damps gross head rotation and body shifts while focusing on ocular micro-cues. Theatrical wide projects energy."))
                     .OnValueChanged(this, &SMHPDDirectorPanel::OnFramingScaleChanged)
                 ]
@@ -1058,7 +1073,7 @@ private:
                 .Padding(0.0f, 0.0f, 0.0f, 6.0f)
                 [
                     SNew(SSlider)
-                    .Value(FacialNuance)
+                    .Value_Lambda([this]() { return FacialNuance; })
                     .ToolTipText(LOCTEXT("NuanceTooltip", "Controls emotional displacement across RigLogic face curves."))
                     .OnValueChanged(this, &SMHPDDirectorPanel::OnNuanceChanged)
                 ]
@@ -1076,7 +1091,7 @@ private:
                 .Padding(0.0f, 0.0f, 0.0f, 6.0f)
                 [
                     SNew(SSlider)
-                    .Value(PhysicalAction)
+                    .Value_Lambda([this]() { return PhysicalAction; })
                     .ToolTipText(LOCTEXT("PhysicalActionTooltip", "Scales cervical spine rotation, nods, tilts, and bodily gestures independently from facial expression."))
                     .OnValueChanged(this, &SMHPDDirectorPanel::OnPhysicalActionChanged)
                 ]
@@ -1094,7 +1109,7 @@ private:
                 .Padding(0.0f, 0.0f, 0.0f, 6.0f)
                 [
                     SNew(SSlider)
-                    .Value(SubtextSuppression)
+                    .Value_Lambda([this]() { return SubtextSuppression; })
                     .ToolTipText(LOCTEXT("SubtextTooltip", "Suppresses overt facial caricature and replaces it with internal micro-leakages."))
                     .OnValueChanged(this, &SMHPDDirectorPanel::OnSubtextChanged)
                 ]
@@ -1112,7 +1127,7 @@ private:
                 .Padding(0.0f, 0.0f, 0.0f, 10.0f)
                 [
                     SNew(SSlider)
-                    .Value(PreparationOffsetMs / 600.0f)
+                    .Value_Lambda([this]() { return FMath::Clamp(PreparationOffsetMs / 600.0f, 0.0f, 1.0f); })
                     .ToolTipText(LOCTEXT("PreparationTooltip", "Timing offset for anticipatory ocular saccades and breath before vocalization."))
                     .OnValueChanged_Lambda([this](float Ratio)
                     {
@@ -2978,6 +2993,59 @@ private:
         {
             FollowUpTextBox->SetText(FText::GetEmpty());
         }
+        return FReply::Handled();
+    }
+
+    FReply OnAutoCalibrateDialsClicked()
+    {
+        UMHPDPerformanceDirectorSubsystem* Subsystem = GEditor ? GEditor->GetEditorSubsystem<UMHPDPerformanceDirectorSubsystem>() : nullptr;
+        if (!Subsystem)
+        {
+            return FReply::Handled();
+        }
+
+        FString CombinedNote = DirectionTextBox.IsValid() ? DirectionTextBox->GetText().ToString().TrimStartAndEnd() : FString();
+        const FString FollowUpNote = FollowUpTextBox.IsValid() ? FollowUpTextBox->GetText().ToString().TrimStartAndEnd() : FString();
+        if (!FollowUpNote.IsEmpty())
+        {
+            if (!CombinedNote.IsEmpty())
+            {
+                CombinedNote += TEXT(" ");
+            }
+            CombinedNote += FollowUpNote;
+        }
+
+        if (CombinedNote.IsEmpty())
+        {
+            if (DirectTabStatusText.IsValid())
+            {
+                DirectTabStatusText->SetText(LOCTEXT("AutoCalibrateNoNote", "Enter a director note above to auto-calibrate dials."));
+            }
+            return FReply::Handled();
+        }
+
+        Subsystem->AutoCalibrateDials(CombinedNote, FramingScale, FacialNuance, PhysicalAction, SubtextSuppression, PreparationOffsetMs);
+        Intensity = FacialNuance;
+
+        if (FramingLabel.IsValid()) FramingLabel->SetText(GetFramingScaleText());
+        if (NuanceLabel.IsValid()) NuanceLabel->SetText(GetNuanceText());
+        if (IntensityLabel.IsValid()) IntensityLabel->SetText(GetIntensityText());
+        if (PhysicalActionLabel.IsValid()) PhysicalActionLabel->SetText(GetPhysicalActionText());
+        if (SubtextLabel.IsValid()) SubtextLabel->SetText(GetSubtextText());
+        if (PreparationLabel.IsValid()) PreparationLabel->SetText(GetPreparationText());
+
+        if (DirectTabStatusText.IsValid())
+        {
+            DirectTabStatusText->SetText(FText::FromString(FString::Printf(
+                TEXT("✨ Calibrated dials: Framing %.0f%%, Nuance %.0f%%, Physical %.0f%%, Subtext %.0f%%, Lead %.0fms"),
+                FramingScale * 100.0f,
+                FacialNuance * 100.0f,
+                PhysicalAction * 100.0f,
+                SubtextSuppression * 100.0f,
+                PreparationOffsetMs
+            )));
+        }
+
         return FReply::Handled();
     }
 

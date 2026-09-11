@@ -22,6 +22,8 @@ Build/
 Thumbs.db
 
 # Python Cache & Temp Files
+.env
+*.env
 __pycache__/
 *.pyc
 *.pyo
@@ -35,3 +37,9 @@ venv/
 Saved/MHPD/
 *.log
 *.tmp
+data/
+models/
+tools/
+*.safetensors
+*.bin
+*.gguf

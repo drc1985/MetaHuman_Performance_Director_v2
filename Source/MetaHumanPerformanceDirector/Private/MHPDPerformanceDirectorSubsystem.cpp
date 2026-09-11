@@ -1176,3 +1176,148 @@ bool UMHPDPerformanceDirectorSubsystem::IsChannelLocked(EMHPDPerformanceChannel 
 
     return false;
 }
+
+void UMHPDPerformanceDirectorSubsystem::AutoCalibrateDials(
+    const FString& DirectionText,
+    float& OutFramingScale,
+    float& OutFacialNuance,
+    float& OutPhysicalAction,
+    float& OutSubtextSuppression,
+    float& OutPreparationOffsetMs
+) const
+{
+    // Defaults: Standard conversational cinematic baseline
+    OutFramingScale        = 0.50f;
+    OutFacialNuance        = 0.50f;
+    OutPhysicalAction      = 0.50f;
+    OutSubtextSuppression  = 0.00f;
+    OutPreparationOffsetMs = 250.0f;
+
+    if (DirectionText.IsEmpty())
+    {
+        return;
+    }
+
+    const FString Lower = DirectionText.ToLower();
+
+    // 1. Framing Scale Calibration (0.0 = Extreme Close-Up, 1.0 = Theatrical Wide)
+    // Close-Up indicators: intimate, ocular, micro, whisper, breath, tears, scrutiny
+    const bool bCloseUp = Lower.Contains(TEXT("whisper")) || Lower.Contains(TEXT("tear")) || Lower.Contains(TEXT("tears"))
+        || Lower.Contains(TEXT("intimate")) || Lower.Contains(TEXT("micro")) || Lower.Contains(TEXT("subtle"))
+        || Lower.Contains(TEXT("eye")) || Lower.Contains(TEXT("gaze")) || Lower.Contains(TEXT("blink"))
+        || Lower.Contains(TEXT("brow")) || Lower.Contains(TEXT("jaw")) || Lower.Contains(TEXT("lip"))
+        || Lower.Contains(TEXT("close")) || Lower.Contains(TEXT("scrutiny")) || Lower.Contains(TEXT("troubled"));
+
+    // Wide / Projection indicators: shouting, projecting, broad physical staging
+    const bool bTheatricalWide = Lower.Contains(TEXT("shout")) || Lower.Contains(TEXT("scream"))
+        || Lower.Contains(TEXT("project")) || Lower.Contains(TEXT("wide")) || Lower.Contains(TEXT("theatric"))
+        || Lower.Contains(TEXT("hall")) || Lower.Contains(TEXT("courtyard")) || Lower.Contains(TEXT("across the room"))
+        || Lower.Contains(TEXT("pacing")) || Lower.Contains(TEXT("run")) || Lower.Contains(TEXT("walk"));
+
+    if (bCloseUp && !bTheatricalWide)
+    {
+        OutFramingScale = 0.28f;
+    }
+    else if (bTheatricalWide)
+    {
+        OutFramingScale = 0.80f;
+    }
+    else
+    {
+        OutFramingScale = 0.50f;
+    }
+
+    // 2. Facial Nuance Calibration (0.0 = Underplayed/Minimal, 1.0 = Pronounced/Intense)
+    const bool bUnderplayed = Lower.Contains(TEXT("underplay")) || Lower.Contains(TEXT("faint"))
+        || Lower.Contains(TEXT("slight")) || Lower.Contains(TEXT("barely")) || Lower.Contains(TEXT("minimal"))
+        || Lower.Contains(TEXT("deadpan")) || Lower.Contains(TEXT("poker")) || Lower.Contains(TEXT("stoic"));
+
+    const bool bHighEmotion = Lower.Contains(TEXT("furious")) || Lower.Contains(TEXT("rage"))
+        || Lower.Contains(TEXT("terrified")) || Lower.Contains(TEXT("hysterical")) || Lower.Contains(TEXT("weep"))
+        || Lower.Contains(TEXT("delighted")) || Lower.Contains(TEXT("ecstatic")) || Lower.Contains(TEXT("shocked"))
+        || Lower.Contains(TEXT("agony")) || Lower.Contains(TEXT("pain"));
+
+    if (bUnderplayed)
+    {
+        OutFacialNuance = 0.32f;
+    }
+    else if (bHighEmotion)
+    {
+        OutFacialNuance = 0.78f;
+    }
+    else
+    {
+        OutFacialNuance = 0.55f;
+    }
+
+    // 3. Head & Physical Action Calibration (0.0 = Held Still, 1.0 = Dynamic Movement)
+    const bool bStill = Lower.Contains(TEXT("still")) || Lower.Contains(TEXT("freeze"))
+        || Lower.Contains(TEXT("frozen")) || Lower.Contains(TEXT("held")) || Lower.Contains(TEXT("rigid"))
+        || Lower.Contains(TEXT("lock")) || Lower.Contains(TEXT("paralyzed")) || Lower.Contains(TEXT("unmoving"));
+
+    const bool bDynamicMovement = Lower.Contains(TEXT("turn")) || Lower.Contains(TEXT("turning"))
+        || Lower.Contains(TEXT("turns")) || Lower.Contains(TEXT("shake")) || Lower.Contains(TEXT("nod"))
+        || Lower.Contains(TEXT("recoil")) || Lower.Contains(TEXT("shift")) || Lower.Contains(TEXT("gesture"))
+        || Lower.Contains(TEXT("reaches")) || Lower.Contains(TEXT("drops head")) || Lower.Contains(TEXT("tilt"));
+
+    if (bStill && !bDynamicMovement)
+    {
+        OutPhysicalAction = 0.18f;
+    }
+    else if (bDynamicMovement)
+    {
+        OutPhysicalAction = 0.68f;
+    }
+    else
+    {
+        OutPhysicalAction = 0.48f;
+    }
+
+    // 4. Subtext Masking / Suppression Calibration (0.0 = Direct, 1.0 = High Internal Guise)
+    const bool bMasking = Lower.Contains(TEXT("mask")) || Lower.Contains(TEXT("hide"))
+        || Lower.Contains(TEXT("hiding")) || Lower.Contains(TEXT("holding back")) || Lower.Contains(TEXT("contain"))
+        || Lower.Contains(TEXT("restrain")) || Lower.Contains(TEXT("suppress")) || Lower.Contains(TEXT("trying not to"))
+        || Lower.Contains(TEXT("trying to appear")) || Lower.Contains(TEXT("poker")) || Lower.Contains(TEXT("secret"))
+        || Lower.Contains(TEXT("guarded")) || Lower.Contains(TEXT("defensive")) || Lower.Contains(TEXT("conceal"))
+        || Lower.Contains(TEXT("forced smile")) || Lower.Contains(TEXT("smile through")) || Lower.Contains(TEXT("almost sadly"));
+
+    const bool bExplosive = Lower.Contains(TEXT("open anger")) || Lower.Contains(TEXT("unfiltered"))
+        || Lower.Contains(TEXT("honest")) || Lower.Contains(TEXT("blunt")) || Lower.Contains(TEXT("screaming"))
+        || Lower.Contains(TEXT("burst")) || Lower.Contains(TEXT("shout"));
+
+    if (bMasking && !bExplosive)
+    {
+        OutSubtextSuppression = 0.72f;
+    }
+    else if (bExplosive)
+    {
+        OutSubtextSuppression = 0.05f;
+    }
+    else
+    {
+        OutSubtextSuppression = 0.0f;
+    }
+
+    // 5. Pre-Speech Preparation Lead Offset (0ms to 1000ms)
+    const bool bHesitant = Lower.Contains(TEXT("hesitat")) || Lower.Contains(TEXT("pause"))
+        || Lower.Contains(TEXT("breath")) || Lower.Contains(TEXT("before answer")) || Lower.Contains(TEXT("calculat"))
+        || Lower.Contains(TEXT("searching")) || Lower.Contains(TEXT("takes in")) || Lower.Contains(TEXT("deliberat"))
+        || Lower.Contains(TEXT("troubled")) || Lower.Contains(TEXT("weighs"));
+
+    const bool bImmediate = Lower.Contains(TEXT("immediate")) || Lower.Contains(TEXT("sharp"))
+        || Lower.Contains(TEXT("snaps")) || Lower.Contains(TEXT("interrupt")) || Lower.Contains(TEXT("quick"))
+        || Lower.Contains(TEXT("blurt")) || Lower.Contains(TEXT("without hesitation"));
+
+    if (bHesitant && !bImmediate)
+    {
+        OutPreparationOffsetMs = 380.0f;
+    }
+    else if (bImmediate)
+    {
+        OutPreparationOffsetMs = 80.0f;
+    }
+    else
+    {
+        OutPreparationOffsetMs = 250.0f;
+    }
+}
