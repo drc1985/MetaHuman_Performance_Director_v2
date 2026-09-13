@@ -10,6 +10,8 @@
 
 **Created & Architected by [David Cobbins](https://github.com/drc1985) • [Frontier Mindworks](https://frontiermindworks.com)**
 
+> ℹ️ **Independent Project Notice:** MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.
+
 ---
 
 **MetaHuman Performance Director (MHPD)** is a native C++ and Python editor plugin for Unreal Engine 5.8+ that enables directors and creators to generate, layer, and direct nuance-rich MetaHuman facial and body performances using natural language notes — directly inside UE5 Sequencer.
@@ -238,3 +240,15 @@ Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.co
 
 Released under the permissive [MIT License](LICENSE).  
 Copyright © 2026 David Cobbins. All rights reserved. Permission is hereby granted under the terms of the MIT License, provided that the above copyright notice and this permission notice are included in all copies or substantial portions of the Software.
+
+---
+
+## ⚖️ Trademarks & Legal Disclaimer
+
+> **MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.**
+
+- **Trademarks:** MetaHuman® and Unreal® Engine are registered trademarks or trademarks of Epic Games, Inc. in the United States of America and elsewhere.
+- **Referential Compatibility:** All references to "MetaHuman", "Unreal Engine", "RigLogic", and "Control Rig" in this repository and associated documentation are strictly referential, intended solely to describe interoperability, compatibility, and workflow integration with Epic Games' software and technologies.
+- **Independence:** MetaHuman Performance Director (MHPD) is an independent open-source tool created by David Cobbins (Frontier Mindworks). It is not sponsored, endorsed, administered by, or officially affiliated with Epic Games, Inc.
+- **Proprietary Assets & Logos:** This repository does not distribute, package, or claim ownership of any proprietary Epic Games logos, character meshes, or assets. All MetaHuman assets remain the intellectual property of Epic Games, Inc. and are governed by their respective licenses.
+

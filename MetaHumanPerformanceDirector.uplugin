@@ -3,7 +3,7 @@
     "Version":  1,
     "VersionName":  "0.3.0",
     "FriendlyName":  "MetaHuman Performance Director",
-    "Description":  "AI-assisted spoken and typed acting direction for editable MetaHuman alternate takes.",
+    "Description":  "Independent directorial framework providing natural language acting direction for editable MetaHuman alternate takes in Sequencer.",
     "Category":  "Virtual Production",
     "CreatedBy":  "David Cobbins (Frontier Mindworks)",
     "CreatedByURL":  "https://frontiermindworks.com",
