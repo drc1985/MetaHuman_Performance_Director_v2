@@ -27,26 +27,111 @@ import json
 
 # behavior_id -> (pattern, curve group). Behaviors on body/timing channels have
 # no facial curves and are skipped with a log line.
+# ------------------------------------------------------------------------------
+# Canonical 111 Directorial Behavior ID Taxonomy & Channel Sets
+# ------------------------------------------------------------------------------
+
+HEAD_MOVEMENT_BEHAVIORS = {
+    "head_pitch_down", "head_pitch_up", "head_tilt", "head_warmth_tilt",
+    "head_turn_left", "head_turn_right", "head_nod", "head_shake",
+    "small_recoil_then_reset", "sudden_startle_pitch_up", "slow_contemptuous_head_turn",
+    "dismissive_head_toss", "inquisitive_cocked_head", "weary_head_hang", "level_chin_steady_lock"
+}
+
+BODY_POSTURE_BEHAVIORS = {
+    "forward_assertive_posture", "closed_guarded_posture", "stiff_protective_posture",
+    "slight_forward_recoil", "collapsed_heavy_posture", "slumped_exhausted_posture",
+    "upright_regal_posture", "clavicle_defensive_elevation", "thoracic_sorrow_deflation",
+    "asymmetric_weight_shift", "leaning_back_detachment", "held_stillness",
+    "tentative_lean_in", "braced_chest_dominance", "social_baseline_posture"
+}
+
+GESTURE_BEHAVIORS = {
+    "sharp_forward_emphasis", "small_defensive_hand_raise", "slow_deliberate_gesture",
+    "dismissive_wave_wrist_flick", "fidgeting_hand_clasp", "clenched_fist_tension",
+    "asymmetric_shoulder_shrug", "bilateral_shoulder_shrug", "self_comforting_arm_touch",
+    "open_palms_plea", "finger_to_lip_contemplation", "restrained_hands_locked"
+}
+
+TIMING_AND_PAUSE_BEHAVIORS = {
+    "delayed_response_beat", "anticipatory_breath_lead", "anticipatory_masseter_set",
+    "anticipatory_gaze_lead", "abrupt_cutting_interruption", "truth_decision_pause",
+    "short_pre_response_pause", "stifled_breath_catch", "sigh_exhale_release",
+    "double_take_timing", "micro_swallow_beat", "cadence_deceleration",
+    "rapid_staccato_burst", "post_line_lingering_hold", "intentional_pre_answer_hold"
+}
+
 BEHAVIOR_TO_PATTERN = {
+    # 1. Facial Expression - Brows & Forehead
+    "brow_lower_lip_press":            ("HOLD",        "brow"),
+    "micro_brow_knot":                 ("HOLD",        "sadness"),
+    "wide_eyes_brow_raise":            ("HOLD",        "surprise"),
+    "soft_defensive_brow":             ("HOLD",        "brow"),
+    "eyebrow_flash_micro_squint":      ("PULSE",       "brow"),
+    "unilateral_brow_cock":            ("HOLD",        "brow_cock"),
+    "glabella_micro_tension":          ("OSCILLATION", "tremor"),
+
+    # 2. Facial Expression - Eyes & Eyelids
+    "subtle_squint_scrutiny":          ("HOLD",        "squint"),
+    "predatory_eye_narrow":            ("HOLD",        "squint"),
+    "heavy_eyelids_jaw_slack":         ("HOLD",        "exhaustion"),
+    "eyelid_ptosis_droop":             ("HOLD",        "exhaustion"),
+    "quick_blink_lip_part":            ("PULSE",       "blink"),
     "directed_blink_pulse":            ("PULSE",       "blink"),
-    "close_eyes_before_answer":        ("PULSE",       "blink"),   # legacy plans
+    "close_eyes_before_answer":        ("PULSE",       "blink"),   # legacy alias
+    "cognitive_eye_flutter":           ("FLUTTER",     "blink"),
     "sustained_eye_closure":           ("HOLD",        "blink"),
-    "brief_gaze_break_before_answer":  ("RAMP",        "gaze_left"),
-    "avoidant_gaze_then_recover":      ("RAMP",        "gaze_left"),
-    "controlled_eye_contact_change":   ("RAMP",        "gaze_down"),
-    "gaze_shift_left":                 ("RAMP",        "gaze_left"),
-    "gaze_shift_right":                ("RAMP",        "gaze_right"),
-    "gaze_shift_up":                   ("RAMP",        "gaze_up"),
-    "gaze_shift_down":                 ("RAMP",        "gaze_down"),
     "micro_tremor":                    ("OSCILLATION", "tremor"),
+
+    # 3. Facial Expression - Mouth, Lips & Zygomaticus (Lower Face Permeable)
+    "open_smile_cheek_raise":          ("HOLD",        "happy"),
+    "lip_corner_pull_bilateral":       ("HOLD",        "smile"),
+    "asymmetric_smug_lip_corner":      ("HOLD",        "smugness"),
+    "suppressed_tell_micro_smirk":     ("HOLD",        "smugness"),
+    "lip_corner_depressor_unilateral": ("HOLD",        "contempt"),
+    "somber_brow_slight_mouth_drop":   ("HOLD",        "sadness"),
+    "subtle_snarl_asymmetric_brow":    ("HOLD",        "contempt"),
+    "unilateral_canine_sneer":         ("HOLD",        "contempt"),
+    "lip_bite_suppression":            ("HOLD",        "lip_bite"),
+    "mouth_pucker_deliberation":       ("HOLD",        "deliberation"),
     "subtle_eye_tension_masked_smile": ("HOLD",        "squint"),
     "masked_expression_leak":          ("HOLD",        "squint"),
-    "tight_jaw_micro_tension":         ("HOLD",        "jaw_tension"),
-    "brow_lower_lip_press":            ("HOLD",        "brow"),
     "subtle_expression_shift":         ("HOLD",        "squint"),
+
+    # 4. Facial Expression - Jaw, Masseter & Somatic Tension
+    "tight_jaw_micro_tension":         ("HOLD",        "jaw_tension"),
+    "clench_jaw":                      ("HOLD",        "jaw_tension"),
+    "masseter_lock_nostril_flare":     ("HOLD",        "jaw_tension"),
+    "micro_grimace_wince":             ("HOLD",        "pain"),
+    "slack_jaw_wonder":                ("HOLD",        "wonder"),
+
+    # 5. Facial Expression - Autonomic Pupillometry
+    "pupil_dilation":                  ("HOLD",        "pupil_dilate"),
+    "pupil_constriction":              ("HOLD",        "pupil_constrict"),
+
+    # 6. Gaze Channel
+    "sustained_direct_eye_contact":          ("HOLD",        "blink"),
+    "avoidant_gaze_then_recover":            ("RAMP",        "gaze_left"),
+    "brief_gaze_break_before_answer":        ("RAMP",        "gaze_left"),
+    "downward_glance_then_reluctant_return": ("RAMP",        "gaze_down"),
+    "wide_eye_fixed_stare":                  ("HOLD",        "surprise"),
+    "gaze_shift_left":                       ("RAMP",        "gaze_left"),
+    "gaze_shift_right":                      ("RAMP",        "gaze_right"),
+    "gaze_shift_up":                         ("RAMP",        "gaze_up"),
+    "gaze_shift_down":                       ("RAMP",        "gaze_down"),
+    "controlled_eye_contact_change":         ("RAMP",        "gaze_down"),
+    "rapid_eye_roll_rejection":              ("RAMP",        "gaze_up"),
+    "slow_dramatic_eye_roll":                ("RAMP",        "gaze_up"),
+    "triangular_intimacy_gaze":              ("RAMP",        "gaze_left"),
+    "darting_saccadic_scanning":             ("OSCILLATION", "gaze_left"),
+    "unfocused_daydream_stare":              ("HOLD",        "daydreaming"),
+    "intense_scrutiny_squint_gaze":          ("HOLD",        "squint"),
+    "reluctant_upward_confession_gaze":      ("RAMP",        "gaze_up"),
+    "averted_downward_submission":           ("RAMP",        "gaze_down"),
+
+    # Backward-Compatible Emotional States
     "express_surprise":                ("HOLD",        "surprise"),
     "express_disgust":                 ("HOLD",        "disgust"),
-    "clench_jaw":                      ("HOLD",        "jaw_tension"),
     "express_sadness":                 ("HOLD",        "sadness"),
     "express_frown":                   ("HOLD",        "frown"),
     "express_upset":                   ("HOLD",        "upset"),
@@ -76,10 +161,6 @@ BEHAVIOR_TO_PATTERN = {
     "express_stoic":                   ("HOLD",        "stoic"),
     "express_casual":                  ("HOLD",        "casual"),
     "express_daydreaming":             ("HOLD",        "daydreaming"),
-    "pupil_dilation":                  ("HOLD",        "pupil_dilate"),
-    "pupil_constriction":              ("HOLD",        "pupil_constrict"),
-    "cognitive_eye_flutter":           ("FLUTTER",     "blink"),
-    "glabella_micro_tension":          ("OSCILLATION", "tremor"),
 }
 
 # Curve group -> list of ((introspection substrings), canonical fallback)
@@ -90,7 +171,7 @@ CURVE_GROUPS = {
     ],
     "gaze_left": [
         (("eyelookleftl", "eyelookleft_l"), "CTRL_expressions_eyeLookLeftL"),
-        (("eyelookleftr", "eyelookleft_r"), "CTRL_expressions_eyeLookRightL"),
+        (("eyelookleftr", "eyelookleft_r"), "CTRL_expressions_eyeLookLeftR"),
     ],
     "gaze_right": [
         (("eyelookrightl", "eyelookright_l"), "CTRL_expressions_eyeLookRightL"),
@@ -98,7 +179,7 @@ CURVE_GROUPS = {
     ],
     "gaze_up": [
         (("eyelookupl", "eyelookup_l"), "CTRL_expressions_eyeLookUpL"),
-        (("eyelookupr", "eyelookupr_r"), "CTRL_expressions_eyeLookUpR"),
+        (("eyelookupr", "eyelookup_r"), "CTRL_expressions_eyeLookUpR"),
     ],
     "gaze_down": [
         (("eyelookdownl", "eyelookdown_l"), "CTRL_expressions_eyeLookDownL"),
@@ -119,6 +200,17 @@ CURVE_GROUPS = {
     "brow": [
         (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
         (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
+    ],
+    "brow_cock": [
+        (("browraiseouterr", "browraiseouter_r"), "CTRL_expressions_browRaiseOuterR"),
+        (("browraiseinr", "browraisein_r"), "CTRL_expressions_browRaiseInR"),
+        (("browdownl", "browlowerl"), "CTRL_expressions_browDownL"),
+    ],
+    "lip_bite": [
+        (("mouthlowerlipdepressl", "mouthlowerlipdepress_l"), "CTRL_expressions_mouthLowerLipDepressL"),
+        (("mouthlowerlipdepressr", "mouthlowerlipdepress_r"), "CTRL_expressions_mouthLowerLipDepressR"),
+        (("mouthlipspressl", "mouthpressl"), "CTRL_expressions_mouthLipsPressL"),
+        (("mouthlipspressr", "mouthpressr"), "CTRL_expressions_mouthLipsPressR"),
     ],
     "tremor": [
         (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
@@ -158,6 +250,8 @@ CURVE_GROUPS = {
         (("mouthlipspressr", "mouthpressr", "mouthpress_r"), "CTRL_expressions_mouthLipsPressR"),
         (("browdownl", "browlowerl", "browlower_l"), "CTRL_expressions_browDownL"),
         (("browdownr", "browlowerr", "browlower_r"), "CTRL_expressions_browDownR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
     ],
     "sadness": [
         (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
@@ -271,6 +365,8 @@ CURVE_GROUPS = {
         (("mouthupperupl",), "CTRL_expressions_mouthUpperUpL"),
         (("mouthcornerpulll",), "CTRL_expressions_mouthCornerPullL"),
         (("browraiseouterl",), "CTRL_expressions_browRaiseOuterL"),
+        (("browraiseinl", "browraisein_l"), "CTRL_expressions_browRaiseInL"),
+        (("browdownr", "browlower_r"), "CTRL_expressions_browDownR"),
         (("jawchinraisedl",), "CTRL_expressions_jawChinRaiseDL"),
     ],
     "fear": [
@@ -473,10 +569,31 @@ def _pulse_keys(r_start, r_end, val, count):
 
 
 def _hold_keys(r_start, r_end, val):
-    """Sustained state: 80ms ease-in, hold, 80ms ease-out."""
-    t_in = min(r_end, r_start + 0.08)
-    t_out = max(t_in, r_end - 0.08)
-    return [(r_start, 0.0), (t_in, val), (t_out, val), (r_end, 0.0)]
+    """
+    Sustained affective state with biological breathing micro-modulation.
+    Prevents rigid static mannequins by adding subtle natural breathing dynamics (~0.4 Hz).
+    """
+    r_dur = r_end - r_start
+    if r_dur < 0.4:
+        return [(r_start, 0.0), (r_start + r_dur * 0.5, val), (r_end, 0.0)]
+
+    t_in = min(r_end, r_start + 0.12)
+    t_out = max(t_in, r_end - 0.15)
+
+    keys = [(r_start, 0.0), (t_in, val)]
+    sustain_dur = t_out - t_in
+    if sustain_dur > 1.2:
+        n_steps = max(2, int(sustain_dur / 0.80))
+        step_dt = sustain_dur / (n_steps + 1)
+        for i in range(1, n_steps + 1):
+            tk = t_in + i * step_dt
+            t_rel = tk - t_in
+            mod = 0.03 * math.sin(2.0 * math.pi * 0.4 * t_rel)
+            keys.append((round(tk, 3), round(max(0.0, min(1.0, val + mod)), 3)))
+
+    keys.append((round(t_out, 3), val))
+    keys.append((round(r_end, 3), 0.0))
+    return sorted(keys, key=lambda kv: kv[0])
 
 
 def _head_switch_keys(r_start, r_end):
@@ -549,36 +666,80 @@ def _flutter_keys(r_start, r_end, val=0.85):
     return unique_keys
 
 
-def _ramp_keys(r_start, r_end, val, offset=0.0):
-    """Gaze shift: hold, fast (saccade-speed) ramp, sustain with fixational micro-drift, ease back to zero."""
+def _ramp_keys(r_start, r_end, val, offset=0.0, is_eye_roll=False, is_quick_glance=False, is_slow_glance=False):
+    """
+    Biological gaze shift: fast saccadic burst (80-100ms), discrete dramatic fixation hold,
+    and smooth recovery back to neutral conversational target.
+    Eliminates the 'sticky gaze' bug where eyes remain frozen in the socket corner for seconds.
+    Glance and roll durations dynamically adjust to directorial intent and emotional subtext:
+    - Quick glance / dart / return: 0.35s - 0.65s hold, fast 160ms return
+    - Standard look-away / collection of thought: 0.7s - 1.3s hold, smooth 220ms return
+    - Slow / lingering / deliberate glance: 1.4s - 2.2s hold, measured 350ms return
+    - Eye roll: rapid 650-850ms arc (or ~1.1s if slow/dramatic), returning cleanly to center.
+    """
     r_dur = r_end - r_start
     if r_dur < 0.6:
-        # Degenerate short range: simple out-and-back
-        return [(r_start, 0.0), (r_start + r_dur * 0.5, val), (r_end, 0.0)]
-    lead = min(max(0.0, 0.15 * r_dur + offset), r_dur * 0.4)
-    t0 = r_start + lead                      # gaze still direct until here
-    t1 = min(t0 + 0.12, r_end - 0.35)        # ~120ms saccade to target
-    t3 = max(t1 + 0.05, r_end - 0.25)        # sustain, then 250ms ease back
+        return [(r_start, 0.0), (r_start + r_dur * 0.4, val), (r_start + r_dur * 0.8, 0.0), (r_end, 0.0)]
+
+    if is_eye_roll:
+        # Rapid ocular arc: 300ms to peak, 150ms crest, 300ms drop back to neutral
+        roll_dur = min(1.10 if is_slow_glance else 0.80, r_dur * 0.45)
+        t_lead = min(0.25, max(0.0, offset) if offset > 0 else 0.12 * r_dur)
+        t0 = r_start + t_lead
+        t_peak = t0 + roll_dur * 0.45
+        t_end = min(r_end, t0 + roll_dur)
+        return [(r_start, 0.0), (t0, 0.0), (t_peak, val), (t_end, 0.0), (r_end, 0.0)]
+
+    # Saccade onset
+    if offset < 0.0:
+        t0 = r_start
+    else:
+        lead = min(max(0.0, 0.12 * r_dur + offset), r_dur * 0.35)
+        t0 = r_start + lead
+    t1 = min(t0 + 0.10, r_end - 0.35)
+
+    # Discrete dramatic hold duration based on emotional intent
+    if is_quick_glance:
+        hold_dur = min(0.65, max(0.35, (r_end - t1) * 0.25))
+        recovery_dur = 0.16
+    elif is_slow_glance:
+        hold_dur = min(2.20, max(1.20, (r_end - t1) * 0.50))
+        recovery_dur = 0.35
+    else:
+        hold_dur = min(1.30, max(0.50, (r_end - t1) * 0.35))
+        recovery_dur = 0.22
+
+    t2 = t1 + hold_dur
+    t3 = min(r_end - 0.05, t2 + recovery_dur)  # Smooth recovery to center
 
     keys = [(r_start, 0.0), (t0, 0.0), (t1, val)]
 
-    # Fixational micro-drift during sustained gaze hold (eliminates glass-eye mannequin stare)
-    hold_dur = t3 - t1
-    if hold_dur > 0.35:
-        step_dur = 0.28
-        n_steps = max(1, int(hold_dur / step_dur))
-        actual_step = hold_dur / (n_steps + 1)
+    # Organic fixational micro-drift during sustained hold
+    drift_span = t2 - t1
+    if drift_span > 0.30:
+        step_dur = 0.24
+        n_steps = max(1, int(drift_span / step_dur))
+        actual_step = drift_span / (n_steps + 1)
         for i in range(1, n_steps + 1):
             tk = t1 + i * actual_step
-            # Organic multi-frequency micro-saccadic drift (+/- 0.025 amplitude)
             t_rel = tk - t1
-            drift = 0.025 * math.sin(2.0 * math.pi * 1.8 * t_rel) * math.cos(2.0 * math.pi * 2.7 * t_rel)
-            val_k = max(0.0, min(1.0, val + drift))
-            keys.append((tk, val_k))
+            drift = 0.02 * math.sin(2.0 * math.pi * 2.0 * t_rel)
+            keys.append((tk, max(0.0, min(1.0, val + drift))))
 
-    keys.append((t3, val))
-    keys.append((r_end, 0.0))
-    return sorted(keys, key=lambda kv: kv[0])
+    keys.append((t2, val))
+    keys.append((t3, 0.0))
+    if t3 < r_end:
+        keys.append((r_end, 0.0))
+
+    # Remove duplicates and sort
+    seen = set()
+    unique = []
+    for k in sorted(keys, key=lambda kv: kv[0]):
+        rk = round(k[0], 4)
+        if rk not in seen:
+            seen.add(rk)
+            unique.append((k[0], k[1]))
+    return unique
 
 
 def _oscillation_keys(r_start, r_end, val, freq=8.0):
@@ -595,7 +756,11 @@ def _oscillation_keys(r_start, r_end, val, freq=8.0):
     return keys
 
 
-def _generate_keys(pattern, r_start, r_end, val, blink_count, offset):
+def _generate_keys(pattern, r_start, r_end, val, blink_count, offset, direction_text=""):
+    d_lower = (direction_text or "").lower()
+    is_eye_roll = "roll" in d_lower and "eye" in d_lower
+    is_quick_glance = any(w in d_lower for w in ("quick", "brief", "dart", "glance", "starting position", "return", "scrubbed", "flick"))
+    is_slow_glance = any(w in d_lower for w in ("slow", "linger", "deliberat", "hesitat", "calculat", "ponder", "measure"))
     if pattern == "PULSE":
         return _pulse_keys(r_start, r_end, val, blink_count)
     if pattern == "FLUTTER":
@@ -609,7 +774,8 @@ def _generate_keys(pattern, r_start, r_end, val, blink_count, offset):
     if pattern == "NOD":
         return _nod_keys(r_start, r_end, val, blink_count if blink_count > 0 else 3)
     if pattern == "RAMP":
-        return _ramp_keys(r_start, r_end, val, offset)
+        return _ramp_keys(r_start, r_end, val, offset, is_eye_roll=is_eye_roll,
+                          is_quick_glance=is_quick_glance, is_slow_glance=is_slow_glance)
     if pattern == "OSCILLATION":
         return _oscillation_keys(r_start, r_end, val)
     return []
@@ -630,7 +796,7 @@ SPEECH_HEADROOM_CEILING = 0.35
 # In affective sorrow/melancholy/guilt, downward ocular rotation must remain subtle (0.28)
 # so the eyeballs do not roll into the floor and drag the upper eyelids into complete closure.
 AFFECTIVE_GAZE_DOWN_CEILING = 0.28
-AFFECTIVE_SQUINT_CEILING = 0.35
+AFFECTIVE_SQUINT_CEILING = 0.30
 
 
 def _curve_ops_from_plan(plan, existing_curve_names):
@@ -653,19 +819,27 @@ def _curve_ops_from_plan(plan, existing_curve_names):
             continue
 
         # ------------------------------------------------------------------
-        # Head Movement Behaviors: Driven by MetaHuman_ControlRig on BodyComponent
+        # Channel Routing: Head, Body Posture, Gesture, Timing
         # ------------------------------------------------------------------
-        # Head and cervical motion are driven procedurally by MetaHuman_ControlRig
-        # on the BodyComponent binding in Sequencer (Solution 3), preserving 100% skin
-        # continuity with zero collar tearing. Facial curves focus on expressions/gaze.
-        if behavior in ("head_turn_left", "head_turn_right", "head_pitch_up", "head_pitch_down",
-                        "head_tilt", "head_nod", "head_shake", "head_warmth_tilt"):
+        if behavior in HEAD_MOVEMENT_BEHAVIORS:
             unreal.log(f"MHPD: '{behavior}' is driven by MetaHuman_ControlRig on BodyComponent - facial curves preserved")
+            continue
+
+        if behavior in BODY_POSTURE_BEHAVIORS:
+            unreal.log(f"MHPD: '{behavior}' is a body posture behavior - handled by Sequencer body track")
+            continue
+
+        if behavior in GESTURE_BEHAVIORS:
+            unreal.log(f"MHPD: '{behavior}' is a gesture behavior - handled by Sequencer body track")
+            continue
+
+        if behavior in TIMING_AND_PAUSE_BEHAVIORS:
+            unreal.log(f"MHPD: '{behavior}' is a timing/pause behavior - handled by pre-speech lead/Sequencer")
             continue
 
         mapping = BEHAVIOR_TO_PATTERN.get(behavior)
         if not mapping:
-            unreal.log(f"MHPD: '{behavior}' has no facial curve mapping (body/timing channel) - skipped")
+            unreal.log(f"MHPD: '{behavior}' has no facial/gaze curve mapping - skipped")
             continue
 
         safe_weight = _soft_knee_saturate(weight)
@@ -685,7 +859,7 @@ def _curve_ops_from_plan(plan, existing_curve_names):
             if "lookdown" in cl and behavior in ("express_sadness", "express_guilt", "express_shame", "express_exhaustion"):
                 target_weight = min(target_weight, AFFECTIVE_GAZE_DOWN_CEILING)
 
-            if "squint" in cl and behavior in ("express_sadness", "express_guilt", "express_shame"):
+            if "squint" in cl:
                 target_weight = min(target_weight, AFFECTIVE_SQUINT_CEILING)
 
             ops[curve_name] = (pattern, target_weight, offset, blink_count)
@@ -707,6 +881,29 @@ def _curve_ops_from_plan(plan, existing_curve_names):
                 for curve_name in _resolve_group(suppress_group, existing_curve_names):
                     cl = curve_name.lower()
                     if any(token in cl for token in ("smile", "cornerpull", "cheekraise")):
+                        ops[curve_name] = ("HOLD", 0.0, offset, blink_count)
+
+        asymmetric_smug = ("express_smugness", "asymmetric_smug_lip_corner", "suppressed_tell_micro_smirk")
+        if behavior in asymmetric_smug:
+            # Actively suppress contralateral (right-side) smile & corner pull
+            # to prevent pre-existing baseline smile keys from turning a smirk into a bilateral grin
+            for suppress_token in ("mouthsmiler", "mouthsmile_r", "mouthcornerpullr", "mouthsharpcornerpullr", "browraiseouterr", "browraiseinr"):
+                for curve_name in existing_curve_names:
+                    if suppress_token in curve_name.lower():
+                        ops[curve_name] = ("HOLD", 0.0, offset, blink_count)
+
+        elif behavior == "unilateral_brow_cock":
+            # Suppress left brow raising so only the right brow arches prominently
+            for suppress_token in ("browraiseouterl", "browraiseinl"):
+                for curve_name in existing_curve_names:
+                    if suppress_token in curve_name.lower():
+                        ops[curve_name] = ("HOLD", 0.0, offset, blink_count)
+
+        elif behavior in ("unilateral_canine_sneer", "subtle_snarl_asymmetric_brow"):
+            # Suppress contralateral upper lip lift
+            for suppress_token in ("mouthupperupr", "nosewrinkler"):
+                for curve_name in existing_curve_names:
+                    if suppress_token in curve_name.lower():
                         ops[curve_name] = ("HOLD", 0.0, offset, blink_count)
 
     return ops
@@ -804,13 +1001,14 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
     # ------------------------------------------------------------------
     ops = {}
     plan_loaded = False
+    plan_dict = {}
     if plan_path and os.path.exists(plan_path):
         try:
             with open(plan_path, "r", encoding="utf-8") as f:
-                plan = json.load(f)
-            ops = _curve_ops_from_plan(plan, existing_curve_names)
+                plan_dict = json.load(f)
+            ops = _curve_ops_from_plan(plan_dict, existing_curve_names)
             plan_loaded = True
-            unreal.log(f"MHPD: Executing plan {plan.get('plan_id', '?')} - {len(ops)} curve op(s)")
+            unreal.log(f"MHPD: Executing plan {plan_dict.get('plan_id', '?')} - {len(ops)} curve op(s)")
         except Exception as e:
             unreal.log_warning(f"MHPD: Failed to read plan '{plan_path}': {e} - falling back to direction text")
 
@@ -831,6 +1029,10 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
     if not ops:
         unreal.log_warning("MHPD: No curve operations produced - take will be an unmodified duplicate")
 
+    combined_dir_text = direction_text
+    if plan_loaded and plan_dict.get("direction_text"):
+        combined_dir_text = f"{direction_text} {plan_dict.get('direction_text', '')}".strip()
+
     # ------------------------------------------------------------------
     # Bake: keep solver keys outside the revision range, director owns inside
     # ------------------------------------------------------------------
@@ -838,13 +1040,15 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
         try:
             curve_exists = curve_name in existing_curve_names
 
+            bake_start = max(0.0, r_start + offset) if offset < 0.0 else r_start
+
             merged = []
             if curve_exists:
                 times, values = unreal.AnimationLibrary.get_float_keys(duplicated_anim, curve_name)
                 merged = [(float(t), float(v)) for t, v in zip(times, values)
-                          if t < r_start or t > r_end]
+                          if t < bake_start or t > r_end]
 
-            merged.extend(_generate_keys(pattern, r_start, r_end, val, count, offset))
+            merged.extend(_generate_keys(pattern, bake_start, r_end, val, count, offset, direction_text=combined_dir_text))
             merged.sort(key=lambda kv: kv[0])
 
             # Rebuild curve
@@ -859,17 +1063,157 @@ def create_acting_take(baseline_anim_path, take_name, output_dir, blink_count=4,
         except Exception as e:
             unreal.log_warning(f"MHPD: Exception keying '{curve_name}': {e}")
 
-    # NOTE: the body-chain bake (head-follows-body) happens in C++ afterwards, in
-    # BakeBodyChainIntoFaceAnim. It cannot be done here: writing bone tracks needs
-    # the animation data controller, and UAnimSequenceBase::GetController() is not
     # Ensure mouth/jaw curves cleanly settle to rest pose at the end of the sequence,
     # strictly protecting any curves keyed by the director's performance plan
     settle_mouth_curves(duplicated_anim, exclude_curves=set(ops.keys()))
+
+    # Synthesize physiological pre-speech lead (anticipatory breath & tension)
+    prep_offset_ms = float(plan_dict.get("preparation_offset_ms", 250.0)) if plan_loaded else 250.0
+    _inject_prespeech_lead(
+        duplicated_anim, existing_curve_names, r_start, r_end,
+        prep_offset_ms=prep_offset_ms, direction_text=combined_dir_text,
+        exclude_curves=set(ops.keys())
+    )
 
     # Save the modified take AnimSequence
     unreal.EditorAssetLibrary.save_loaded_asset(duplicated_anim)
     unreal.log(f"MHPD SUCCESS: Saved acting take: {new_anim_path}")
     return new_anim_path
+
+
+def _inject_prespeech_lead(anim_sequence, existing_curve_names, r_start, r_end,
+                           prep_offset_ms=250.0, direction_text="", exclude_curves=None):
+    """
+    Synthesizes physiological pre-speech preparation:
+    1. Anticipatory breath inhalation: soft lip-parting (jawOpen ~0.07-0.08) leading into speech phonemes.
+    2. Anticipatory masseter tension: subtle jaw clench (jawClenchL/R ~0.40-0.45) holding during the pre-beat
+       and releasing right as speech articulates (for anger, threat, interrogation, suppression, tension).
+    """
+    if not anim_sequence:
+        return
+
+    excluded = {c.lower() for c in (exclude_curves or set())}
+
+    lead_sec = max(0.18, min(0.60, float(prep_offset_ms) / 1000.0))
+    speech_onset = r_start if r_start > 0.05 else 0.0
+
+    jaw_open_curve = next((c for c in existing_curve_names if "jawopen" in c.lower() or "jaw_open" in c.lower()), None)
+    if not jaw_open_curve:
+        jaw_open_curve = "CTRL_expressions_jawOpen"
+
+    # If r_start <= 0.05, detect when mouth first begins opening for speech in baseline
+    if speech_onset <= 0.05 and jaw_open_curve in existing_curve_names:
+        try:
+            times, values = unreal.AnimationLibrary.get_float_keys(anim_sequence, jaw_open_curve)
+            for t, v in zip(times, values):
+                if v >= 0.05 and t <= 2.5:
+                    speech_onset = float(t)
+                    break
+        except Exception:
+            pass
+
+    # If dialogue begins immediately (< 0.10s), skip pre-speech breath lead
+    # to protect audio-visual phoneme sync and prevent lips locking closed
+    if speech_onset < 0.10:
+        unreal.log(f"MHPD: Dialogue articulates immediately ({speech_onset:.2f}s); skipping pre-speech breath injection to preserve lip-sync alignment.")
+        return
+
+    breath_start = max(0.0, speech_onset - lead_sec)
+    breath_peak = breath_start + (speech_onset - breath_start) * 0.60
+
+    # 1. Anticipatory Breath Inhalation on jawOpen
+    if jaw_open_curve.lower() not in excluded:
+        try:
+            curve_exists = jaw_open_curve in existing_curve_names
+            raw_keys = []
+            if curve_exists:
+                t_keys, v_keys = unreal.AnimationLibrary.get_float_keys(anim_sequence, jaw_open_curve)
+                raw_keys = [(float(t), float(v)) for t, v in zip(t_keys, v_keys)]
+
+            # Preserve speech phoneme keys at and after speech_onset
+            speech_keys = [(t, v) for t, v in raw_keys if t >= speech_onset]
+            val_at_onset = speech_keys[0][1] if speech_keys else 0.04
+
+            # Synthetic breath curve: closed lips -> soft parting (0.075) -> blend to speech onset
+            breath_keys = [
+                (breath_start, 0.0),
+                (breath_peak, 0.075),
+                (speech_onset, max(0.05, val_at_onset))
+            ]
+            if breath_start > 0.0:
+                breath_keys.insert(0, (0.0, 0.0))
+
+            merged = breath_keys + speech_keys
+            seen = set()
+            clean_keys = []
+            for t, v in sorted(merged, key=lambda kv: kv[0]):
+                rt = round(t, 4)
+                if rt not in seen:
+                    seen.add(rt)
+                    clean_keys.append((t, v))
+
+            if curve_exists:
+                unreal.AnimationLibrary.remove_curve(anim_sequence, jaw_open_curve)
+            unreal.AnimationLibrary.add_curve(anim_sequence, jaw_open_curve)
+            unreal.AnimationLibrary.add_float_curve_keys(
+                anim_sequence, jaw_open_curve,
+                [k[0] for k in clean_keys], [k[1] for k in clean_keys]
+            )
+            unreal.log(f"MHPD: Synthesized pre-speech breath lead-in on '{jaw_open_curve}' ({breath_start:.2f}s -> {speech_onset:.2f}s)")
+        except Exception as e:
+            unreal.log_warning(f"MHPD: Exception injecting breath lead-in: {e}")
+
+    # 2. Anticipatory Masseter Tension (jaw clench)
+    d_lower = (direction_text or "").lower()
+    needs_tension = any(w in d_lower for w in (
+        "clench", "anger", "angry", "grit", "rigid", "suppress", "threat", "interrogat",
+        "tension", "tight", "fury", "cold", "intimidat", "firm", "lock", "strain"
+    ))
+
+    if needs_tension:
+        clench_candidates = []
+        c_left = next((c for c in existing_curve_names if "jawclenchl" in c.lower() or "jawclench_l" in c.lower()), "CTRL_expressions_jawClenchL")
+        c_right = next((c for c in existing_curve_names if "jawclenchr" in c.lower() or "jawclench_r" in c.lower()), "CTRL_expressions_jawClenchR")
+        clench_candidates.extend([c_left, c_right])
+
+        for clench_curve in clench_candidates:
+            try:
+                curve_exists = clench_curve in existing_curve_names
+                raw_keys = []
+                if curve_exists:
+                    t_keys, v_keys = unreal.AnimationLibrary.get_float_keys(anim_sequence, clench_curve)
+                    raw_keys = [(float(t), float(v)) for t, v in zip(t_keys, v_keys)]
+
+                post_keys = [(t, v) for t, v in raw_keys if t >= speech_onset]
+                onset_val = post_keys[0][1] if post_keys else 0.25
+
+                tension_keys = [
+                    (breath_start, 0.0),
+                    (breath_start + (speech_onset - breath_start) * 0.40, 0.65),
+                    (speech_onset, max(0.20, onset_val))
+                ]
+                if breath_start > 0.0:
+                    tension_keys.insert(0, (0.0, 0.0))
+
+                merged = tension_keys + post_keys
+                seen = set()
+                clean_keys = []
+                for t, v in sorted(merged, key=lambda kv: kv[0]):
+                    rt = round(t, 4)
+                    if rt not in seen:
+                        seen.add(rt)
+                        clean_keys.append((t, v))
+
+                if curve_exists:
+                    unreal.AnimationLibrary.remove_curve(anim_sequence, clench_curve)
+                unreal.AnimationLibrary.add_curve(anim_sequence, clench_curve)
+                unreal.AnimationLibrary.add_float_curve_keys(
+                    anim_sequence, clench_curve,
+                    [k[0] for k in clean_keys], [k[1] for k in clean_keys]
+                )
+                unreal.log(f"MHPD: Synthesized anticipatory jaw tension on '{clench_curve}' ({breath_start:.2f}s -> {speech_onset:.2f}s)")
+            except Exception as e:
+                unreal.log_warning(f"MHPD: Exception injecting jaw tension: {e}")
 
 
 def settle_mouth_curves(anim_sequence, settle_duration=0.40, lead_in_duration=0.20, exclude_curves=None):
