@@ -93,6 +93,7 @@ Unlike cloud GenAI services or other comparable tools, MHPD runs **entirely loca
 | **MetaHuman Animator** | Enabled | Used for baseline phonetic Audio2Face capture. |
 | **Control Rig Plugin** | Enabled (`ControlRig`) | Declared in `.uplugin`; required for skeletal layer blending. |
 | **Python Script Plugin** | Enabled (`PythonScriptPlugin`) | Declared in `.uplugin`; required for automated Sequencer asset plumbing. |
+| **Movie Render Queue** | Enabled (`MovieRenderPipeline`) | Declared in `.uplugin`; required for automated batch take rendering. |
 | **MetaHuman Actor** | Placed in Level | Standard MetaHuman Blueprint (`BP_<CharacterName>`) placed in active map. |
 | **Dialogue Audio** | `.wav` Sound Wave | Mono or stereo 16-bit / 44.1 or 48 kHz dialogue sound wave asset. |
 
@@ -196,6 +197,7 @@ Verify that your Unreal project has the required plugins enabled:
 - **MetaHuman** and **MetaHuman Animator**
 - **Control Rig**
 - **Python Editor Script Plugin** (`PythonScriptPlugin`)
+- **Movie Render Queue** (`MovieRenderPipeline`)
 
 ### 2. Install Plugin
 Clone or extract this repository into your project's `Plugins/` folder:
