@@ -5,8 +5,8 @@ authors:
     given-names: "David"
     affiliation: "Frontier Mindworks"
 title: "MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans"
-version: 0.3.0
-date-released: 2026-09-11
+version: 0.3.1
+date-released: 2026-09-19
 url: "https://github.com/drc1985/MetaHuman_Performance_Director_v2"
 repository-code: "https://github.com/drc1985/MetaHuman_Performance_Director_v2"
 keywords:

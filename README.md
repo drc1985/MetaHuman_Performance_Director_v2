@@ -3,7 +3,7 @@
 [![Unreal Engine 5.8](https://img.shields.io/badge/Unreal%20Engine-5.8%2B-blue?logo=unrealengine)](https://www.unrealengine.com)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Compute](https://img.shields.io/badge/Compute-100%25%20Local%20%26%20Offline-success)](https://frontiermindworks.com)
-[![Status](https://img.shields.io/badge/Status-v0.3.0--Production%20Ready-brightgreen)](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
+[![Status](https://img.shields.io/badge/Status-v0.3.1--Production%20Ready-brightgreen)](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
 [![Author](https://img.shields.io/badge/Author-David%20Cobbins-blue.svg)](https://frontiermindworks.com)
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
@@ -30,6 +30,22 @@
 ---
 
 ## ⚡ Recent Updates & Devlog
+
+### September 2026 — v0.3.1: Batch Movie Render Queue (MRQ) & Kinematic Hardening Update
+- **Movie Render Queue (MRQ) Batch Rendering:** Added automated, high-fidelity take rendering via `MoviePipelinePIEExecutor` (`batch_render_takes.py`):
+  - In-editor batch rendering queue supporting sequential take export without blocking the UI.
+  - Automated camera binding, framing compensation, and CineCamera cut track generation.
+  - Multi-pass rendering with anti-aliasing engine warm-up and automatic dialogue audio muxing into final MP4 deliverables.
+- **Cranial Kinematics & Contralateral Asymmetry:**
+  - Corrected cranial turn/tilt rotational axes for natural cervical articulation.
+  - Implemented contralateral asymmetry suppression to eliminate robotic mirror-symmetry in emotional holds.
+  - Expanded affective and emotional lexicons for more expressive take variety.
+- **Pre-Speech Breath & Lip-Sync Hardening:**
+  - Injected an onset guard for pre-speech breath leads, eliminating phonetic clash and lower-lip tearing before dialogue articulation begins.
+  - Biologically calibrated viscoelastic mouth-settle curves so expressions ease smoothly back to rest.
+- **Morphological Stemming & NLP Parser Hardening:**
+  - Upgraded native C++ `MHPDPerformanceDirectorSubsystem` with comprehensive morphological stemming and adverb-hardening pass, broadening natural language director note recognition.
+- **Plugin Ecosystem:** Added first-party `MovieRenderPipeline` dependency declaration in `.uplugin`.
 
 ### September 2026 — v0.3.0: 3-Tab Director Slate UI & Sustained Posture Update
 - **3-Tab Directorial Slate (`SWidgetSwitcher`):** Re-architected editor UX into a high-ergonomics 3-stage filmmaking pipeline:
@@ -211,14 +227,14 @@ If you use **MetaHuman Performance Director** in your academic research, virtual
   title = {{MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans}},
   year = {2026},
   month = {9},
-  version = {0.3.0},
+  version = {0.3.1},
   organization = {Frontier Mindworks},
   url = {https://github.com/drc1985/MetaHuman_Performance_Director_v2}
 }
 ```
 
 ### APA
-> Cobbins, D. (2026). *MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans* (Version 0.3.0) [Computer software]. Frontier Mindworks. https://github.com/drc1985/MetaHuman_Performance_Director_v2
+> Cobbins, D. (2026). *MetaHuman Performance Director: Natural Language Directorial System for Unreal Engine MetaHumans* (Version 0.3.1) [Computer software]. Frontier Mindworks. https://github.com/drc1985/MetaHuman_Performance_Director_v2
 
 *(You can also use GitHub's native **"Cite this repository"** button in the sidebar to export APA or BibTeX directly).*
 
