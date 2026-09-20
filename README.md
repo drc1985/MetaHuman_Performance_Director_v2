@@ -14,7 +14,9 @@
 
 ---
 
-**MetaHuman Performance Director (MHPD)** is a native C++ and Python editor plugin for Unreal Engine 5.8+ that enables directors and creators to generate, layer, and direct nuance-rich MetaHuman facial and body performances using natural language notes — directly inside UE5 Sequencer.
+Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time lighting, and virtual production sets for independent filmmakers. But directing virtual human actors has remained locked behind a technical wall: tweaking raw facial curves, keyframing 200+ blendshapes, or waiting days for animation revisions strips away the spontaneous creative rhythm of a director.
+
+**MetaHuman Performance Director** closes the gap between filmmaking intuition and technical execution. Direct with the natural vocabulary of dramatic performance—calibrating emotional subtext, physical posture, ocular gaze breaks, and framing scale. Generate non-destructive alternate takes in seconds, A/B compare performances on the fly, and lock pristine dialogue audio and speech lip-sync key-for-key.
 
 ---
 
