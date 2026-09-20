@@ -18,7 +18,7 @@ Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time l
 
 **MetaHuman Performance Director** closes the gap between filmmaking intuition and technical execution:
 
-- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **Hold-to-Talk voice input** powered by local NLP/NLU—translating dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) directly into calibrated RigLogic animation.
+- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input** powered by local NLP/NLU—translating dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) directly into calibrated RigLogic animation.
 - **Dedicated Directorial Dials:** Fine-tune performance dynamics independently from your dramatic notes. Five calibrated cinematic dials let you shape **Framing Scale** (subtle ocular micro-cues for close-ups vs. projected energy for wide shots), **Facial Nuance**, **Physical Action** (cervical neck and posture energy), **Subtext Masking** (intentional emotional concealment with authentic micro-leakage), and **Pre-Speech Lead Time** (anticipatory breaths and cognitive gaze saccades before speaking).
 - **Non-Destructive Alternate Takes & Channel Locks:** Generate fully editable takes in seconds, A/B compare performances on the fly directly in Sequencer, and selectively lock channels—preserving pristine dialogue audio and speech lip-sync key-for-key while freely iterating on emotional nuance.
 
@@ -56,7 +56,7 @@ Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time l
 ### September 2026 — v0.3.0: 3-Tab Director Slate UI & Sustained Posture Update
 - **3-Tab Directorial Slate (`SWidgetSwitcher`):** Re-architected editor UX into a high-ergonomics 3-stage filmmaking pipeline:
   1. **Generate Baseline Take:** Setup audio file, automated Sequencer binding, and AI generative body motion staging.
-  2. **Direct the Performance:** Streamlined note prompting with Hold-to-Talk voice capture, 5 calibrated cinematic dials, optional follow-up iteration, and channel preservation locks.
+  2. **Direct the Performance:** Streamlined note prompting with voice capture, 5 calibrated cinematic dials, optional follow-up iteration, and channel preservation locks.
   3. **Review Performance:** Clean take selector, A/B review, take deletion, and transparent structured performance plan JSON inspection.
 - **Sustained Head & Gaze Posture:** Replaced abrupt return-to-rest drift with natural posture-holding dynamics. MetaHumans maintain directed physical attitude across speech beats with organic micro-settling.
 - **Academic & Research Citation:** Added official GitHub citation support via [`CITATION.cff`](CITATION.cff) for standard BibTeX and APA attribution.
@@ -113,7 +113,7 @@ Unlike cloud GenAI services or other comparable tools, MHPD runs **entirely loca
 - **Native RigLogic Curve Synthesis**: Operates directly on MetaHuman's native RigLogic curve set (200+ blendshapes & joint controls across emotional, ocular, and phonetic articulators) using 4 universal animation patterns: **Pulse** (blinks), **Hold** (sustained tension), **RAMP** (directional gaze shifts), and **Oscillation** (micro-tremor).
 - **Soft-Knee Viseme Collision Avoidance**: Automatically attenuates conflicting lower-face emotional curves during active speech syllables, eliminating viseme distortion and mouth tearing.
 - **Directorial Dials**: Beyond a generic intensity slider, five dedicated cinematic dimensions calibrate the performance: *Framing Scale* (Close-Up vs. Wide), *Facial Nuance*, *Physical Action*, *Subtext Suppression*, and *Preparation Lead Time*.
-- **In-Editor Voice Input**: Integrated 'Hold to Talk' voice transcription allows directors to speak acting notes directly to digital actors.
+- **In-Editor Voice Input**: Integrated voice transcription allows directors to speak acting notes directly to digital actors.
 
 ---
 
