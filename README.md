@@ -16,7 +16,11 @@
 
 Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time lighting, and virtual production sets for independent filmmakers. But directing virtual human actors has remained locked behind a technical wall: tweaking raw facial curves, keyframing 200+ blendshapes, or waiting days for animation revisions strips away the spontaneous creative rhythm of a director.
 
-**MetaHuman Performance Director** closes the gap between filmmaking intuition and technical execution. Direct with the natural vocabulary of dramatic performance—calibrating emotional subtext, physical posture, ocular gaze breaks, and framing scale. Generate non-destructive alternate takes in seconds, A/B compare performances on the fly, and lock pristine dialogue audio and speech lip-sync key-for-key.
+**MetaHuman Performance Director** closes the gap between filmmaking intuition and technical execution:
+
+- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **Hold-to-Talk voice input** powered by local NLP/NLU—translating dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) directly into calibrated RigLogic animation.
+- **Dedicated Directorial Dials:** Fine-tune performance dynamics independently from your dramatic notes. Five calibrated cinematic dials let you shape **Framing Scale** (subtle ocular micro-cues for close-ups vs. projected energy for wide shots), **Facial Nuance**, **Physical Action** (cervical neck and posture energy), **Subtext Masking** (intentional emotional concealment with authentic micro-leakage), and **Pre-Speech Lead Time** (anticipatory breaths and cognitive gaze saccades before speaking).
+- **Non-Destructive Alternate Takes & Channel Locks:** Generate fully editable takes in seconds, A/B compare performances on the fly directly in Sequencer, and selectively lock channels—preserving pristine dialogue audio and speech lip-sync key-for-key while freely iterating on emotional nuance.
 
 ---
 
