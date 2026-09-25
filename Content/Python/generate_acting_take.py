@@ -402,11 +402,13 @@ CURVE_GROUPS = {
         (("pupildilater", "pupildilationr", "eyepupildilater"), "CTRL_expressions_pupilDilationR"),
     ],
     "exhaustion": [
-        (("eyeblinkl", "eyeblink_l"), "CTRL_expressions_eyeBlinkL"),
-        (("eyeblinkr", "eyeblink_r"), "CTRL_expressions_eyeBlinkR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
         (("mouthcornerdepressl", "mouthfrownl"), "CTRL_expressions_mouthCornerDepressL"),
         (("mouthcornerdepressr", "mouthfrownr"), "CTRL_expressions_mouthCornerDepressR"),
         (("jawopen", "jaw_open"), "CTRL_expressions_jawOpen"),
+        (("browdownl", "browlowerl"), "CTRL_expressions_browDownL"),
+        (("browdownr", "browlowerr"), "CTRL_expressions_browDownR"),
     ],
     "contempt": [
         (("mouthupperupl",), "CTRL_expressions_mouthUpperUpL"),
@@ -436,8 +438,8 @@ CURVE_GROUPS = {
         (("cheekraiser", "eyecheekraiser"), "CTRL_expressions_eyeCheekRaiseR"),
     ],
     "relief": [
-        (("eyeblinkl", "eyeblink_l"), "CTRL_expressions_eyeBlinkL"),
-        (("eyeblinkr", "eyeblink_r"), "CTRL_expressions_eyeBlinkR"),
+        (("eyesquintinnerl", "eyesquintinner_l"), "CTRL_expressions_eyeSquintInnerL"),
+        (("eyesquintinnerr", "eyesquintinner_r"), "CTRL_expressions_eyeSquintInnerR"),
         (("mouthsmilel", "mouthsmile_l"), "CTRL_expressions_mouthSmileL"),
         (("mouthsmiler", "mouthsmile_r"), "CTRL_expressions_mouthSmileR"),
     ],
@@ -657,10 +659,10 @@ def _get_decorrelated_wander(t_rel, curve_name, base_val):
     """
     Band-limited multi-frequency decorrelated micro-wander (0.17 Hz, 0.31 Hz, 0.53 Hz) (§6.7).
     Eliminates uniform sinusoidal breathing artifacts ('metronome face') with deterministic phase hashing.
-    Strictly exempts eyelids/blinks so eyelids remain rock-steady without unnatural micro-twitching.
+    Strictly exempts ocular and peri-orbital curves (blinks, squints, gaze, pupils, cheek raises) so eyes remain rock-steady.
     """
     c = (curve_name or "").lower()
-    if any(k in c for k in ("blink", "eyeblink", "eyelid")):
+    if any(k in c for k in ("blink", "eyeblink", "eyelid", "squint", "eyesquint", "look", "eyelook", "pupil", "gaze", "cheeksquint", "cheekraise", "eyecheekraise")):
         return 0.0
 
     h = int(hashlib.md5((curve_name or "wander").encode('utf-8')).hexdigest()[:6], 16)
@@ -684,10 +686,13 @@ def _hold_keys(r_start, r_end, val, is_masseter_tension=False, is_high_status=Fa
     if r_dur < 0.4:
         return [(r_start, 0.0), (r_start + r_dur * 0.35, val), (r_end, 0.0)]
 
+    c_lower = (curve_name or "").lower()
+    is_ocular_curve = any(k in c_lower for k in ("blink", "eyeblink", "eyelid", "squint", "eyesquint", "look", "eyelook", "pupil", "gaze", "cheeksquint", "cheekraise", "eyecheekraise"))
+
     # 1. Ballistic rapid entry with overshoot and viscoelastic clamp (§6.7)
-    # Reach ~1.18x at 120ms, settle back to target over 350ms
+    # Reach ~1.18x at 120ms, settle back to target over 350ms (ocular curves do not overshoot)
     t_overshoot = min(r_end, r_start + 0.12)
-    v_overshoot = _soft_knee_saturate(val * 1.18)
+    v_overshoot = val if is_ocular_curve else _soft_knee_saturate(val * 1.18)
     t_settle = min(r_end, r_start + 0.35)
     v_settle = val
 
@@ -706,7 +711,7 @@ def _hold_keys(r_start, r_end, val, is_masseter_tension=False, is_high_status=Fa
     ]
 
     sustain_dur = t_out - t_settle
-    if sustain_dur > 0.4:
+    if sustain_dur > 0.4 and not is_ocular_curve:
         d_fatigue, tau = _get_fatigue_params(curve_name)
 
         if is_masseter_tension:
@@ -1018,24 +1023,14 @@ def _ramp_keys(r_start, r_end, val, offset=0.0, is_eye_roll=False, is_quick_glan
 
     # Organic fixational micro-drift or lingering saccadic eye-scanning
     drift_span = t2 - t1
-    if drift_span > 0.30:
-        if is_high_status:
-            # Triangular dominance scanning between interlocutor's eyes (+-0.035 every ~0.30s)
-            scan_step = 0.30
-            n_scans = max(2, int(drift_span / scan_step))
-            for i in range(1, n_scans + 1):
-                tk = t1 + i * scan_step
-                scan_dir = 0.035 if (i % 2 == 1) else -0.035
-                keys.append((round(tk, 3), round(max(0.0, min(1.0, val + scan_dir)), 3)))
-        else:
-            step_dur = 0.24
-            n_steps = max(1, int(drift_span / step_dur))
-            actual_step = drift_span / (n_steps + 1)
-            for i in range(1, n_steps + 1):
-                tk = t1 + i * actual_step
-                t_rel = tk - t1
-                drift = 0.02 * math.sin(2.0 * math.pi * 2.0 * t_rel)
-                keys.append((tk, max(0.0, min(1.0, val + drift))))
+    if drift_span > 0.30 and is_high_status:
+        # Triangular dominance scanning between interlocutor's eyes (+-0.035 every ~0.30s)
+        scan_step = 0.30
+        n_scans = max(2, int(drift_span / scan_step))
+        for i in range(1, n_scans + 1):
+            tk = t1 + i * scan_step
+            scan_dir = 0.035 if (i % 2 == 1) else -0.035
+            keys.append((round(tk, 3), round(max(0.0, min(1.0, val + scan_dir)), 3)))
 
     keys.append((t2, val))
     keys.append((t3, 0.0))
