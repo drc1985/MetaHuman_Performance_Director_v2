@@ -29,9 +29,6 @@ public:
     ) const;
 
     UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director")
-    FString ExportPlanToJson(const FMHPDPerformancePlan& Plan) const;
-
-    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director")
     void AutoCalibrateDials(
         const FString& DirectionText,
         float& OutFramingScale,
@@ -40,6 +37,39 @@ public:
         float& OutSubtextSuppression,
         float& OutPreparationOffsetMs
     ) const;
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director")
+    FString ExportPlanToJson(const FMHPDPerformancePlan& Plan) const;
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    EMHPDDirectorialEngine GetDirectorialEngine() const;
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    void SetDirectorialEngine(EMHPDDirectorialEngine NewEngine);
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    EMHPDRenderQuality GetRenderQuality() const;
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    void SetRenderQuality(EMHPDRenderQuality NewQuality);
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    bool IsLocalSLMModelAvailable() const;
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    FString GetLocalSLMModelPath() const;
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    FString GetLastActiveSessionPath() const;
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    void SetLastActiveSessionPath(const FString& NewPath);
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    FString GetCustomTakeRootPath() const;
+
+    UFUNCTION(BlueprintCallable, Category = "MetaHuman Performance Director|Settings")
+    void SetCustomTakeRootPath(const FString& NewRoot);
 
 private:
     void AddInstruction(

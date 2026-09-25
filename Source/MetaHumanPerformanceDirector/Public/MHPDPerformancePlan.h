@@ -16,6 +16,22 @@ enum class EMHPDPerformanceChannel : uint8
     VoiceDelivery
 };
 
+UENUM(BlueprintType)
+enum class EMHPDDirectorialEngine : uint8
+{
+    RuleBasedParser    UMETA(DisplayName = "Rule-Based C++ Parser (Fast / 0ms)"),
+    LocalSLM           UMETA(DisplayName = "Local SLM: MHPD-Direct-1.5B (RTX GPU)"),
+    CloudAPI           UMETA(DisplayName = "Cloud Directorial API (Gemini / OpenAI)")
+};
+
+UENUM(BlueprintType)
+enum class EMHPDRenderQuality : uint8
+{
+    DraftPreview       UMETA(DisplayName = "Draft Preview (1080p, 10 Warm-Up Frames)"),
+    ProductionHero     UMETA(DisplayName = "Production Hero (4K, 48 Warm-Up Frames, Anti-Aliasing)"),
+    CinematicMaster    UMETA(DisplayName = "Cinematic Master (4K UHD, 64 Warm-Up Frames, EXR/PNG)")
+};
+
 USTRUCT(BlueprintType)
 struct FMHPDRevisionRange
 {
@@ -98,6 +114,9 @@ struct FMHPDPerformancePlan
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director")
     TArray<FMHPDChannelInstruction> Instructions;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director")
+    FString Subtext;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MetaHuman Performance Director")
     FString EditableOutputTarget = TEXT("sequencer_control_rig_layers");

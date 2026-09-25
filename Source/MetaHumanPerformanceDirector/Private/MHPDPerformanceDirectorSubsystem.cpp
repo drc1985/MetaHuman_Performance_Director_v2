@@ -225,17 +225,9 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     // -------------------------------------------------------------------------
     // High-Level Emotional & Character State Parsing (Global Context)
     // -------------------------------------------------------------------------
-    const bool bNervous = LowerDirection.Contains(TEXT("nervous"))
-        || LowerDirection.Contains(TEXT("anxious"))
-        || LowerDirection.Contains(TEXT("fear"))
-        || LowerDirection.Contains(TEXT("afraid"))
-        || LowerDirection.Contains(TEXT("pressure"));
+    const bool bNervous = ContainsPattern(LowerDirection, TEXT("\\b(nervous\\w*|anxi\\w*|apprehens\\w*|fear\\w*|afraid|on edge|jitter\\w*|fidget\\w*|uneas\\w*|tremul\\w*|panick\\w*|panic\\w*|pressure)\\b"));
 
-    const bool bTryingConfidence = LowerDirection.Contains(TEXT("confident"))
-        || LowerDirection.Contains(TEXT("appear calm"))
-        || LowerDirection.Contains(TEXT("trying to appear"))
-        || LowerDirection.Contains(TEXT("hide"))
-        || LowerDirection.Contains(TEXT("hiding"));
+    const bool bTryingConfidence = ContainsPattern(LowerDirection, TEXT("\\b(confiden\\w*|appear\\w* calm|trying to appear|poised|steady|brave|in control|mask\\w*|hid\\w*|poker face)\\b"));
 
     if (bNervous && bTryingConfidence)
     {
@@ -247,10 +239,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         bMatchedIntent = true;
     }
 
-    if (LowerDirection.Contains(TEXT("defensive"))
-        || LowerDirection.Contains(TEXT("guarded"))
-        || LowerDirection.Contains(TEXT("cornered"))
-        || LowerDirection.Contains(TEXT("under attack")))
+    if (ContainsPattern(LowerDirection, TEXT("\\b(defens\\w*|guard\\w*|corner\\w*|under attack|shield\\w*|protect\\w*)\\b")))
     {
         Plan.MatchedInterpretations.Add(TEXT("Defensive"));
         AddInstruction(Plan, EMHPDPerformanceChannel::BodyPosture, TEXT("closed_guarded_posture"), TEXT("Close the posture slightly and reduce exposed body language."), 0.75f);
@@ -260,12 +249,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         bMatchedIntent = true;
     }
 
-    if (LowerDirection.Contains(TEXT("conceal"))
-        || LowerDirection.Contains(TEXT("lying"))
-        || LowerDirection.Contains(TEXT("truth"))
-        || LowerDirection.Contains(TEXT("hiding"))
-        || LowerDirection.Contains(TEXT("missing file"))
-        || LowerDirection.Contains(TEXT("information")))
+    if (ContainsPattern(LowerDirection, TEXT("\\b(conceal\\w*|ly\\w*|lying|liar\\w*|truth|hid\\w*|missing file|information|deceiv\\w*|withhold\\w*|secret\\w*)\\b")))
     {
         Plan.MatchedInterpretations.Add(TEXT("Concealing information"));
         AddInstruction(Plan, EMHPDPerformanceChannel::Gaze, TEXT("avoidant_gaze_then_recover"), TEXT("Look away on the moment of concealment, then recover eye contact."), 0.7f);
@@ -275,38 +259,9 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         bMatchedIntent = true;
     }
 
-    const bool bAnger = LowerDirection.Contains(TEXT("angry"))
-        || LowerDirection.Contains(TEXT("anger"))
-        || LowerDirection.Contains(TEXT("angrily"))
-        || LowerDirection.Contains(TEXT("frustrated"))
-        || LowerDirection.Contains(TEXT("frustration"))
-        || LowerDirection.Contains(TEXT("furious"))
-        || LowerDirection.Contains(TEXT("furiously"))
-        || LowerDirection.Contains(TEXT("fury"))
-        || LowerDirection.Contains(TEXT("rage"))
-        || LowerDirection.Contains(TEXT("raging"))
-        || LowerDirection.Contains(TEXT("seething"))
-        || LowerDirection.Contains(TEXT("livid"))
-        || LowerDirection.Contains(TEXT("fuming"))
-        || LowerDirection.Contains(TEXT("wrath"))
-        || LowerDirection.Contains(TEXT("hostil"));
+    const bool bAnger = ContainsPattern(LowerDirection, TEXT("\\b(ang\\w*|furi\\w*|fury|rag\\w*|hostil\\w*|mad\\w*|livid\\w*|seeth\\w*|fuming|wrath\\w*|bitter\\w*|snarl\\w*|scowl\\w*|glar\\w*|glare)\\b"));
 
-    const bool bRestrained = LowerDirection.Contains(TEXT("restrained"))
-        || LowerDirection.Contains(TEXT("controlled"))
-        || LowerDirection.Contains(TEXT("underneath"))
-        || LowerDirection.Contains(TEXT("cannot openly"))
-        || LowerDirection.Contains(TEXT("less obvious"))
-        || LowerDirection.Contains(TEXT("subtle"))
-        || LowerDirection.Contains(TEXT("subtly"))
-        || LowerDirection.Contains(TEXT("smaller"))
-        || LowerDirection.Contains(TEXT("composure"))
-        || LowerDirection.Contains(TEXT("composed"))
-        || LowerDirection.Contains(TEXT("holding back"))
-        || LowerDirection.Contains(TEXT("cold"))
-        || LowerDirection.Contains(TEXT("coldly"))
-        || LowerDirection.Contains(TEXT("contain"))
-        || LowerDirection.Contains(TEXT("suppress"))
-        || LowerDirection.Contains(TEXT("maintain"));
+    const bool bRestrained = ContainsPattern(LowerDirection, TEXT("\\b(restrain\\w*|control\\w*|contain\\w*|suppress\\w*|mask\\w*|hid\\w*|subtl\\w*|cold\\w*|composure|cool\\w*|calm\\w*|intern\\w*|underneath|poker face|held back|holds? back|holding back|steely|icil\\w*|icy|maintain\\w*)\\b"));
 
     if (bAnger && !bRestrained)
     {
@@ -328,11 +283,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         bMatchedIntent = true;
     }
 
-    if (LowerDirection.Contains(TEXT("less theatrical"))
-        || LowerDirection.Contains(TEXT("restrained"))
-        || LowerDirection.Contains(TEXT("smaller"))
-        || LowerDirection.Contains(TEXT("less movement"))
-        || LowerDirection.Contains(TEXT("reduce")))
+    if (ContainsPattern(LowerDirection, TEXT("\\b(less theatric\\w*|restrain\\w*|smaller|less movement|reduc\\w*|econom\\w*|subdu\\w*|understated)\\b")))
     {
         Plan.MatchedInterpretations.Add(TEXT("Reduced theatricality"));
         AddInstruction(Plan, EMHPDPerformanceChannel::Gesture, TEXT("minimize_broad_gestures"), TEXT("Minimize broad gestures and keep movement economical."), 0.6f);
@@ -340,10 +291,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
         bMatchedIntent = true;
     }
 
-    if (LowerDirection.Contains(TEXT("pause"))
-        || LowerDirection.Contains(TEXT("hesitat"))
-        || LowerDirection.Contains(TEXT("before answering"))
-        || LowerDirection.Contains(TEXT("before the response")))
+    if (ContainsPattern(LowerDirection, TEXT("\\b(pause\\w*|hesitat\\w*|before answer\\w*|before the response|weigh\\w*|deliberat\\w*)\\b")))
     {
         Plan.MatchedInterpretations.Add(TEXT("Hesitation before response"));
         AddInstruction(Plan, EMHPDPerformanceChannel::Pauses, TEXT("intentional_pre_answer_hold"), TEXT("Hold briefly before responding to show thought or concealment."), 0.55f, 0.18f);
@@ -593,7 +541,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     }
 
     // Frustration / Exasperation / Resignation
-    if (ContainsPattern(LowerDirection, TEXT("\\b(frustrat\\w*|exasperat\\w*|sigh\\w* heavily|giving up|give up|resignation|resigned|thwart\\w*)\\b")))
+    if (ContainsPattern(LowerDirection, TEXT("\\b(frustrat\\w*|exasperat\\w*|giving up|give up|resignation|resigned|thwart\\w*)\\b")))
     {
         Plan.MatchedInterpretations.Add(TEXT("Frustration / Exasperation"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_frustration"), TEXT("Press lips thin, clench jaw, and cast gaze upward in frustration."), 0.85f);
@@ -632,8 +580,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     }
 
     // Smugness / Arrogance / Condescension / Smirk
-    if (ContainsPattern(LowerDirection, TEXT("\\b(smug\\w*|smirk\\w*|arrogant\\w*|arrogance|condescend\\w*|superiority|cocky)\\b"))
-        || LowerDirection.Contains(TEXT("smirk")))
+    if (ContainsPattern(LowerDirection, TEXT("\\b(smug\\w*|smirk\\w*|arrogant\\w*|arrogance|condescend\\w*|superiority|cocky|sardonic\\w*)\\b")))
     {
         Plan.MatchedInterpretations.Add(TEXT("Smugness / Arrogance"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_smugness"), TEXT("Asymmetrical smirk, raised outer brow, and elevated chin."), 0.85f);
@@ -646,7 +593,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     }
 
     // Unilateral Eyebrow Cock / Arched Brow
-    if (ContainsPattern(LowerDirection, TEXT("\\b(arch\\w* (eye)?brow|cock\\w* (eye)?brow|raise\\w* (an?|her|his|one) (eye)?brow|(one|single|asymmetric\\w*) (eye)?brow raise\\w*)\\b"))
+    if (ContainsPattern(LowerDirection, TEXT("\\b(arch\\w* (eye)?brow|cock\\w* (eye)?brow|raise\\w* (an?|her|his|their|one) (eye)?brow|(one|single|asymmetric\\w*) (eye)?brow raise\\w*)\\b"))
         || (LowerDirection.Contains(TEXT("eyebrow")) && (LowerDirection.Contains(TEXT("arch")) || LowerDirection.Contains(TEXT("cock")) || LowerDirection.Contains(TEXT("raise"))))
         || (LowerDirection.Contains(TEXT("brow")) && (LowerDirection.Contains(TEXT("arch")) || LowerDirection.Contains(TEXT("cock")))))
     {
@@ -656,7 +603,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     }
 
     // Defiance / Rebellion / Contempt
-    if (ContainsPattern(LowerDirection, TEXT("\\b(defian\\w*|rebellio\\w*|rebel\\w*|contempt\\w*|disrespect\\w*|insolent\\w*|scoff\\w*|disdain\\w*|sneer\\w*)\\b")))
+    if (ContainsPattern(LowerDirection, TEXT("\\b(defian\\w*|rebellio\\w*|rebel\\w*|contempt\\w*|disrespect\\w*|insolent\\w*|scoff\\w*|disdain\\w*|sneer\\w*|taunt\\w*)\\b")))
     {
         Plan.MatchedInterpretations.Add(TEXT("Defiance / Contempt"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("express_contempt"), TEXT("Unilateral sneer raising lip showing canine, thrust jaw, and hard stare."), 0.90f);
@@ -730,6 +677,15 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
             AddInstruction(Plan, EMHPDPerformanceChannel::HeadMovement, TEXT("head_warmth_tilt"), TEXT("Warm tilted head exposing neck in gentle empathy."), 0.70f);
             bAddedHeadInstruction = true;
         }
+        bMatchedIntent = true;
+    }
+
+    // Somatic Exhale / Sigh / Breath Release
+    if (ContainsPattern(LowerDirection, TEXT("\\b(sigh\\w*|exhale\\w*|breath release|let out breath|deep breath)\\b")))
+    {
+        Plan.MatchedInterpretations.Add(TEXT("Somatic Exhale / Sigh"));
+        AddInstruction(Plan, EMHPDPerformanceChannel::ReactionTiming, TEXT("sigh_exhale_release"), TEXT("Audible sigh and somatic breath release."), 0.85f);
+        AddInstruction(Plan, EMHPDPerformanceChannel::BodyPosture, TEXT("thoracic_sorrow_deflation"), TEXT("Clavicle depression and thoracic deflation on breath release."), 0.75f);
         bMatchedIntent = true;
     }
 
@@ -895,8 +851,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
 
     // Jaw Tension / Clench
     if (ContainsPattern(LowerDirection, TEXT("\\b(clench\\w*|jaw tension|jaw clench\\w*|grit\\w* teeth|tense\\w* jaw|tight\\w* jaw|firm\\w* jaw|locked jaw)\\b"))
-        || LowerDirection.Contains(TEXT("clench"))
-        || (LowerDirection.Contains(TEXT("jaw")) && (LowerDirection.Contains(TEXT("tense")) || LowerDirection.Contains(TEXT("tight")) || LowerDirection.Contains(TEXT("set")) || LowerDirection.Contains(TEXT("lock")))))
+        || (ContainsPattern(LowerDirection, TEXT("\\b(jaw)\\b")) && ContainsPattern(LowerDirection, TEXT("\\b(tens\\w*|tight\\w*|set|lock\\w*)\\b"))))
     {
         Plan.MatchedInterpretations.Add(TEXT("Jaw Tension"));
         AddInstruction(Plan, EMHPDPerformanceChannel::FacialExpression, TEXT("clench_jaw"), TEXT("Clench jaw, press lips, and lower brows."), 1.0f);
@@ -935,7 +890,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     }
 
     // 3. Affective Mood: Sadness / Grief (Vulnerability, sorrow, melancholy)
-    const bool bSadnessMood = ContainsPattern(LowerDirection, TEXT("\\b(sad\\w*|sorrow\\w*|grief|griev\\w*|heartbrok\\w*|mourn\\w*|depress\\w*|glum\\w*|tear\\w*|unhappi\\w*|downcast|melanchol\\w*|cry\\w*|weep\\w*|wept|somber\\w*)\\b"));
+    const bool bSadnessMood = ContainsPattern(LowerDirection, TEXT("\\b(sad\\w*|sorrow\\w*|grief|griev\\w*|heartbrok\\w*|mourn\\w*|depress\\w*|glum\\w*|tear\\w*|unhappi\\w*|downcast|melanchol\\w*|cry\\w*|weep\\w*|wept|somber\\w*|crestfallen|despondent|bereft|wistful\\w*)\\b"));
     if (bSadnessMood && !bUpsetMood && !bFrownAction)
     {
         Plan.MatchedInterpretations.Add(TEXT("Sadness / Grief"));
@@ -987,7 +942,7 @@ FMHPDPerformancePlan UMHPDPerformanceDirectorSubsystem::CreatePlanFromDirection(
     if (ContainsPattern(LowerDirection, TEXT("\\b(shrug\\w*|shoulder shrug\\w*)\\b")))
     {
         Plan.MatchedInterpretations.Add(TEXT("Shoulder shrug"));
-        const bool bAsymmetric = LowerDirection.Contains(TEXT("asymmetric")) || LowerDirection.Contains(TEXT("one shoulder")) || LowerDirection.Contains(TEXT("half"));
+        const bool bAsymmetric = ContainsPattern(LowerDirection, TEXT("\\b(asymmetric\\w*|one shoulder|half)\\b"));
         if (bAsymmetric)
         {
             AddInstruction(Plan, EMHPDPerformanceChannel::Gesture, TEXT("asymmetric_shoulder_shrug"), TEXT("Asymmetric single-shoulder shrug with transient return to rest."), 0.90f);
@@ -1262,20 +1217,19 @@ void UMHPDPerformanceDirectorSubsystem::AutoCalibrateDials(
     const FString Lower = DirectionText.ToLower();
 
     // 1. Framing Scale Calibration (0.0 = Extreme Close-Up, 1.0 = Theatrical Wide)
+    // Tight Close-Up: jaw clenching, intimate tremor, nervous micro-tension
+    const bool bTightCloseUp = ContainsPattern(Lower, TEXT("\\b(close-up|extreme close|tight close|macro|micro[- ]?tension|clench\\w* (her|his|their)? jaw|nervous\\w*.*clench|chin pucker)\\b"));
     // Close-Up indicators: intimate, ocular, micro, whisper, breath, tears, scrutiny
-    const bool bCloseUp = Lower.Contains(TEXT("whisper")) || Lower.Contains(TEXT("tear")) || Lower.Contains(TEXT("tears"))
-        || Lower.Contains(TEXT("intimate")) || Lower.Contains(TEXT("micro")) || Lower.Contains(TEXT("subtle"))
-        || Lower.Contains(TEXT("eye")) || Lower.Contains(TEXT("gaze")) || Lower.Contains(TEXT("blink"))
-        || Lower.Contains(TEXT("brow")) || Lower.Contains(TEXT("jaw")) || Lower.Contains(TEXT("lip"))
-        || Lower.Contains(TEXT("close")) || Lower.Contains(TEXT("scrutiny")) || Lower.Contains(TEXT("troubled"));
+    const bool bCloseUp = ContainsPattern(Lower, TEXT("\\b(whisper\\w*|tear\\w*|intimate\\w*|micro\\w*|subtl\\w*|eye\\w*|gaz\\w*|blink\\w*|brow\\w*|jaw\\w*|lip\\w*|close\\w*|scrutin\\w*|troubl\\w*)\\b"));
 
     // Wide / Projection indicators: shouting, projecting, broad physical staging
-    const bool bTheatricalWide = Lower.Contains(TEXT("shout")) || Lower.Contains(TEXT("scream"))
-        || Lower.Contains(TEXT("project")) || Lower.Contains(TEXT("wide")) || Lower.Contains(TEXT("theatric"))
-        || Lower.Contains(TEXT("hall")) || Lower.Contains(TEXT("courtyard")) || Lower.Contains(TEXT("across the room"))
-        || Lower.Contains(TEXT("pacing")) || Lower.Contains(TEXT("run")) || Lower.Contains(TEXT("walk"));
+    const bool bTheatricalWide = ContainsPattern(Lower, TEXT("\\b(shout\\w*|scream\\w*|project\\w*|wide\\w*|theatric\\w*|hall|courtyard|across the room|pac\\w*|run\\w*|walk\\w*)\\b"));
 
-    if (bCloseUp && !bTheatricalWide)
+    if (bTightCloseUp && !bTheatricalWide)
+    {
+        OutFramingScale = 0.15f;
+    }
+    else if (bCloseUp && !bTheatricalWide)
     {
         OutFramingScale = 0.28f;
     }
@@ -1289,18 +1243,18 @@ void UMHPDPerformanceDirectorSubsystem::AutoCalibrateDials(
     }
 
     // 2. Facial Nuance Calibration (0.0 = Underplayed/Minimal, 1.0 = Pronounced/Intense)
-    const bool bUnderplayed = Lower.Contains(TEXT("underplay")) || Lower.Contains(TEXT("faint"))
-        || Lower.Contains(TEXT("slight")) || Lower.Contains(TEXT("barely")) || Lower.Contains(TEXT("minimal"))
-        || Lower.Contains(TEXT("deadpan")) || Lower.Contains(TEXT("poker")) || Lower.Contains(TEXT("stoic"));
+    const bool bUnderplayed = ContainsPattern(Lower, TEXT("\\b(underplay\\w*|faint\\w*|slight\\w*|barely|minimal\\w*|deadpan|poker|stoic\\w*|unemotional\\w*)\\b"));
 
-    const bool bHighEmotion = Lower.Contains(TEXT("furious")) || Lower.Contains(TEXT("rage"))
-        || Lower.Contains(TEXT("terrified")) || Lower.Contains(TEXT("hysterical")) || Lower.Contains(TEXT("weep"))
-        || Lower.Contains(TEXT("delighted")) || Lower.Contains(TEXT("ecstatic")) || Lower.Contains(TEXT("shocked"))
-        || Lower.Contains(TEXT("agony")) || Lower.Contains(TEXT("pain"));
+    const bool bVeryHighEmotion = ContainsPattern(Lower, TEXT("\\b(smug\\w*|insolent\\w*|insolence|arrogant\\w*|arrogance|defian\\w*|hysteria|furious)\\b"));
+    const bool bHighEmotion = ContainsPattern(Lower, TEXT("\\b(furi\\w*|fury|rag\\w*|terrifi\\w*|terror|hyster\\w*|weep\\w*|wept|delight\\w*|ecstat\\w*|shock\\w*|agony|agoniz\\w*|pain\\w*|anguish\\w*)\\b"));
 
     if (bUnderplayed)
     {
         OutFacialNuance = 0.32f;
+    }
+    else if (bVeryHighEmotion)
+    {
+        OutFacialNuance = 0.85f;
     }
     else if (bHighEmotion)
     {
@@ -1312,17 +1266,9 @@ void UMHPDPerformanceDirectorSubsystem::AutoCalibrateDials(
     }
 
     // 3. Head & Physical Action Calibration (0.0 = Held Still, 1.0 = Dynamic Movement)
-    const bool bStill = Lower.Contains(TEXT("still")) || Lower.Contains(TEXT("freeze"))
-        || Lower.Contains(TEXT("frozen")) || Lower.Contains(TEXT("held")) || Lower.Contains(TEXT("rigid"))
-        || Lower.Contains(TEXT("lock")) || Lower.Contains(TEXT("paralyzed")) || Lower.Contains(TEXT("unmoving"));
+    const bool bStill = ContainsPattern(Lower, TEXT("\\b(still\\w*|freez\\w*|froze\\w*|held|rigid\\w*|lock\\w*|paralyz\\w*|unmoving)\\b"));
 
-    const bool bDynamicMovement = Lower.Contains(TEXT("turn")) || Lower.Contains(TEXT("turning"))
-        || Lower.Contains(TEXT("turns")) || Lower.Contains(TEXT("shake")) || Lower.Contains(TEXT("shaking"))
-        || Lower.Contains(TEXT("shook")) || Lower.Contains(TEXT("nod"))
-        || Lower.Contains(TEXT("recoil")) || Lower.Contains(TEXT("shift")) || Lower.Contains(TEXT("gesture"))
-        || Lower.Contains(TEXT("reaches")) || Lower.Contains(TEXT("drop")) || Lower.Contains(TEXT("dropping"))
-        || Lower.Contains(TEXT("bow")) || Lower.Contains(TEXT("hang")) || Lower.Contains(TEXT("lower"))
-        || Lower.Contains(TEXT("tilt")) || Lower.Contains(TEXT("chin down")) || Lower.Contains(TEXT("head down"));
+    const bool bDynamicMovement = ContainsPattern(Lower, TEXT("\\b(turn\\w*|shak\\w*|shook|nod\\w*|recoil\\w*|shift\\w*|gestur\\w*|reach\\w*|drop\\w*|bow\\w*|hang\\w*|lower\\w*|tilt\\w*|chin down|chin up|head down|head up)\\b"));
 
     if (bStill && !bDynamicMovement)
     {
@@ -1338,16 +1284,9 @@ void UMHPDPerformanceDirectorSubsystem::AutoCalibrateDials(
     }
 
     // 4. Subtext Masking / Suppression Calibration (0.0 = Direct, 1.0 = High Internal Guise)
-    const bool bMasking = Lower.Contains(TEXT("mask")) || Lower.Contains(TEXT("hide"))
-        || Lower.Contains(TEXT("hiding")) || Lower.Contains(TEXT("holding back")) || Lower.Contains(TEXT("contain"))
-        || Lower.Contains(TEXT("restrain")) || Lower.Contains(TEXT("suppress")) || Lower.Contains(TEXT("trying not to"))
-        || Lower.Contains(TEXT("trying to appear")) || Lower.Contains(TEXT("poker")) || Lower.Contains(TEXT("secret"))
-        || Lower.Contains(TEXT("guarded")) || Lower.Contains(TEXT("defensive")) || Lower.Contains(TEXT("conceal"))
-        || Lower.Contains(TEXT("forced smile")) || Lower.Contains(TEXT("smile through")) || Lower.Contains(TEXT("almost sadly"));
+    const bool bMasking = ContainsPattern(Lower, TEXT("\\b(quietly|silent\\w*|mask\\w*|hid\\w*|holding back|held back|holds? back|contain\\w*|restrain\\w*|suppress\\w*|trying not to|trying to appear|poker|secret\\w*|guard\\w*|defens\\w*|conceal\\w*|forced smile|smile through|almost sadly)\\b"));
 
-    const bool bExplosive = Lower.Contains(TEXT("open anger")) || Lower.Contains(TEXT("unfiltered"))
-        || Lower.Contains(TEXT("honest")) || Lower.Contains(TEXT("blunt")) || Lower.Contains(TEXT("screaming"))
-        || Lower.Contains(TEXT("burst")) || Lower.Contains(TEXT("shout"));
+    const bool bExplosive = ContainsPattern(Lower, TEXT("\\b(open anger|unfiltered|honest\\w*|blunt\\w*|scream\\w*|burst\\w*|shout\\w*|erupt\\w*)\\b"));
 
     if (bMasking && !bExplosive)
     {
@@ -1363,16 +1302,16 @@ void UMHPDPerformanceDirectorSubsystem::AutoCalibrateDials(
     }
 
     // 5. Pre-Speech Preparation Lead Offset (0ms to 1000ms)
-    const bool bHesitant = Lower.Contains(TEXT("hesitat")) || Lower.Contains(TEXT("pause"))
-        || Lower.Contains(TEXT("breath")) || Lower.Contains(TEXT("before answer")) || Lower.Contains(TEXT("calculat"))
-        || Lower.Contains(TEXT("searching")) || Lower.Contains(TEXT("takes in")) || Lower.Contains(TEXT("deliberat"))
-        || Lower.Contains(TEXT("troubled")) || Lower.Contains(TEXT("weighs"));
+    const bool bDeepHesitant = ContainsPattern(Lower, TEXT("\\b(weep\\w*.*hesitat\\w*|hesitat\\w*.*before answer\\w*|before answer\\w*.*hesitat\\w*|long pause|deep breath before)\\b"));
+    const bool bHesitant = ContainsPattern(Lower, TEXT("\\b(hesitat\\w*|pause\\w*|breath\\w*|before answer\\w*|calculat\\w*|search\\w*|takes in|deliberat\\w*|troubl\\w*|weigh\\w*|waver\\w*)\\b"));
 
-    const bool bImmediate = Lower.Contains(TEXT("immediate")) || Lower.Contains(TEXT("sharp"))
-        || Lower.Contains(TEXT("snaps")) || Lower.Contains(TEXT("interrupt")) || Lower.Contains(TEXT("quick"))
-        || Lower.Contains(TEXT("blurt")) || Lower.Contains(TEXT("without hesitation"));
+    const bool bImmediate = ContainsPattern(Lower, TEXT("\\b(immediate\\w*|sharp\\w*|snap\\w*|interrupt\\w*|quick\\w*|blurt\\w*|without hesitation)\\b"));
 
-    if (bHesitant && !bImmediate)
+    if (bDeepHesitant && !bImmediate)
+    {
+        OutPreparationOffsetMs = 450.0f;
+    }
+    else if (bHesitant && !bImmediate)
     {
         OutPreparationOffsetMs = 380.0f;
     }
@@ -1383,5 +1322,107 @@ void UMHPDPerformanceDirectorSubsystem::AutoCalibrateDials(
     else
     {
         OutPreparationOffsetMs = 250.0f;
+    }
+}
+
+EMHPDDirectorialEngine UMHPDPerformanceDirectorSubsystem::GetDirectorialEngine() const
+{
+    int32 EngineVal = 0;
+    if (GConfig && GConfig->GetInt(TEXT("MHPD_Settings"), TEXT("DirectorialEngine"), EngineVal, GEditorIni))
+    {
+        return static_cast<EMHPDDirectorialEngine>(FMath::Clamp(EngineVal, 0, 2));
+    }
+    return EMHPDDirectorialEngine::RuleBasedParser;
+}
+
+void UMHPDPerformanceDirectorSubsystem::SetDirectorialEngine(EMHPDDirectorialEngine NewEngine)
+{
+    if (GConfig)
+    {
+        GConfig->SetInt(TEXT("MHPD_Settings"), TEXT("DirectorialEngine"), static_cast<int32>(NewEngine), GEditorIni);
+        GConfig->Flush(false, GEditorIni);
+    }
+}
+
+EMHPDRenderQuality UMHPDPerformanceDirectorSubsystem::GetRenderQuality() const
+{
+    int32 QualityVal = 1; // Default to ProductionHero (index 1)
+    if (GConfig && GConfig->GetInt(TEXT("MHPD_Settings"), TEXT("RenderQuality"), QualityVal, GEditorIni))
+    {
+        return static_cast<EMHPDRenderQuality>(FMath::Clamp(QualityVal, 0, 2));
+    }
+    return EMHPDRenderQuality::ProductionHero;
+}
+
+void UMHPDPerformanceDirectorSubsystem::SetRenderQuality(EMHPDRenderQuality NewQuality)
+{
+    if (GConfig)
+    {
+        GConfig->SetInt(TEXT("MHPD_Settings"), TEXT("RenderQuality"), static_cast<int32>(NewQuality), GEditorIni);
+        GConfig->Flush(false, GEditorIni);
+    }
+}
+
+FString UMHPDPerformanceDirectorSubsystem::GetLocalSLMModelPath() const
+{
+    // Prioritize 4-bit GGUF (935 MB, zero-dependency sub-second execution)
+    const TArray<FString> Candidates = {
+        TEXT("E:/DavidCobbinsGlobal/Software/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector/models/MHPD-Direct-1.5B-Q4_K_M.gguf"),
+        TEXT("E:/DavidCobbinsGlobal/Software/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector/models/MHPD-Direct-1.5B-Q8_0.gguf"),
+        FPaths::ProjectDir() / TEXT("models/MHPD-Direct-1.5B-Q4_K_M.gguf"),
+        TEXT("E:/DavidCobbinsGlobal/Software/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector/models/MHPD-Direct-1.5B-Merged-v3"),
+        FPaths::ProjectDir() / TEXT("models/MHPD-Direct-1.5B-Merged-v3")
+    };
+
+    for (const FString& Path : Candidates)
+    {
+        if (IFileManager::Get().FileExists(*Path) || IFileManager::Get().DirectoryExists(*Path))
+        {
+            return Path;
+        }
+    }
+    return FString();
+}
+
+bool UMHPDPerformanceDirectorSubsystem::IsLocalSLMModelAvailable() const
+{
+    return !GetLocalSLMModelPath().IsEmpty();
+}
+
+FString UMHPDPerformanceDirectorSubsystem::GetLastActiveSessionPath() const
+{
+    FString Path;
+    if (GConfig && GConfig->GetString(TEXT("MHPD_Settings"), TEXT("LastActiveSessionPath"), Path, GEditorIni))
+    {
+        return Path;
+    }
+    return FString();
+}
+
+void UMHPDPerformanceDirectorSubsystem::SetLastActiveSessionPath(const FString& NewPath)
+{
+    if (GConfig)
+    {
+        GConfig->SetString(TEXT("MHPD_Settings"), TEXT("LastActiveSessionPath"), *NewPath, GEditorIni);
+        GConfig->Flush(false, GEditorIni);
+    }
+}
+
+FString UMHPDPerformanceDirectorSubsystem::GetCustomTakeRootPath() const
+{
+    FString Root;
+    if (GConfig && GConfig->GetString(TEXT("MHPD_Settings"), TEXT("CustomTakeRootPath"), Root, GEditorIni))
+    {
+        if (!Root.IsEmpty()) return Root;
+    }
+    return TEXT("/Game/MHPD");
+}
+
+void UMHPDPerformanceDirectorSubsystem::SetCustomTakeRootPath(const FString& NewRoot)
+{
+    if (GConfig)
+    {
+        GConfig->SetString(TEXT("MHPD_Settings"), TEXT("CustomTakeRootPath"), *NewRoot, GEditorIni);
+        GConfig->Flush(false, GEditorIni);
     }
 }

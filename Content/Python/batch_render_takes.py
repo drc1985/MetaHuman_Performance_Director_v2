@@ -7,6 +7,8 @@ import sys
 import glob
 import shutil
 import subprocess
+import json
+import tempfile
 from pathlib import Path
 
 # Resolve default output directory
@@ -107,10 +109,13 @@ def compile_frames_to_mp4(frame_dir: str, output_mp4: str, audio_path: str | Non
         return False
 
 
-def get_optimal_camera_transform() -> tuple[unreal.Vector, unreal.Rotator]:
-    """Calculates the optimal medium close-up camera transform targeting the MetaHuman face."""
+def get_optimal_camera_transform(pullback: float | None = None, height_offset: float | None = None) -> tuple[unreal.Vector, unreal.Rotator]:
+    """Calculates the optimal camera transform targeting the MetaHuman face, respecting framing pullback and height."""
     actor_subsystem = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
     editor_subsystem = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem)
+
+    actual_pullback = REVIEW_CAMERA_PULLBACK if pullback is None else float(pullback)
+    actual_height_offset = REVIEW_CAMERA_HEIGHT_OFFSET if height_offset is None else float(height_offset)
 
     mh_actor = None
     if actor_subsystem:
@@ -138,8 +143,8 @@ def get_optimal_camera_transform() -> tuple[unreal.Vector, unreal.Rotator]:
             face_offset = vp_loc - face_anchor
             dist = face_offset.length()
             if 50.0 < dist < 600.0:
-                cam_loc = face_anchor + (face_offset * REVIEW_CAMERA_PULLBACK)
-                cam_loc.z += REVIEW_CAMERA_HEIGHT_OFFSET
+                cam_loc = face_anchor + (face_offset * actual_pullback)
+                cam_loc.z += actual_height_offset
                 unreal.log(
                     f"[MHPD Batch Render] Widened active viewport framing "
                     f"from {dist:.1f}cm to {(cam_loc - face_anchor).length():.1f}cm: "
@@ -152,9 +157,9 @@ def get_optimal_camera_transform() -> tuple[unreal.Vector, unreal.Rotator]:
     if mh_actor:
         mh_loc = mh_actor.get_actor_location()
         cam_loc = unreal.Vector(
-            mh_loc.x - (79.8 * REVIEW_CAMERA_PULLBACK),
-            mh_loc.y - (104.4 * REVIEW_CAMERA_PULLBACK),
-            mh_loc.z + 158.7 + REVIEW_CAMERA_HEIGHT_OFFSET,
+            mh_loc.x - (79.8 * actual_pullback),
+            mh_loc.y - (104.4 * actual_pullback),
+            mh_loc.z + 158.7 + actual_height_offset,
         )
         unreal.log(f"[MHPD Batch Render] Derived wide MCU camera from MetaHuman at {mh_loc} -> {cam_loc}")
         return cam_loc, DEFAULT_CAM_ROT
@@ -162,13 +167,13 @@ def get_optimal_camera_transform() -> tuple[unreal.Vector, unreal.Rotator]:
     # 3. Fallback to verified DevBuild constants
     default_face_anchor = unreal.Vector(36820.0, -7930.0, 168.7)
     default_offset = DEFAULT_CAM_LOC - default_face_anchor
-    wide_default_loc = default_face_anchor + (default_offset * REVIEW_CAMERA_PULLBACK)
-    wide_default_loc.z += REVIEW_CAMERA_HEIGHT_OFFSET
+    wide_default_loc = default_face_anchor + (default_offset * actual_pullback)
+    wide_default_loc.z += actual_height_offset
     unreal.log(f"[MHPD Batch Render] Using default wide MCU framing -> {wide_default_loc}")
     return wide_default_loc, DEFAULT_CAM_ROT
 
 
-def ensure_camera_cut_track(seq_asset) -> bool:
+def ensure_camera_cut_track(seq_asset, framing_scale: float | None = None) -> bool:
     """Ensures the sequence has a spawnable CineCameraActor and Camera Cuts track framed on the MetaHuman face."""
     if not seq_asset:
         unreal.log_error("[MHPD Batch Render] ensure_camera_cut_track received null seq_asset.")
@@ -205,8 +210,42 @@ def ensure_camera_cut_track(seq_asset) -> bool:
         if isinstance(a, unreal.CineCameraActor) and ("MHPD_ReviewCamera" in a.get_name() or "MHPD_ReviewCamera" in a.get_actor_label()):
             actor_subsystem.destroy_actor(a)
 
+    # Resolve framing_scale from parameter or cached plan JSON
+    seq_name = seq_asset.get_name()
+    take_key = seq_name[3:] if seq_name.startswith("LS_") else seq_name
+    if framing_scale is None:
+        plan_file = os.path.join(tempfile.gettempdir(), f"mhpd_plan_{take_key}.json")
+        if os.path.exists(plan_file):
+            try:
+                with open(plan_file, "r", encoding="utf-8") as pf:
+                    p_data = json.load(pf)
+                    framing_scale = float(p_data.get("framing_scale", 0.50))
+            except Exception:
+                framing_scale = 0.50
+
+    scale_val = 0.50 if framing_scale is None else float(framing_scale)
+    if scale_val <= 0.20:
+        target_focal_length = 55.0
+        scale_pullback = 1.30
+        scale_height_offset = -12.0
+        unreal.log(f"[MHPD Batch Render] Framing scale {scale_val:.2f} -> Close-Up (55mm, pullback 1.30, height -12cm)")
+    elif scale_val <= 0.40:
+        target_focal_length = 52.0
+        scale_pullback = 1.45
+        scale_height_offset = -14.0
+        unreal.log(f"[MHPD Batch Render] Framing scale {scale_val:.2f} -> Medium Close-Up (52mm, pullback 1.45, height -14cm)")
+    elif scale_val >= 0.70:
+        target_focal_length = 35.0
+        scale_pullback = 2.00
+        scale_height_offset = -20.0
+        unreal.log(f"[MHPD Batch Render] Framing scale {scale_val:.2f} -> Theatrical Wide (35mm, pullback 2.00, height -20cm)")
+    else:
+        target_focal_length = 50.0
+        scale_pullback = REVIEW_CAMERA_PULLBACK
+        scale_height_offset = REVIEW_CAMERA_HEIGHT_OFFSET
+
     # 4. Determine camera location and rotation
-    cam_loc, cam_rot = get_optimal_camera_transform()
+    cam_loc, cam_rot = get_optimal_camera_transform(pullback=scale_pullback, height_offset=scale_height_offset)
 
     # 5. Spawn temporary CineCameraActor to configure template for Sequencer spawnable
     temp_cam = actor_subsystem.spawn_actor_from_class(unreal.CineCameraActor, cam_loc, cam_rot)
@@ -217,7 +256,7 @@ def ensure_camera_cut_track(seq_asset) -> bool:
     temp_cam.set_actor_label("MHPD_ReviewCamera")
     try:
         cam_comp = temp_cam.camera_component
-        cam_comp.current_focal_length = 50.0
+        cam_comp.current_focal_length = target_focal_length
         cam_comp.focus_settings.focus_method = unreal.CameraFocusMethod.DISABLE
     except Exception as e:
         unreal.log_warning(f"[MHPD Batch Render] Could not configure camera component: {e}")
@@ -363,40 +402,74 @@ def _get_render_map_path() -> str:
 
 
 def create_mrq_job(sequence_path: str, output_frame_dir: str, res_x: int = 1920,
-                   res_y: int = 1080, fps: int = 30):
-    """Creates one MRQ job that evaluates the sequence and its camera cuts in PIE."""
+                   res_y: int = 1080, fps: int = 30, quality_preset: int = 1):
+    """
+    Creates one MRQ job that evaluates the sequence and its camera cuts in PIE.
+    Quality Presets (§2):
+      0 = Draft Preview (1080p, 10 warm-up frames)
+      1 = Production Hero (1440p/QHD, 48 warm-up frames for Lumen GI & hair groom settling, 4x/2x AA)
+      2 = Cinematic Master (4K UHD, 64 warm-up frames, 8x/4x AA)
+    """
     subsystem = unreal.get_editor_subsystem(unreal.MoviePipelineQueueSubsystem)
     if not subsystem:
         raise RuntimeError("Movie Render Queue subsystem is unavailable. Enable the Movie Render Pipeline plugin.")
     queue = subsystem.get_queue()
     if subsystem.is_rendering():
         raise RuntimeError("Movie Render Queue is already rendering another job.")
-    foreign_jobs = [job for job in queue.get_jobs() if str(job.author) != "MetaHuman Performance Director"]
+    foreign_jobs = [job for job in queue.get_jobs() if str(job.author).strip() and str(job.author) != "MetaHuman Performance Director"]
     if foreign_jobs:
         raise RuntimeError("Movie Render Queue contains user jobs. Clear or render them before starting an MHPD batch.")
     queue.delete_all_jobs()
     job = queue.allocate_new_job(unreal.MoviePipelineExecutorJob)
-    job.job_name = f"MHPD_{Path(sequence_path).name}"
     job.author = "MetaHuman Performance Director"
-    job.sequence = unreal.SoftObjectPath(sequence_path)
-    job.map = unreal.SoftObjectPath(_get_render_map_path())
+    job.job_name = f"MHPD_{Path(sequence_path).name}"
+    seq_str = str(sequence_path)
+    if "." not in seq_str.split("/")[-1]:
+        seq_str = f"{seq_str}.{seq_str.split('/')[-1]}"
+    map_str = _get_render_map_path()
+    if "." not in map_str.split("/")[-1]:
+        map_str = f"{map_str}.{map_str.split('/')[-1]}"
+
+    job.set_editor_property("sequence", unreal.SoftObjectPath(path_string=seq_str))
+    job.set_editor_property("map", unreal.SoftObjectPath(path_string=map_str))
     config = job.get_configuration()
     output = config.find_or_add_setting_by_class(unreal.MoviePipelineOutputSetting)
     output.output_directory = unreal.DirectoryPath(output_frame_dir)
     output.file_name_format = "frame_{frame_number}"
-    output.output_resolution = unreal.IntPoint(res_x, res_y)
+
+    # Resolve resolution and warm-up counts from quality preset
+    if quality_preset == 0:
+        actual_res_x, actual_res_y = 1920, 1080
+        warm_up = 10
+        spatial_aa, temporal_aa = 1, 1
+        unreal.log("[MHPD Batch Render] Applying 'Draft Preview' preset (1080p, 10 warm-up frames)")
+    elif quality_preset == 2:
+        actual_res_x, actual_res_y = 3840, 2160
+        warm_up = 64
+        spatial_aa, temporal_aa = 8, 4
+        unreal.log("[MHPD Batch Render] Applying 'Cinematic Master' preset (4K UHD, 64 warm-up frames, 8x/4x AA)")
+    else:  # ProductionHero (Default 1)
+        actual_res_x, actual_res_y = 2560, 1440
+        warm_up = 48
+        spatial_aa, temporal_aa = 4, 2
+        unreal.log("[MHPD Batch Render] Applying 'Production Hero' preset (1440p QHD, 48 warm-up frames, 4x/2x AA)")
+
+    output.output_resolution = unreal.IntPoint(actual_res_x, actual_res_y)
     output.use_custom_frame_rate = True
     output.output_frame_rate = unreal.FrameRate(fps, 1)
     output.flush_disk_writes_per_shot = True
     config.find_or_add_setting_by_class(unreal.MoviePipelineDeferredPassBase)
     config.find_or_add_setting_by_class(unreal.MoviePipelineImageSequenceOutput_JPG)
     anti_aliasing = config.find_or_add_setting_by_class(unreal.MoviePipelineAntiAliasingSetting)
-    anti_aliasing.engine_warm_up_count = 10
-    anti_aliasing.render_warm_up_count = 10
-    # The generated cut begins at playback start, so it has no negative-time
-    # section data for MRQ to consume as camera-cut warm-up.
-    anti_aliasing.use_camera_cut_for_warm_up = False
-    unreal.log(f"[MHPD Batch Render] Configured MRQ job: sequence={sequence_path}, map={job.map}, output={output_frame_dir}")
+    anti_aliasing.engine_warm_up_count = warm_up
+    anti_aliasing.render_warm_up_count = warm_up
+    try:
+        anti_aliasing.spatial_sample_count = spatial_aa
+        anti_aliasing.temporal_sample_count = temporal_aa
+    except Exception:
+        pass
+
+    unreal.log(f"[MHPD Batch Render] Configured MRQ job: sequence={seq_str}, map={map_str}, output={output_frame_dir} ({actual_res_x}x{actual_res_y}, {warm_up} warm-up frames)")
     return subsystem, job
 
 
@@ -410,13 +483,14 @@ class _RenderQueueManager:
         self.active_executor = None
         self.active_mrq_subsystem = None
 
-    def add_job(self, sequence_path: str, output_dir: str, res_x: int = 1920, res_y: int = 1080, fps: int = 30):
+    def add_job(self, sequence_path: str, output_dir: str, res_x: int = 1920, res_y: int = 1080, fps: int = 30, quality_preset: int = 1):
         self.queue.append({
             "sequence_path": sequence_path,
             "output_dir": output_dir,
             "res_x": res_x,
             "res_y": res_y,
-            "fps": fps
+            "fps": fps,
+            "quality_preset": quality_preset
         })
         self.process_next()
 
@@ -435,6 +509,7 @@ class _RenderQueueManager:
         res_x = self.active_job["res_x"]
         res_y = self.active_job["res_y"]
         fps = self.active_job["fps"]
+        quality_preset = self.active_job.get("quality_preset", 1)
 
         seq_asset = unreal.load_asset(seq_path)
         if not seq_asset:
@@ -464,10 +539,10 @@ class _RenderQueueManager:
             shutil.rmtree(temp_frames)
         os.makedirs(temp_frames, exist_ok=True)
 
-        unreal.log(f"[MHPD Batch Render] >>> Starting MRQ render for '{take_name}'...")
+        unreal.log(f"[MHPD Batch Render] >>> Starting MRQ render for '{take_name}' (Quality Preset: {quality_preset})...")
         try:
             self.active_mrq_subsystem, _ = create_mrq_job(
-                seq_path, temp_frames, res_x=res_x, res_y=res_y, fps=fps
+                seq_path, temp_frames, res_x=res_x, res_y=res_y, fps=fps, quality_preset=quality_preset
             )
             self.active_executor = unreal.MoviePipelinePIEExecutor(self.active_mrq_subsystem)
             self.active_executor.on_executor_finished_delegate.add_callable_unique(self._on_mrq_finished)
@@ -514,11 +589,11 @@ class _RenderQueueManager:
 _MANAGER = _RenderQueueManager()
 
 
-def render_take(sequence_path: str, output_dir: str | None = None, res_x: int = 1920, res_y: int = 1080, fps: int = 30):
-    """Queues a single Level Sequence take to render to MP4."""
+def render_take(sequence_path: str, output_dir: str | None = None, res_x: int = 1920, res_y: int = 1080, fps: int = 30, quality_preset: int = 1):
+    """Queues a single Level Sequence take to render to MP4 with specified quality preset."""
     target_out_dir = str(output_dir or DEFAULT_OUTPUT_DIR)
     os.makedirs(target_out_dir, exist_ok=True)
-    _MANAGER.add_job(sequence_path, target_out_dir, res_x=res_x, res_y=res_y, fps=fps)
+    _MANAGER.add_job(sequence_path, target_out_dir, res_x=res_x, res_y=res_y, fps=fps, quality_preset=quality_preset)
 
 
 def get_all_takes_in_folder(take_dir: str = "/Game/MHPD/Take_001") -> list[str]:
@@ -547,15 +622,15 @@ def get_all_takes_in_folder(take_dir: str = "/Game/MHPD/Take_001") -> list[str]:
     return [f"{a.package_name}.{a.asset_name}" for a in sorted_assets]
 
 
-def render_all_takes(take_dir: str = "/Game/MHPD/Take_001", output_dir: str | None = None, res_x: int = 1920, res_y: int = 1080, fps: int = 30):
-    """Queues all takes in the folder sequentially for batch rendering."""
+def render_all_takes(take_dir: str = "/Game/MHPD/Take_001", output_dir: str | None = None, res_x: int = 1920, res_y: int = 1080, fps: int = 30, quality_preset: int = 1):
+    """Queues all takes in the folder sequentially for batch rendering with specified quality preset."""
     target_out_dir = str(output_dir or DEFAULT_OUTPUT_DIR)
     os.makedirs(target_out_dir, exist_ok=True)
     
     take_paths = get_all_takes_in_folder(take_dir)
     unreal.log(f"[MHPD Batch Render] Found {len(take_paths)} takes in '{take_dir}' to queue.")
     for seq_path in take_paths:
-        _MANAGER.add_job(seq_path, target_out_dir, res_x=res_x, res_y=res_y, fps=fps)
+        _MANAGER.add_job(seq_path, target_out_dir, res_x=res_x, res_y=res_y, fps=fps, quality_preset=quality_preset)
 
 
 if __name__ == "__main__":
@@ -565,12 +640,13 @@ if __name__ == "__main__":
     parser.add_argument("--take", type=str, help="Specific sequence asset path to render")
     parser.add_argument("--take_dir", type=str, default="/Game/MHPD/Take_001", help="Folder of takes to batch render")
     parser.add_argument("--output_dir", type=str, default=str(DEFAULT_OUTPUT_DIR), help="Output folder for MP4 videos")
+    parser.add_argument("--quality", type=int, default=1, choices=[0, 1, 2], help="Render quality (0=Draft, 1=Production, 2=Cinematic)")
     parser.add_argument("--all", action="store_true", help="Batch render all takes in take_dir")
 
     args = parser.parse_args()
     if args.take:
-        render_take(args.take, output_dir=args.output_dir)
+        render_take(args.take, output_dir=args.output_dir, quality_preset=args.quality)
     elif args.all:
-        render_all_takes(take_dir=args.take_dir, output_dir=args.output_dir)
+        render_all_takes(take_dir=args.take_dir, output_dir=args.output_dir, quality_preset=args.quality)
     else:
-        render_all_takes(take_dir=args.take_dir, output_dir=args.output_dir)
+        render_all_takes(take_dir=args.take_dir, output_dir=args.output_dir, quality_preset=args.quality)
