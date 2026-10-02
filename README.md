@@ -19,11 +19,11 @@
 
 [![MetaHuman Performance Director - October 2026 ADE Showcase](https://frontiermindworks.com/MetaHumanPerformanceDirector/demolinkscreencap.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)
 
-- 🚀 **Latest ADE Showcase Video (October 2026):** [![Latest Video](https://img.shields.io/badge/▶%20Watch%20Latest%20Showcase-DemoOct.mp4-brightgreen?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)  
+- 🚀 **Latest ADE Showcase Video (October 2026):** [![Watch Latest Showcase](https://img.shields.io/badge/▶%20Watch-Production%20Showcase-brightgreen?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)  
   *Features the new 4-Tab Director Slate, 5 calibrated cinematic dials, timecoded multi-beat directing, and somatic vertebral breathing.*
-- 🎞️ **Original Grant Submission Video (Initial v0.1.0 Draft):** [![Initial Draft](https://img.shields.io/badge/🎞%20Watch%20Initial%20Draft-MetaHumanPerformanceDirector.mp4-blue?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)  
+- 🎞️ **Original Grant Submission Video (Initial v0.1.0 Draft):** [![Watch Initial Draft](https://img.shields.io/badge/🎞%20Watch-Grant%20Submission%20Prototype-blue?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)  
   *The foundational single-prompt prototype submitted for the 2026 Epic MegaGrant.*
-- 🌐 **Project Updates & Status Hub:** [![Live Portal](https://img.shields.io/badge/🌐%20Visit%20Live%20Portal-frontiermindworks.com-orange?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector)  
+- 🌐 **Project Updates & Status Hub:** [![Live Portal](https://img.shields.io/badge/🌐%20Explore-Devlog%20%26%20Roadmap-orange?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector)  
   *Explore interactive devlogs, live milestone roadmap, and the complete 8-dimension architecture evolution table.*
 
 ---
