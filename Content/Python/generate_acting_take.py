@@ -1325,7 +1325,7 @@ def _curve_ops_from_plan(plan, existing_curve_names):
                 unreal.log(f"MHPD: Fuzzy resolved '{behavior}' -> pattern '{mapping[0]}', group '{mapping[1]}'")
             else:
                 if behavior in GESTURE_BEHAVIORS:
-                    unreal.log(f"MHPD: '{behavior}' is a limb gesture behavior - handled by Kimodo body motion engine")
+                    unreal.log(f"MHPD: '{behavior}' is a limb gesture behavior - handled by skeletal body motion layer")
                 elif behavior in TIMING_AND_PAUSE_BEHAVIORS:
                     unreal.log(f"MHPD: '{behavior}' is a timing/pause behavior - handled by pre-speech lead/Sequencer")
                 else:

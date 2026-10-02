@@ -391,20 +391,6 @@ public:
     TSharedPtr<SComboBox<FBodyOptionPtr>> BodyLibraryComboBox;
     FString                              LastUploadBrowsePath;
 
-    // Text-to-Motion Generative Engine
-    TSharedPtr<SMultiLineEditableTextBox> MotionPromptTextBox;
-    TSharedPtr<SEditableTextBox>          MotionDurationTextBox;
-    TSharedPtr<SButton>                   GenerateMotionButton;
-    TSharedPtr<STextBlock>                MotionStatusText;
-    TSharedPtr<FInteractiveProcess>       MotionProcess;
-    FString                               LastGeneratedMotionPath;
-    FString                               LastGeneratedMotionJsonPath;
-
-    // Thread-safe queues for non-blocking process polling on Game Thread (avoids UE 5.8 FAppTime ensure)
-    TQueue<FString, EQueueMode::Mpsc>     MotionOutputQueue;
-    std::atomic<bool>                     bMotionProcessFinished{false};
-    std::atomic<int32>                    MotionProcessReturnCode{0};
-
     TQueue<FString, EQueueMode::Mpsc>     VoiceOutputQueue;
     std::atomic<bool>                     bVoiceProcessFinished{false};
 
@@ -441,18 +427,6 @@ public:
     virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override
     {
         SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
-
-        // Process Motion output lines on Game Thread
-        FString MotionLine;
-        while (MotionOutputQueue.Dequeue(MotionLine))
-        {
-            HandleMotionOutputLine(MotionLine);
-        }
-
-        if (bMotionProcessFinished.exchange(false))
-        {
-            HandleMotionProcessCompleted(MotionProcessReturnCode.load());
-        }
 
         // Process Voice output lines on Game Thread
         FString VoiceLine;
@@ -737,85 +711,6 @@ private:
                 + SVerticalBox::Slot()
                 .AutoHeight()
                 .Padding(0.0f, 4.0f, 0.0f, 12.0f)
-                [
-                    SNew(SSeparator)
-                ]
-
-                // ========================================================
-                // AI Body Motion (Generative)
-                // ========================================================
-                + SVerticalBox::Slot()
-                .AutoHeight()
-                .Padding(0.0f, 0.0f, 0.0f, 4.0f)
-                [
-                    SNew(STextBlock)
-                    .Text(LOCTEXT("TextToMotionHeader", "AI Body Motion (Generative)"))
-                    .Font(FAppStyle::GetFontStyle("DetailsView.CategoryFontStyle"))
-                ]
-
-                + SVerticalBox::Slot()
-                .AutoHeight()
-                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                [
-                    SNew(STextBlock)
-                    .Text(LOCTEXT("TextToMotionDesc", "Synthesize continuous 3D skeletal motion on local GPU and bind to the MetaHuman body."))
-                    .AutoWrapText(true)
-                    .ColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)))
-                ]
-
-                // Motion Prompt Box
-                + SVerticalBox::Slot()
-                .AutoHeight()
-                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                [
-                    SNew(SBox)
-                    .MinDesiredHeight(50.0f)
-                    [
-                        SAssignNew(MotionPromptTextBox, SMultiLineEditableTextBox)
-                        .HintText(LOCTEXT("MotionPromptHint", "e.g., cautious sneak forward, hesitant look around"))
-                        .AutoWrapText(true)
-                    ]
-                ]
-
-                // Motion Duration & Generate Button row
-                + SVerticalBox::Slot()
-                .AutoHeight()
-                .Padding(0.0f, 0.0f, 0.0f, 6.0f)
-                [
-                    SNew(SHorizontalBox)
-                    + SHorizontalBox::Slot()
-                    .AutoWidth()
-                    .Padding(0.0f, 0.0f, 8.0f, 0.0f)
-                    [
-                        MakeTextInputRow(MotionDurationTextBox, LOCTEXT("MotionDurationLabel", "Duration (s)"), LOCTEXT("MotionDurationDefault", "3.5"), 80.0f)
-                    ]
-                    + SHorizontalBox::Slot()
-                    .FillWidth(1.0f)
-                    .VAlign(VAlign_Bottom)
-                    [
-                        SAssignNew(GenerateMotionButton, SButton)
-                        .Text(this, &SMHPDDirectorPanel::GetGenerateMotionButtonText)
-                        .HAlign(HAlign_Center)
-                        .ButtonColorAndOpacity(FLinearColor(0.2f, 0.45f, 0.85f, 1.0f))
-                        .OnClicked(this, &SMHPDDirectorPanel::OnGenerateBodyMotionClicked)
-                    ]
-                ]
-
-                // Motion Status text
-                + SVerticalBox::Slot()
-                .AutoHeight()
-                .Padding(0.0f, 0.0f, 0.0f, 12.0f)
-                [
-                    SAssignNew(MotionStatusText, STextBlock)
-                    .Text(LOCTEXT("MotionStatusReady", "Ready to generate body motion."))
-                    .ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.6f, 0.6f)))
-                    .AutoWrapText(true)
-                ]
-
-                // Divider
-                + SVerticalBox::Slot()
-                .AutoHeight()
-                .Padding(0.0f, 0.0f, 0.0f, 12.0f)
                 [
                     SNew(SSeparator)
                 ]
@@ -1908,7 +1803,7 @@ private:
         return BodyAnim;
     }
 
-    UAnimSequence* CreateAnimSequenceFromMotionJson(
+    UAnimSequence* CreateAnimSequenceFromJsonFile(
         const FString& JsonFilePath,
         const FString& OutputDir,
         const FString& AssetName,
@@ -3771,7 +3666,7 @@ private:
             }
             else if (Ext == TEXT("json"))
             {
-                UAnimSequence* CreatedAnim = CreateAnimSequenceFromMotionJson(SrcPath, DestPackageDir, SafeAssetName, TargetSkeleton);
+                UAnimSequence* CreatedAnim = CreateAnimSequenceFromJsonFile(SrcPath, DestPackageDir, SafeAssetName, TargetSkeleton);
                 if (CreatedAnim)
                 {
                     LastUploadedAssetName = SafeAssetName;
@@ -3901,217 +3796,6 @@ private:
     void OnVoiceProcessCompleted(int32 ReturnCode, bool bCanceled)
     {
         bVoiceProcessFinished = true;
-    }
-
-    // -------------------------------------------------------------------------
-    // AI Body Motion (Text-to-Motion)
-    // -------------------------------------------------------------------------
-
-    FText GetGenerateMotionButtonText() const
-    {
-        if (MotionProcess.IsValid() && MotionProcess->IsRunning())
-        {
-            return LOCTEXT("GeneratingMotionRunning", "⚡ Synthesizing Motion on GPU...");
-        }
-        return LOCTEXT("GenerateMotionBtn", "⚡ Generate Body Motion");
-    }
-
-    FReply OnGenerateBodyMotionClicked()
-    {
-        if (MotionProcess.IsValid() && MotionProcess->IsRunning())
-        {
-            return FReply::Handled();
-        }
-
-        const FString Prompt = MotionPromptTextBox.IsValid() ? MotionPromptTextBox->GetText().ToString().TrimStartAndEnd() : FString();
-        if (Prompt.IsEmpty())
-        {
-            if (MotionStatusText.IsValid())
-            {
-                MotionStatusText->SetText(LOCTEXT("PromptEmptyError", "Please enter a motion prompt before generating."));
-            }
-            return FReply::Handled();
-        }
-
-        const float Duration = ParseFloatTextBox(MotionDurationTextBox, 3.5f);
-
-        // Resolve Python executable: check project-relative venv first, then absolute dev path, then system Python
-        TArray<FString> PythonCandidates = {
-            FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("../../MetaHumanPerformanceDirector/text_to_motion/.venv/Scripts/python.exe")),
-            TEXT("E:/DavidCobbinsGlobal/Software/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector/text_to_motion/.venv/Scripts/python.exe"),
-            TEXT("C:\\Users\\david\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe")
-        };
-
-        FString PythonExe;
-        for (const FString& Candidate : PythonCandidates)
-        {
-            if (FPaths::FileExists(Candidate))
-            {
-                PythonExe = Candidate;
-                break;
-            }
-        }
-
-        if (PythonExe.IsEmpty())
-        {
-            if (MotionStatusText.IsValid())
-            {
-                MotionStatusText->SetText(LOCTEXT("PythonNotFoundError", "Python environment for text_to_motion not found."));
-            }
-            return FReply::Handled();
-        }
-
-        // Resolve direct_motion.py
-        TArray<FString> ScriptCandidates = {
-            FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("../../MetaHumanPerformanceDirector/text_to_motion/direct_motion.py")),
-            TEXT("E:/DavidCobbinsGlobal/Software/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector/text_to_motion/direct_motion.py")
-        };
-
-        FString ScriptPath;
-        for (const FString& Candidate : ScriptCandidates)
-        {
-            if (FPaths::FileExists(Candidate))
-            {
-                ScriptPath = Candidate;
-                break;
-            }
-        }
-
-        if (ScriptPath.IsEmpty())
-        {
-            if (MotionStatusText.IsValid())
-            {
-                MotionStatusText->SetText(LOCTEXT("ScriptNotFoundError", "direct_motion.py not found in text_to_motion."));
-            }
-            return FReply::Handled();
-        }
-
-        const FString MotionOutputDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() / TEXT("MHPD/Motions"));
-        IFileManager::Get().MakeDirectory(*MotionOutputDir, true);
-
-        const FString SafeName = TEXT("Motion_") + MakeTakeToken(Prompt);
-        const FString OutputBvh = MotionOutputDir / (SafeName + TEXT(".bvh"));
-
-        LastGeneratedMotionPath = OutputBvh;
-        LastGeneratedMotionJsonPath = MotionOutputDir / (SafeName + TEXT(".json"));
-
-        const FString Args = FString::Printf(TEXT("\"%s\" --prompt \"%s\" --duration %.2f --output \"%s\""),
-            *ScriptPath,
-            *Prompt.Replace(TEXT("\""), TEXT("\\\"")),
-            Duration,
-            *OutputBvh
-        );
-
-        if (MotionStatusText.IsValid())
-        {
-            MotionStatusText->SetText(FText::FromString(FString::Printf(TEXT("Synthesizing motion for '%s' (%.1fs) on GPU..."), *Prompt, Duration)));
-        }
-
-        MotionProcess = MakeShareable(new FInteractiveProcess(PythonExe, Args, true));
-        MotionProcess->OnOutput().BindRaw(this, &SMHPDDirectorPanel::OnMotionProcessOutput);
-        MotionProcess->OnCompleted().BindRaw(this, &SMHPDDirectorPanel::OnMotionProcessCompleted);
-        MotionProcess->Launch();
-
-        return FReply::Handled();
-    }
-
-    void OnMotionProcessOutput(const FString& Output)
-    {
-        MotionOutputQueue.Enqueue(Output);
-    }
-
-    void OnMotionProcessCompleted(int32 ReturnCode, bool bCanceled)
-    {
-        MotionProcessReturnCode = bCanceled ? -1 : ReturnCode;
-        bMotionProcessFinished = true;
-    }
-
-    void HandleMotionOutputLine(const FString& Output)
-    {
-        if (Output.StartsWith(TEXT("MHPD_MOTION_RESULT: ")))
-        {
-            const FString JsonStr = Output.Mid(20).TrimStartAndEnd();
-            TSharedPtr<FJsonObject> JsonObj;
-            TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonStr);
-            if (FJsonSerializer::Deserialize(Reader, JsonObj) && JsonObj.IsValid())
-            {
-                LastGeneratedMotionPath = JsonObj->GetStringField(TEXT("bvh_path"));
-                LastGeneratedMotionJsonPath = JsonObj->GetStringField(TEXT("json_path"));
-            }
-        }
-        else if (Output.StartsWith(TEXT("MHPD_MOTION_STATUS: ")))
-        {
-            if (MotionStatusText.IsValid())
-            {
-                MotionStatusText->SetText(FText::FromString(Output.Mid(20).TrimStartAndEnd()));
-            }
-        }
-        else if (Output.StartsWith(TEXT("MHPD_MOTION_ERROR: ")))
-        {
-            if (MotionStatusText.IsValid())
-            {
-                MotionStatusText->SetText(FText::FromString(FString::Printf(TEXT("Error: %s"), *Output.Mid(19).TrimStartAndEnd())));
-            }
-        }
-    }
-
-    void HandleMotionProcessCompleted(int32 ReturnCode)
-    {
-        MotionProcess.Reset();
-        if (ReturnCode != 0)
-        {
-            if (MotionStatusText.IsValid())
-            {
-                MotionStatusText->SetText(LOCTEXT("MotionGenFailed", "Motion generation ended with an error. Check Output Log."));
-            }
-            return;
-        }
-
-        const FString OutputPackageDir = TEXT("/Game/MHPD/BodyLibrary/Generated");
-        FString SafeAssetName = TEXT("Motion_Generated");
-        if (!LastGeneratedMotionPath.IsEmpty())
-        {
-            SafeAssetName = FPaths::GetBaseFilename(LastGeneratedMotionPath);
-        }
-
-        // Create native AnimSequence from motion JSON
-        if (FPaths::FileExists(LastGeneratedMotionJsonPath))
-        {
-            CreateAnimSequenceFromMotionJson(LastGeneratedMotionJsonPath, OutputPackageDir, SafeAssetName, nullptr);
-        }
-
-        // Also copy BVH to project content for archival
-        const FString ProjectBodyDir = FPaths::ProjectContentDir() / TEXT("MHPD/BodyLibrary/Generated");
-        IFileManager::Get().MakeDirectory(*ProjectBodyDir, true);
-        if (!LastGeneratedMotionPath.IsEmpty() && FPaths::FileExists(LastGeneratedMotionPath))
-        {
-            const FString DestFileName = FPaths::GetCleanFilename(LastGeneratedMotionPath);
-            const FString DestFilePath = ProjectBodyDir / DestFileName;
-            IFileManager::Get().Copy(*DestFilePath, *LastGeneratedMotionPath, true, true);
-        }
-
-        // Rescan Body Library to populate dropdown with the new asset
-        ScanBodyLibrary();
-
-        // Auto-select the newly created asset
-        const FString TargetAssetPath = OutputPackageDir / (SafeAssetName + TEXT(".") + SafeAssetName);
-        for (const FBodyOptionPtr& Option : BodyLibraryOptions)
-        {
-            if (Option.IsValid() && (Option->Equals(TargetAssetPath, ESearchCase::IgnoreCase) || Option->Contains(SafeAssetName)))
-            {
-                SelectedBodyOption = Option;
-                if (BodyLibraryComboBox.IsValid())
-                {
-                    BodyLibraryComboBox->SetSelectedItem(SelectedBodyOption);
-                }
-                break;
-            }
-        }
-
-        if (MotionStatusText.IsValid())
-        {
-            MotionStatusText->SetText(FText::FromString(FString::Printf(TEXT("✓ Generated: %s (Selected for Take)"), *SafeAssetName)));
-        }
     }
 
 private: 
