@@ -3,7 +3,8 @@
 [![Unreal Engine 5.8](https://img.shields.io/badge/Unreal%20Engine-5.8%2B-blue?logo=unrealengine)](https://www.unrealengine.com)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Compute](https://img.shields.io/badge/Compute-100%25%20Local%20%26%20Offline-success)](https://frontiermindworks.com)
-[![Status](https://img.shields.io/badge/Status-v0.3.1--Production%20Ready-brightgreen)](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
+[![Status](https://img.shields.io/badge/Status-v0.3.1%2B%20(Alpha%20%26%20ADE)-brightgreen)](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
+[![Engine](https://img.shields.io/badge/Engine-Auteur%20Drama%20Engine-gold)](https://frontiermindworks.com)
 [![Author](https://img.shields.io/badge/Author-David%20Cobbins-blue.svg)](https://frontiermindworks.com)
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
@@ -14,31 +15,99 @@
 
 ---
 
-Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time lighting, and virtual production sets for independent filmmakers. But directing virtual human actors has remained locked behind a technical wall: tweaking raw facial curves, keyframing 200+ blendshapes, or waiting days for animation revisions strips away the spontaneous creative rhythm of a director.
+### 📢 Development & Roadmap Update
 
-**MetaHuman Performance Director** closes the gap between filmmaking intuition and technical execution:
+We've been working on significant updates that will be released over the coming months. Some of those updates have been released in GitHub in an unfinished state.
 
-- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input** powered by local NLP/NLU—translating dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) directly into calibrated RigLogic animation.
-- **Dedicated Directorial Dials:** Fine-tune performance dynamics independently from your dramatic notes. Five calibrated cinematic dials let you shape **Framing Scale** (subtle ocular micro-cues for close-ups vs. projected energy for wide shots), **Facial Nuance**, **Physical Action** (cervical neck and posture energy), **Subtext Masking** (intentional emotional concealment with authentic micro-leakage), and **Pre-Speech Lead Time** (anticipatory breaths and cognitive gaze saccades before speaking).
-- **Non-Destructive Alternate Takes & Channel Locks:** Generate fully editable takes in seconds, A/B compare performances on the fly directly in Sequencer, and selectively lock channels—preserving pristine dialogue audio and speech lip-sync key-for-key while freely iterating on emotional nuance.
+Here's a summary of changes from the original V1 release, and what will be released:
+
+| Core Dimension | Original/v1 Build | Current Production Build (Alpha & ADE) |
+| :--- | :--- | :--- |
+| **Directorial Architecture** | Basic prompt-to-blendshape scalar tool | **Auteur Drama Engine (ADE)** — Psychophysical acting engine (Stanislavski subtext, Brechtian somatic presence) |
+| **Editor Workflow & UI** | Single-window prompt & intensity slider | **4-Tab Director Slate UI:**<br>1. **Generate Baseline** (determinate $0\% \to 100\%$ progress bar)<br>2. **Direct Performance** (5 dials + voice)<br>3. **Review Takes** (A/B take auditioning)<br>4. **Render Studio** (Cinematography & MRQ) |
+| **Anatomical & Kinetic Scope** | Facial RigLogic curves & basic neck rotation | **Full Vertebral & Somatic Chain:** Pelvis, Spine 01–04, Clavicles + Upper Arm coupling ($k=0.90$), Cervical Neck, Diaphragm breathing cycles & emotional sighs |
+| **Facial & Speech Realism** | Basic blendshape activation with potential tearing | **Duchenne co-activation matrices**, soft-knee viseme protection, pre-speech breath onset guard, sustained posture holding |
+| **Directorial Controls** | Single "Intensity" slider ($0.0 - 1.0$) | **5 Calibrated Cinematic Dials:** Framing Scale, Facial Nuance, Physical Action, Subtext Masking (guise vs. leakage), Pre-Speech Lead Time |
+| **Multi-Beat Directing** | Single prompt per take | **Timecoded Multi-Beat Syntax** (`[0s-7s]... [7s-14s]...`) compiled into a single seamless Level Sequence |
+| **Virtual Cinematography** | Manual editor viewport review | **Render Studio (Tab 4):** Shot sizes (Wide, MCU, CU, ECU), angles (Dutch, Low, Profile), lenses (35–105mm), automated CineCamera cuts & batch MRQ to MP4 |
+| **Multi-Actor & External MoCap** | Conceptual future | **Bravo Architecture:** External baseline/MoCap ingestion, non-destructive additive Control Rig layers, screenplay ingestion & proxemics |
+
+*Note: The features above represent active implementations rolling out across our milestone releases.*
 
 ---
 
-## 🎬 In-Editor Demonstration
+## 🎬 Video Showcase & Walkthrough
 
-[![MetaHuman Performance Director In-Editor Walkthrough](https://frontiermindworks.com/MetaHumanPerformanceDirector/mhpd_demo_preview.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector)
+[![MetaHuman Performance Director - October 2026 ADE Showcase](https://frontiermindworks.com/MetaHumanPerformanceDirector/demolinkscreencap.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)
 
-> **[▶ Watch Full Video](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)** &bull; **[Interactive Project Page](https://frontiermindworks.com/MetaHumanPerformanceDirector)**  
-> *Walkthrough demonstrating automated audio-to-face baseline synthesis, natural language performance directing, non-destructive Sequencer take layering, and RigLogic curve synthesis directly in Unreal Engine 5.8.*  
->  
-> 💡 **Release Note:** *The walkthrough video above demonstrates the Phase 1 grant submission build (single intensity control). The latest codebase introduces the **Three-Tab Director Slate UI**, **Five Directorial Dials**, and biological **Sustained Head Posture & Soft-Knee Viseme Collision Avoidance** (detailed in [Recent Updates](#-recent-updates--devlog) below).*
+- **Interactive Project Page:** [https://frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
+- **October 2026 ADE Update Video:** [DemoOct.mp4](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)
+- **Original Grant Submission Video:** [MetaHumanPerformanceDirector.mp4](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)
+- **Public GitHub Mirror:** [https://github.com/drc1985/MetaHuman_Performance_Director_v2](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
+
+---
+
+## 🧠 The Auteur Drama Engine (ADE)
+
+Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time lighting, and virtual production sets for independent filmmakers. But directing virtual human actors has remained locked behind a technical wall: tweaking raw facial curves, keyframing 200+ blendshapes, or relying on mechanical acoustic solvers.
+
+Traditional audio-driven systems solve the phonemes, but they suffer from the **"I love you / I will kill you" paradox**: acoustic waveforms for identical words sound identical, yet dramatically they demand opposite somatic realities.
+
+The **Auteur Drama Engine (ADE)** transforms MetaHuman Performance Director from an animation curve tool into a **psychophysical acting engine**:
+
+1. **Stanislavskian Inner Monologue & Dramatic Subtext:** Synthesizes the psychological space *underneath* spoken dialogue—masking overt emotion while surfacing authentic micro-leakage (masseter clenching, ocular avoidance, breath suppression).
+2. **Brechtian Somatic Presence:** Characters don't freeze between lines. They possess continuous vertebral breathing, postural weight transfer, clavicle counter-rotations, and sustained physical attitude.
+3. **Chekhovian Psychological Gesture:** Pre-speech lead times (0–1000ms) inject anticipatory gaze saccades, breath intake onsets, and cervical preparation before the first syllable is spoken.
+
+---
+
+## 🎛️ The 4-Tab Filmmaker Workflow
+
+```
+[ Tab 1: Baseline ]  ──►  [ Tab 2: Directing Slate ]  ──►  [ Tab 3: Take Review ]  ──►  [ Tab 4: Render Studio ]
+ Audio Ingestion &          5 Dials, Voice Input &           A/B Take Auditioning &       Framing Presets &
+ Progress Bar (0→100%)      Multi-Beat Timecode Syntax       Structured JSON Inspection   Batch MRQ Export to MP4
+```
+
+1. **Tab 1 — Generate Baseline:**
+   - Asynchronous, non-blocking Audio2Face baseline generation with a determinative $0\% \to 100\%$ progress bar.
+   - Clean audio ingestion (.wav) automatically bound into an isolated Sequencer take.
+2. **Tab 2 — Directing Slate:**
+   - **5 Calibrated Cinematic Dials:** *Framing Scale* (MCU/CU/Wide), *Facial Nuance*, *Physical Action*, *Subtext Masking*, and *Pre-Speech Lead Time*.
+   - **Hold-to-Talk Voice Directing:** Speak or type natural language acting notes.
+   - **Timecoded Multi-Beat Syntax:** Direct evolving dramatic beats (`[0s-7s] She is defensive... [7s-14s] Breaks down in grief`) seamlessly inside a single Level Sequence.
+   - **Channel Preservation Locks:** Preserve dialogue audio, speech phonemes, gaze, or body layers key-for-key.
+3. **Tab 3 — Take Review Station:**
+   - Instant A/B take auditioning and non-destructive layer switching directly in Sequencer.
+   - Transparent structured JSON performance plan inspection and take management.
+4. **Tab 4 — Render Studio:**
+   - Performer-aware automated CineCamera framing with calibrated shot sizes (Wide, Medium Close-Up, Close-Up, Extreme Close-Up) and lenses (35mm, 50mm, 85mm, 105mm).
+   - Cinematic angles: Dutch tilt, Low angle, Profile, Eye-level.
+   - In-editor batch Movie Render Queue (MRQ) automation producing final graded MP4 deliverables with muxed audio.
+
+---
+
+## 🧬 Somatic & Biomechanical Engine
+
+- **Kinetic Vertebral Chain:** Propagates motion organically through Pelvis $\to$ Spine 01–04 $\to$ Neck $\to$ Head, eliminating static mannequin stiffness.
+- **Clavicle & Upper Arm Coupling ($k=0.90$):** $100\%$ clavicle displacement coupled to upper arm kinematics to prevent shoulder disarticulation during emotional gestures and posture slumps.
+- **Diaphragm Breathing Cycles & Emotional Sighs:** Autonomic breathing rhythms that speed up during anxiety and deep restorative sighs during emotional releases.
+- **Duchenne Co-Activation:** Biologically linked zygomaticus major and orbicularis oculi muscle groups ensure authentic smiles rather than artificial mouth-only warping.
+- **Soft-Knee Viseme Protection:** Non-linear saturation curves (`_soft_knee_saturate`) prevent blendshape overshoot and mouth tearing during active speech.
 
 ---
 
 ## ⚡ Recent Updates & Devlog
 
+### October 2026 — v0.3.1+ (Alpha Cycle / ADE): Auteur Drama Engine & 4-Tab Filmmaker Suite
+- **Auteur Drama Engine (ADE) Integration:** Integrated psychophysical acting model with Stanislavski subtext processing and Brechtian somatic presence.
+- **4-Tab Director Slate UI:** Expanded the Slate architecture into a 4-tab workflow: Baseline Generation ($0\% \to 100\%$ progress bar), Directing Slate (5 dials + voice), Take Review Station (A/B auditioning), and Render Studio (automated CineCamera cuts & MRQ batch export).
+- **Timecoded Multi-Beat Directing:** Direct multi-phase acting arcs within a single take using timecode intervals (`[0s-7s]... [7s-14s]...`).
+- **Vertebral Spine & Clavicle Dynamics:** Implemented complete 5-segment spinal chain (Pelvis, Spine 01-04) and clavicle counter-rotations with $k=0.90$ arm coupling.
+- **Automated Render Studio:** Cinematic lens presets (35mm-105mm), camera framing compensation, and automated Movie Render Queue batch pipeline to MP4.
+
 ### September 2026 — v0.3.1: Batch Movie Render Queue (MRQ) & Kinematic Hardening Update
-- **Movie Render Queue (MRQ) Batch Rendering:** Added automated, high-fidelity take rendering via `MoviePipelinePIEExecutor` (`batch_render_takes.py`):
+- **Movie Render Queue (MRQ) Batch Rendering:** Added automated take rendering via `MoviePipelinePIEExecutor` (`batch_render_takes.py`):
   - In-editor batch rendering queue supporting sequential take export without blocking the UI.
   - Automated camera binding, framing compensation, and CineCamera cut track generation.
   - Multi-pass rendering with anti-aliasing engine warm-up and automatic dialogue audio muxing into final MP4 deliverables.
@@ -54,39 +123,24 @@ Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time l
 - **Plugin Ecosystem:** Added first-party `MovieRenderPipeline` dependency declaration in `.uplugin`.
 
 ### September 2026 — v0.3.0: 3-Tab Director Slate UI & Sustained Posture Update
-- **3-Tab Directorial Slate (`SWidgetSwitcher`):** Re-architected editor UX into a high-ergonomics 3-stage filmmaking pipeline:
-  1. **Generate Baseline Take:** Setup audio file, automated Sequencer binding, and AI generative body motion staging.
-  2. **Direct the Performance:** Streamlined note prompting with voice capture, 5 calibrated cinematic dials, optional follow-up iteration, and channel preservation locks.
-  3. **Review Performance:** Clean take selector, A/B review, take deletion, and transparent structured performance plan JSON inspection.
-- **Sustained Head & Gaze Posture:** Replaced abrupt return-to-rest drift with natural posture-holding dynamics. MetaHumans maintain directed physical attitude across speech beats with organic micro-settling.
-- **Academic & Research Citation:** Added official GitHub citation support via [`CITATION.cff`](CITATION.cff) for standard BibTeX and APA attribution.
+- **3-Tab Directorial Slate (`SWidgetSwitcher`):** Ergonomic filmmaking pipeline (Baseline, Direct, Review).
+- **Sustained Head & Gaze Posture:** Replaced abrupt return-to-rest drift with natural posture-holding dynamics.
+- **Academic & Research Citation:** Added official GitHub citation support via [`CITATION.cff`](CITATION.cff).
 
 ### September 2026 — v0.2.0: Directorial Dials & Soft-Knee Viseme Update
-
-Following the initial grant concept submission, we expanded the directorial controls to reflect film-directing psychology and biological realism:
-
-### 1. The Five Directorial Dials
-Replaced the single scalar "intensity" slider with five calibrated cinematic dimensions in the Slate UI:
-- **Framing Scale:** Calibrates performance for *Cinematic Close-Up* (dampens gross head movement, accentuates ocular micro-cues) vs. *Conversational* vs. *Theatrical Wide* (projects energy to the back row).
-- **Facial Nuance:** Controls emotional displacement across RigLogic face curves with non-linear calibration (*Subtle*, *Natural*, or *Pronounced*).
-- **Head & Body (Physical Action):** Modulates cervical neck rotations and body posture independently from facial expressions.
-- **Subtext Masking (Chekhov's 'Guise vs. Under-the-Guise'):** Models intentional concealment—suppresses overt emotional caricature while injecting authentic micro-leakage (masseter jaw clench, brow asymmetry, inner squint).
-- **Pre-Speech Preparation Lead:** Injects anticipatory psychological gesture (eye saccade, breath lead) 0–1000ms prior to the first spoken word.
-
-### 2. Biological Soft-Knee Viseme Protection
-- Injected `_soft_knee_saturate()` into the Python execution pipeline, preventing linear blendshape overshoot past anatomical limits.
-- Upgraded mouth-settling routines to strictly protect expressive acting curves (smiles, frowns, jaw clenches) while ensuring speech opening phonemes cleanly return to rest pose without tearing.
+- **The Five Directorial Dials:** Framing Scale, Facial Nuance, Physical Action, Subtext Masking, and Pre-Speech Lead Time.
+- **Biological Soft-Knee Viseme Protection:** `_soft_knee_saturate()` preventing blendshape overshoot past anatomical limits.
 
 ---
 
 ## 🔒 100% Local & Offline — Zero Cloud Dependencies
 
-Unlike cloud GenAI services or other comparable tools, MHPD runs **entirely locally inside your Unreal Engine editor session**:
+Unlike cloud GenAI services or other comparable tools, MHPD runs **100% locally and offline in Unreal Engine**:
 
-- **No Cloud Services or External Network Calls:** Operates 100% offline. Zero latency roundtrips to remote APIs.
-- **No API Keys or Accounts Required:** No OpenAI, Anthropic, or third-party cloud credentials needed. Clone, build, and direct.
-- **Complete Script & Actor Privacy:** Unreleased screenplays, confidential character likenesses, and voice recordings never leave your local workstation or studio intranet.
-- **Deterministic & Repeatable:** Performance plans are generated deterministically and stored as open JSON contracts, ensuring repeatable takes across team members.
+- **Zero Cloud Calls:** No latency roundtrips or external server dependencies.
+- **Zero API Keys or Accounts:** No OpenAI, Anthropic, or proprietary cloud accounts required.
+- **Studio IP & Privacy First:** Unreleased screenplays, actor likenesses, and voice recordings never leave your workstation.
+- **Deterministic IR:** Generates deterministic JSON performance plans conforming to strict schema contracts.
 
 ---
 
@@ -117,22 +171,22 @@ Unlike cloud GenAI services or other comparable tools, MHPD runs **entirely loca
 
 ---
 
-## 📄 Performance Plan Specification (Open IR)
+## 📄 Repository Contents & Documentation
 
-MHPD decouples high-level creative intent from low-level joint and blendshape keyframing using an open intermediate representation (IR): the **Performance Plan**.
-
-- **Master Specification & Lexicon:** [`docs/PERFORMANCE_DIRECTOR_SPECIFICATION.md`](docs/PERFORMANCE_DIRECTOR_SPECIFICATION.md)
-- **JSON Schema:** [`schemas/performance_plan.schema.json`](schemas/performance_plan.schema.json)
-
-The specification document details the schema, the 4 mathematical curve synthesis profiles, and includes a complete worked example demonstrating how the note *"She is nervous, but trying to appear confident. Have her look away before answering"* compiles into specific RigLogic curves (`eyeLookLeftL`, `eyeSquintInnerL`, `jawClenchL`, `mouthLipsPressL`, `mouthCornerPullL`) with timing offsets and viseme preservation.
+- `docs/PERFORMANCE_DIRECTOR_SPECIFICATION.md` — Master technical specification and creative directorial lexicon (28-category acting library, 5 dials math, 4 curve patterns, and Sequencer architecture).
+- `schemas/performance_plan.schema.json` — Formal Draft 2020-12 JSON Schema for performance plan validation.
+- `docs/PROJECT_DEFINITION.md` — Product definition, user stories, scope, and success criteria.
+- `docs/MEGAGRANT_CONCEPT_BRIEF.md` — Concept brief for Epic MegaGrants submission.
+- `docs/AGILE_BACKLOG.md` — Epics, user stories, and milestone tracking.
+- `docs/PROTOTYPE_ARCHITECTURE.md` — Architecture breakdown of the Unreal C++ and Python pipeline.
+- `prototype/` — Standalone Python prototype and CLI testbed.
+- `unreal-plugin/` — Native Unreal Engine 5.8 editor plugin (`MetaHumanPerformanceDirector`).
 
 ---
 
 ## ⚖️ Current Capabilities & Limitations
 
-To set clear expectations for animators and technical directors:
-
-### What Is Fully Functional Today:
+### What Is Functional Today:
 - **RigLogic Facial Directing:** Full procedural keyframing of MetaHuman's 200+ native facial blendshapes and bone controls.
 - **Gaze & Saccadic Kinematics:** Procedural gaze breaks, cognitive aversion shifts, and blink synchronization.
 - **Cervical & Head Turns:** Driven via Control Rig on the MetaHuman body skeleton (cervical yaw, pitch, roll).
@@ -140,87 +194,64 @@ To set clear expectations for animators and technical directors:
 - **Offline Semantic Parser:** Local heuristic rule engine mapping director phrasing to calibrated performance plans.
 
 ### Current Limitations & What's In Active Development:
-- **Body Gesture Synthesis:** *Early Prototype / Experimental.* While cervical head orientation and upper-torso posture anchoring are supported, full-body text-to-motion generative synthesis is currently in early development and kept in research quarantine.
-- **Subtext Parsing:** Complex, multi-sentence subtext with subtle literary nuance currently uses a rule-based parser. An embedded, fully local Small Language Model (SLM) is in development to expand semantic range without introducing cloud dependencies.
+- **Body Motion & Gesture Architecture:** *Pluggable Motion Resolver.* With local Kimodo engines maturing (MotionSmith, DDS Motion), general text-to-body motion is commoditized infrastructure. MHPD delegates gross locomotion to a pluggable **Motion Resolver** (supporting MotionSmith, DDS Motion, project clips, or our Tier 0 built-in procedural fallback), while focusing its core R&D on **directorial acting layers** (cervical head posture, ocular gaze saccades, thoracic breathing tension, and relational blocking).
+- **Subtext Parsing:** Complex, multi-sentence subtext currently uses a deterministic heuristic engine. An embedded local Small Language Model (SLM) is in development for deeper subtext reasoning without cloud dependencies.
 - **Platform Support:** Developed and verified specifically on Unreal Engine 5.8 on Windows x64.
 
 ---
 
 ## 🗺️ Project Roadmap
 
-- [x] **Phase 1: Working Prototype (Complete & Demonstrable in UE 5.8)**
-  - Native UE 5.8 Slate director panel (voice or typed notes, directorial dials, channel locks).
+- [x] **Phase 1: Alpha Cycle — Working Single-Performer Prototype (Complete & Demonstrable in UE 5.8)**
+  - Native UE 5.8 Slate director panel (voice or typed notes, 5 directorial dials, channel locks).
   - Audio-to-face baseline automation via MetaHuman Animator.
   - Native RigLogic curve synthesis (200+ blendshapes & joint controls via 4 universal mathematical patterns).
   - Procedural gaze breaks, saccadic eye darting, and blink synchronization.
   - Non-destructive Sequencer take isolation, take A/B switching, and soft-knee viseme preservation.
   - Offline heuristic semantic parser behind an open JSON performance plan contract.
 
-- [ ] **Phase 2: Production Scale — Curated Behavior Library & Data-Calibrated Proceduralism**
-  - **Full-Performance Capture Sessions:** Commissioned motion capture sessions with simultaneous optical/inertial body tracking and Head-Mounted Camera (HMC) facial capture, producing 100% original, redistributable MetaHuman assets.
-  - **Modular Additive Behavior Library:** Retarget and modularize captured takes into discrete additive micro-behaviors (posture shifts, physical listening beats, conversation gestures, head-movement idioms) that the planner blends non-destructively in Sequencer.
-  - **Data-Calibrated Procedural Synthesis:** Leverage captured actor data to biologically calibrate procedural curve generation:
-    - *Muscle Co-Activation Matrices:* Empirically derived RigLogic multi-muscle synergies (e.g., authentic smile-to-cheek and brow-to-squint co-activation ratios).
-    - *Biological Kinematic Profiles:* Empirically measured velocity and ease envelopes (e.g., asymmetric blink attack/decay, masseter tension curves).
-    - *Directorial Dial Grounding:* Calibrate the 5 Directorial Dials against ground-truth actor performances across framing scales (close-up underplay vs. theatrical projection).
-  - **Fine-Tuned Local Language Model:** Replace the heuristic parser with a specialized Small Language Model (SLM) running 100% offline on a single workstation GPU (DirectML / ONNX Runtime) behind the same open JSON contract.
+- [ ] **Phase 2: Alpha Polish — Curated Behavior Library & Data-Calibrated Proceduralism**
+  - **Data-Calibrated Procedural Synthesis:** Leverage captured actor data to biologically calibrate procedural curve generation (muscle co-activation matrices, biological kinematic profiles, and ground-truth dial calibration).
+  - **Fine-Tuned Local Small Language Model (SLM):** Replace the keyword heuristic parser with a specialized offline SLM running locally on workstation hardware (DirectML / ONNX Runtime).
 
-- [ ] **Phase 3: Multi-Character Directing & Emotion Timeline**
-  - **Multi-Character Scene Directing:** Parse multi-actor notes (*"Joe, stay guarded. Bob, let the disappointment show"*) into a synchronized master plan with per-character Sequencer take layers.
-  - **Voice Emotion Timeline UI:** Surface audio-derived emotional cues as editable, director-reviewable micro-expression proposals in Sequencer before baking.
+- [ ] **Phase 3: Bravo Cycle — Multi-Character Scene Directing & Soundstage Staging**
+  - **Screenplay Ingestion & Scene Breakdown:** Native Fountain / `.fdx` screenplay parser extracting characters, dialogue, action beats, props, and scene mood into a visual Scene Selector.
+  - **Soundstage Auto-Placement & Staging:** Geometric solver for conversational proxemics, ground raycasting, eye-line matching vectors, and 180° camera rule constraints.
+  - **Pluggable Motion Resolver:** Seamless bridge interfacing with local Kimodo engines (MotionSmith AI, Dark Dojo DDS Motion) and stock animation libraries, backed by our Tier 0 procedural fallback.
+  - **DP Camera Coverage Package:** Automatic suggestion and generation of Master Two-Shots, OTS, MCU singles, and emotional close-up coverage.
+  - **Multi-Character Relational Directing:** Compound natural language parsing for multi-actor relational notes (*"Julia and Todd turn away... Julia stops first"*), Master Sequence take branching, and cross-character take mixing.
 
-- [ ] **Phase 4: Fab Marketplace Release & Studio Validation**
-  - **Formal Validation Studies:** Blind A/B director-intent recognition tests and technical animator editability reviews.
-  - **Fab Distribution:** Public release on Fab with a free educational tier and open performance plan schema.
+- [ ] **Phase 4: Fab Marketplace Release & Studio / Enterprise Validation**
+  - **Studio & Defense Validation:** Formal A/B director-intent testing, virtual production previz trials, and air-gapped simulation validation.
+  - **Fab Distribution:** Public release on Epic's Fab marketplace with open performance plan schema.
 
 ---
 
-## 🛠️ Architecture Overview
+## 🚀 Running the Unreal Engine Demo
 
-The plugin implements an automated two-phase directorial pipeline built natively on top of Epic Games' first-party stack (MetaHuman Animator, RigLogic, and Sequencer):
-
-```
-+-------------------------------------------------------------------------------+
-|                       Phase 1: Audio-to-Face Baseline                         |
-| Ingests raw dialogue audio (.wav) -> Extracts acoustic phonemes via MetaHuman  |
-| Animator -> Generates baseline Level Sequence with speech & lipsync locked.   |
-+---------------------------------------+---------------------------------------+
-                                        |
-                                        v
-+-------------------------------------------------------------------------------+
-|                       Phase 2: Intent Take Generation                         |
-| Directorial note -> Parsed into JSON Performance Plan -> Bakes additive       |
-| RigLogic curve tracks & Control Rig layers non-destructively in Sequencer.    |
-+-------------------------------------------------------------------------------+
-```
+1. **Verify Plugins:** Ensure `MetaHuman`, `MetaHuman Animator`, `ControlRig`, `PythonScriptPlugin`, and `MovieRenderPipeline` are enabled.
+2. **Open the Demo Map:** In the Unreal Editor Content Browser, open your designated demo level (e.g. `Lvl_IntroRoom`).
+3. **Verify the Performer:** Ensure `BP_MH_DemoActor` is placed in the level.
+4. **Open the Performance Director Panel:** Navigate to **Window &rarr; MetaHuman Performance Director**.
+5. **Direct a Take:**
+   - Input a directorial note (e.g., *"She is nervous, but trying to appear confident."*)
+   - Adjust directorial dials (*Framing Scale*, *Facial Nuance*, *Subtext Suppression*, etc.)
+   - Click **Generate Take** to synthesize the new Sequencer take!
 
 ---
 
-## 🚀 Installation & Quick Start
+## 🧪 Running the Standalone Python Prototype
 
-### 1. Prerequisites
-Verify that your Unreal project has the required plugins enabled:
-- **MetaHuman** and **MetaHuman Animator**
-- **Control Rig**
-- **Python Editor Script Plugin** (`PythonScriptPlugin`)
-- **Movie Render Queue** (`MovieRenderPipeline`)
+You can also run the offline planner CLI from the repository root:
 
-### 2. Install Plugin
-Clone or extract this repository into your project's `Plugins/` folder:
-```bash
-cd MyProject/Plugins/
-git clone https://github.com/drc1985/MetaHuman_Performance_Director_v2.git MetaHumanPerformanceDirector
+```powershell
+python .\prototype\mhpd_cli.py "She is nervous, but trying to appear confident. Have her look away before answering." --intensity 0.65 --lock dialogue_audio --lock lip_sync
 ```
 
-### 3. Build & Launch
-Generate project files and rebuild your C++ project in Visual Studio or Rider, then launch Unreal Editor 5.8+.
-
-### 4. Direct a Take
-1. Ensure your MetaHuman Character Blueprint (e.g. `BP_<CharacterName>`) is placed in the level.
-2. Open the panel via **Window &rarr; MetaHuman Performance Director**.
-3. Select your MetaHuman actor and your dialogue `.wav` sound wave.
-4. Generate the audio baseline take.
-5. Enter a directorial note (e.g. *"She turns her head right, glances down nervously, and frowns while speaking"*), adjust your directorial dials, and click **Generate Take**!
+Run test suite:
+```powershell
+python -m unittest discover -s .\prototype\tests -t .\prototype
+```
 
 ---
 
@@ -275,4 +306,3 @@ Copyright © 2026 David Cobbins. All rights reserved. Permission is hereby grant
 - **Referential Compatibility:** All references to "MetaHuman", "Unreal Engine", "RigLogic", and "Control Rig" in this repository and associated documentation are strictly referential, intended solely to describe interoperability, compatibility, and workflow integration with Epic Games' software and technologies.
 - **Independence:** MetaHuman Performance Director (MHPD) is an independent open-source tool created by David Cobbins (Frontier Mindworks). It is not sponsored, endorsed, administered by, or officially affiliated with Epic Games, Inc.
 - **Proprietary Assets & Logos:** This repository does not distribute, package, or claim ownership of any proprietary Epic Games logos, character meshes, or assets. All MetaHuman assets remain the intellectual property of Epic Games, Inc. and are governed by their respective licenses.
-
