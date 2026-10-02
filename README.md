@@ -5,11 +5,11 @@
 [![Compute](https://img.shields.io/badge/Compute-100%25%20Local%20%26%20Offline-success)](https://frontiermindworks.com)
 [![Status](https://img.shields.io/badge/Status-v0.3.1%2B%20(Alpha%20%26%20ADE)-brightgreen)](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
 [![Engine](https://img.shields.io/badge/Engine-Auteur%20Drama%20Engine-gold)](https://frontiermindworks.com)
-[![Author](https://img.shields.io/badge/Author-David%20Cobbins-blue.svg)](https://frontiermindworks.com)
+[![Author](https://img.shields.io/badge/Author-David%20Cobbins-blue.svg)](https://www.linkedin.com/in/davidcobbins)
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
 
-**Created & Architected by [David Cobbins](https://github.com/drc1985) • [Frontier Mindworks](https://frontiermindworks.com)**
+**Created & Architected by [David Cobbins](https://www.linkedin.com/in/davidcobbins) • [Frontier Mindworks](https://frontiermindworks.com)**
 
 > ℹ️ **Independent Project Notice:** MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.
 
@@ -31,7 +31,7 @@ Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time l
 
 [![MetaHuman Performance Director - October 2026 ADE Showcase](https://frontiermindworks.com/MetaHumanPerformanceDirector/demolinkscreencap.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)
 
-- **Interactive Project Page:** [https://frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
+- **Project Updates and Status:** [https://frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
 - **October 2026 ADE Update Video:** [DemoOct.mp4](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)
 - **Original Grant Submission Video:** [MetaHumanPerformanceDirector.mp4](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)
 - **Public GitHub Mirror:** [https://github.com/drc1985/MetaHuman_Performance_Director_v2](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
@@ -198,9 +198,10 @@ If you use **MetaHuman Performance Director** in your academic research, virtual
 **David Cobbins**  
 Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com)
 
+- **LinkedIn:** [davidcobbins](https://www.linkedin.com/in/davidcobbins)
 - **GitHub:** [@drc1985](https://github.com/drc1985)
 - **Portfolio & Lab:** [frontiermindworks.com](https://frontiermindworks.com)
-- **Project Showcase:** [frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
+- **Project Updates & Status:** [frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
 - **Epic MegaGrants 2026:** Official Submission
 
 ---
