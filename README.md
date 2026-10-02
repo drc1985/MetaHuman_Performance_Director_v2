@@ -138,9 +138,12 @@ Here's a summary of changes from the original V1 release, and what will be relea
   - **DP Camera Coverage Package:** Automatic suggestion and generation of Master Two-Shots, OTS, MCU singles, and emotional close-up coverage.
   - **Multi-Character Relational Directing:** Compound natural language parsing for multi-actor relational notes (*"Julia and Todd turn away... Julia stops first"*), Master Sequence take branching, and cross-character take mixing.
 
-- [ ] **Phase 4: Fab Marketplace Release & Studio Validation**
-  - Studio & virtual production previz testing.
-  - Public release on Epic's Fab marketplace with open performance plan schema.
+- [ ] **Phase 4: Fab Marketplace Release, Studio Validation & Documentation**
+  - **Studio & Virtual Production Previz Testing:** Real-world validation with indie filmmakers and virtual production stages.
+  - **Comprehensive Filmmaker Video Walkthroughs:** Step-by-step video tutorials covering voice directing, dramatic subtext tuning, multi-beat take iteration, and batch MRQ delivery.
+  - **Complete Sample Project & Cinematic Demo Scenes:** Turnkey Unreal Engine sample project featuring pre-calibrated MetaHumans, multi-beat Level Sequences, and CineCamera rigs.
+  - **Technical Documentation & API Reference:** Complete user manual and open Performance Plan JSON Schema documentation for studio pipeline and DCC integration.
+  - **Fab Marketplace Launch:** Official release on Epic's Fab marketplace.
 
 ---
 
