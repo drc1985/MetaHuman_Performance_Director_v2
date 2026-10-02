@@ -9,6 +9,27 @@
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
 
+## 📦 What's in This Repository
+
+This repository provides the open-source architectural foundation and working single-performer core of **MetaHuman Performance Director (MPHD)** for Unreal Engine 5.8. It implements the complete end-to-end directorial workflow to demonstrate our core systems and performance schema.
+
+- **Included in this Public Repository:**
+  - **4-Tab Director Slate UI:** Full Slate editor panel (Baseline Ingestion, Direct Performance, Take Review, and Render Studio).
+  - **RigLogic Curve Synthesis:** Deterministic facial curve generation, Duchenne co-activation, and soft-knee viseme protection.
+  - **Non-Destructive Take Management:** Multi-take Sequencer generation (`LS_ALT_...`) with selective Channel Preservation Locks.
+  - **In-Editor Virtual Cinematography:** CineCamera framing presets and batch Movie Render Queue (MRQ) automation to MP4.
+  - **Open Performance Plan Contract:** Complete JSON Schema for directorial intent and toolchain interoperability.
+  - **Core Rule-Based Directorial Parser:** Fast C++ semantic parser for natural language directorial notes and timecoded syntax.
+
+- **In Active Private Development (Commercial Roadmap):**
+  - **Fine-Tuned Local SLM:** Offline neural directorial compiler (DirectML / ONNX Runtime) running directly on workstation hardware.
+  - **Auteur Drama Engine (ADE) Neural Solvers:** Deep psychophysical subtext modeling, emotional masking, and involuntary micro-leakage synthesis.
+  - **Bravo Multi-Character Staging:** Screenplay ingestion (`.fdx`/Fountain), conversational proxemics, and cross-character relational blocking.
+
+*These advanced modules are demonstrated in our showcase videos and will release on Fab and commercial studio tiers aligned with our milestone roadmap.*
+
+---
+
 **Created & Architected by [David Cobbins](https://www.linkedin.com/in/davidcobbins) • [Frontier Mindworks](https://frontiermindworks.com)**
 
 > ℹ️ **Independent Project Notice:** MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.
