@@ -135,7 +135,6 @@ Here's a summary of changes from the original V1 release, and what will be relea
 - [ ] **Phase 3: Bravo Cycle — Multi-Character Scene Directing & Soundstage Staging**
   - **Screenplay Ingestion & Scene Breakdown:** Native Fountain / `.fdx` screenplay parser extracting characters, dialogue, action beats, props, and scene mood into a visual Scene Selector.
   - **Soundstage Auto-Placement & Staging:** Geometric solver for conversational proxemics, ground raycasting, eye-line matching vectors, and 180° camera rule constraints.
-  - **Pluggable Motion Resolver:** Seamless bridge interfacing with local Kimodo engines (MotionSmith AI, Dark Dojo DDS Motion) and stock animation libraries, backed by our Tier 0 procedural fallback.
   - **DP Camera Coverage Package:** Automatic suggestion and generation of Master Two-Shots, OTS, MCU singles, and emotional close-up coverage.
   - **Multi-Character Relational Directing:** Compound natural language parsing for multi-actor relational notes (*"Julia and Todd turn away... Julia stops first"*), Master Sequence take branching, and cross-character take mixing.
 
