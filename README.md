@@ -21,7 +21,7 @@ This repository provides the open-source architectural foundation and working si
   - **Open Performance Plan Contract:** Complete JSON Schema for directorial intent and toolchain interoperability.
   - **Core Rule-Based Directorial Parser:** Fast C++ semantic parser for natural language directorial notes and timecoded syntax.
 
-- **In Active Private Development (Commercial Roadmap):**
+- **In Active Private Development:**
   - **Fine-Tuned Local SLM:** Offline neural directorial compiler (DirectML / ONNX Runtime) running directly on workstation hardware.
   - **Auteur Drama Engine (ADE) Neural Solvers:** Deep psychophysical subtext modeling, emotional masking, and involuntary micro-leakage synthesis.
   - **Bravo Multi-Character Staging:** Screenplay ingestion (`.fdx`/Fountain), conversational proxemics, and cross-character relational blocking.
