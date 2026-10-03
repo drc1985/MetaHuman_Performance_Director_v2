@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Code Quality & Regression Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install Validation Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff jsonschema pytest
+
+      - name: 1. Python Syntax & Bytecode Compilation Check
+        run: |
+          python -m py_compile Content/Python/generate_baseline.py Content/Python/generate_acting_take.py Content/Python/batch_render_takes.py
+          echo "All Python scripts passed syntax compilation."
+
+      - name: 2. Python Lint & Static Analysis (ruff)
+        run: |
+          ruff check Content/Python/ --select=E9,F63,F7,F82 --target-version=py311
+          echo "Python static analysis passed."
+
+      - name: 3. Validate Public Performance Plan JSON Schema
+        run: |
+          python -c "import json, jsonschema; schema = json.load(open('schemas/performance_plan.schema.json', encoding='utf-8')); jsonschema.Draft7Validator.check_schema(schema); print('Performance Plan JSON Schema is valid Draft-7.')"
+
+      - name: 4. Run Public Unit Test Suite
+        run: |
+          python -m unittest discover -s Content/Python/tests/ -v

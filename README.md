@@ -1,6 +1,7 @@
 # MetaHuman Performance Director
 
 [![Unreal Engine 5.8](https://img.shields.io/badge/Unreal%20Engine-5.8%2B-blue?logo=unrealengine)](https://www.unrealengine.com)
+[![CI](https://github.com/drc1985/MetaHuman_Performance_Director_v2/actions/workflows/ci.yml/badge.svg)](https://github.com/drc1985/MetaHuman_Performance_Director_v2/actions)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Compute](https://img.shields.io/badge/Compute-100%25%20Local%20%26%20Offline-success)](https://frontiermindworks.com)
 [![Status](https://img.shields.io/badge/Status-v0.3.1%2B%20(Alpha%20%26%20ADE)-brightgreen)](https://github.com/drc1985/MetaHuman_Performance_Director_v2)
