@@ -1,0 +1,44 @@
+{
+  "plan_id": "PLAN_SINGLE_BEAT_001",
+  "source_take": "LS_Baseline_Take01",
+  "direction_text": "She glances away nervously before speaking.",
+  "revision_range": {
+    "start_seconds": 0.0,
+    "end_seconds": 4.5
+  },
+  "intensity": 0.85,
+  "framing_scale": 0.75,
+  "facial_nuance": 0.8,
+  "physical_action": 0.5,
+  "subtext_suppression": 0.4,
+  "preparation_offset_ms": 250.0,
+  "fallback": false,
+  "matched_interpretations": [
+    "brief_gaze_break_before_answer",
+    "nervous_anticipation"
+  ],
+  "locked_channels": [],
+  "instructions": [
+    {
+      "channel": "gaze",
+      "behavior_id": "brief_gaze_break_before_answer",
+      "description": "Anticipatory lateral ocular saccade breaking eye-contact before dialogue onset.",
+      "weight": 0.85,
+      "preserve_original": false,
+      "timing_offset_seconds": 0.0
+    },
+    {
+      "channel": "facial_expression",
+      "behavior_id": "eyebrow_subtle_raise",
+      "description": "Inner brow raise signaling nervous vulnerability.",
+      "weight": 0.65,
+      "preserve_original": false,
+      "timing_offset_seconds": 0.15
+    }
+  ],
+  "editable_output": {
+    "target": "sequencer_control_rig_layers",
+    "non_destructive": true,
+    "notes": "Generated single-beat take targeting RigLogic facial curves and CineCamera eye-lines."
+  }
+}

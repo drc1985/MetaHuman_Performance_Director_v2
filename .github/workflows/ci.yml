@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    name: Code Quality & Regression Tests (${{ matrix.python-version }})
+    name: Code Quality, Schema & Unit Tests (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -31,16 +31,16 @@ jobs:
       - name: 1. Python Syntax & Bytecode Compilation Check
         run: |
           python -m py_compile Content/Python/generate_baseline.py Content/Python/generate_acting_take.py Content/Python/batch_render_takes.py
-          echo "All Python scripts passed syntax compilation."
+          echo "All Python scripts passed bytecode compilation."
 
       - name: 2. Python Lint & Static Analysis (ruff)
         run: |
           python -m ruff check Content/Python/ --select=E9,F63,F7,F82
-          echo "Python static analysis passed."
+          echo "Python static analysis passed with zero errors."
 
-      - name: 3. Validate Public Performance Plan JSON Schema
+      - name: 3. Validate Public Performance Plan JSON Schema & Canonical Examples
         run: |
-          python -c "import json, jsonschema; schema = json.load(open('schemas/performance_plan.schema.json', encoding='utf-8')); jsonschema.Draft7Validator.check_schema(schema); print('Performance Plan JSON Schema is valid Draft-7.')"
+          python -c "import json, glob, jsonschema; schema = json.load(open('schemas/performance_plan.schema.json', encoding='utf-8')); validator_cls = jsonschema.validators.validator_for(schema); validator_cls.check_schema(schema); validator = validator_cls(schema); examples = sorted(glob.glob('schemas/examples/*.json')); assert len(examples) >= 3, f'Expected at least 3 sample plans, found {len(examples)}'; [validator.validate(instance=json.load(open(f, encoding='utf-8'))) for f in examples]; print(f'Validated schema dialect ({validator_cls.__name__}) and all {len(examples)} canonical example plans.')"
 
       - name: 4. Run Public Unit Test Suite (pytest)
         run: |

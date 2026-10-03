@@ -1,0 +1,56 @@
+{
+  "plan_id": "PLAN_CHANNEL_LOCKS_003",
+  "source_take": "LS_Baseline_Take03",
+  "direction_text": "She smiles politely, but her eyes betray deep anxiety.",
+  "revision_range": {
+    "start_seconds": 1.0,
+    "end_seconds": 6.5
+  },
+  "intensity": 0.8,
+  "framing_scale": 0.9,
+  "facial_nuance": 0.85,
+  "physical_action": 0.3,
+  "subtext_suppression": 0.9,
+  "preparation_offset_ms": 150.0,
+  "fallback": false,
+  "matched_interpretations": [
+    "social_smile_polite",
+    "ocular_micro_tremor"
+  ],
+  "locked_channels": [
+    "dialogue_audio",
+    "lip_sync",
+    "body_posture"
+  ],
+  "instructions": [
+    {
+      "channel": "facial_expression",
+      "behavior_id": "social_smile_polite",
+      "description": "Zygomaticus major activation without full Duchenne orbicularis oculi engagement.",
+      "weight": 0.8,
+      "preserve_original": false,
+      "timing_offset_seconds": 1.0
+    },
+    {
+      "channel": "gaze",
+      "behavior_id": "ocular_micro_tremor",
+      "description": "High-frequency cognitive saccades revealing internal psychological friction.",
+      "weight": 0.75,
+      "preserve_original": false,
+      "timing_offset_seconds": 1.2
+    },
+    {
+      "channel": "body_posture",
+      "behavior_id": "held_stillness",
+      "description": "Locked posture channel preserving existing body track.",
+      "weight": 0.0,
+      "preserve_original": true,
+      "timing_offset_seconds": 0.0
+    }
+  ],
+  "editable_output": {
+    "target": "sequencer_control_rig_layers",
+    "non_destructive": true,
+    "notes": "Directorial plan with locked audio/lip-sync/body channels shaping subtextual facial nuance."
+  }
+}

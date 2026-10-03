@@ -1,0 +1,54 @@
+{
+  "plan_id": "PLAN_MULTI_BEAT_002",
+  "source_take": "LS_Baseline_Take02",
+  "direction_text": "[0s-3.5s] She maintains a cold defensive facade. [3.5s-8.0s] Breaks down into quiet sorrow.",
+  "revision_range": {
+    "start_seconds": 0.0,
+    "end_seconds": 8.0
+  },
+  "intensity": 0.9,
+  "framing_scale": 0.8,
+  "facial_nuance": 0.9,
+  "physical_action": 0.7,
+  "subtext_suppression": 0.75,
+  "preparation_offset_ms": 320.0,
+  "fallback": false,
+  "matched_interpretations": [
+    "cold_defensive_facade",
+    "thoracic_sorrow_deflation"
+  ],
+  "locked_channels": [
+    "lip_sync"
+  ],
+  "instructions": [
+    {
+      "channel": "facial_expression",
+      "behavior_id": "jaw_clench_suppression",
+      "description": "Masseter tension and tight lip compression during cold facade.",
+      "weight": 0.9,
+      "preserve_original": false,
+      "timing_offset_seconds": 0.0
+    },
+    {
+      "channel": "body_posture",
+      "behavior_id": "thoracic_sorrow_deflation",
+      "description": "Clavicle depression and thoracic vertebral release on emotional breakdown.",
+      "weight": 0.85,
+      "preserve_original": false,
+      "timing_offset_seconds": 3.5
+    },
+    {
+      "channel": "gaze",
+      "behavior_id": "downward_gaze_avoidance",
+      "description": "Downward ocular shift accompanying emotional vulnerability.",
+      "weight": 0.7,
+      "preserve_original": false,
+      "timing_offset_seconds": 3.8
+    }
+  ],
+  "editable_output": {
+    "target": "sequencer_control_rig_layers",
+    "non_destructive": true,
+    "notes": "Compiled multi-beat sequence spanning defensive holding to emotional release."
+  }
+}
