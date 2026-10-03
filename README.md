@@ -22,7 +22,7 @@ This repository provides the open-source architectural foundation and working si
   - **Core Rule-Based Directorial Parser:** Fast C++ semantic parser for natural language directorial notes and timecoded syntax.
 
 - **In Active Private Development:**
-  - **Fine-Tuned Local SLM:** Offline neural directorial compiler (DirectML / ONNX Runtime) running directly on workstation hardware.
+  - **Fine-Tuned Local Small Language Model (SLM):** Offline neural directorial compiler (DirectML / ONNX Runtime) running directly on workstation hardware.
   - **Auteur Drama Engine (ADE) Neural Solvers:** Deep psychophysical subtext modeling, emotional masking, and involuntary micro-leakage synthesis.
   - **Bravo Multi-Character Staging:** Screenplay ingestion (`.fdx`/Fountain), conversational proxemics, and cross-character relational blocking.
 
@@ -55,7 +55,7 @@ Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time l
 
 **MetaHuman Performance Director (MPHD)** closes the gap between filmmaking intuition and technical execution:
 
-- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input** powered by local NLP/NLU—translating dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) directly into calibrated RigLogic animation.
+- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input** powered by local Natural Language Processing / Understanding (NLP/NLU)—translating dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) directly into calibrated RigLogic animation.
 - **Dedicated Directorial Dials:** Fine-tune performance dynamics independently from your dramatic notes. Five calibrated cinematic dials let you shape **Framing Scale** (subtle ocular micro-cues for close-ups vs. projected energy for wide shots), **Facial Nuance**, **Physical Action** (cervical neck and posture energy), **Subtext Masking** (intentional emotional concealment with authentic micro-leakage), and **Pre-Speech Lead Time** (anticipatory breaths and cognitive gaze saccades before speaking).
 - **Non-Destructive Alternate Takes & Channel Locks:** Generate fully editable takes in seconds, A/B compare performances on the fly directly in Sequencer, and selectively lock channels—preserving pristine dialogue audio and speech lip-sync key-for-key while freely iterating on emotional nuance.
 
@@ -85,7 +85,7 @@ The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **p
    - Asynchronous, non-blocking Audio2Face baseline generation with a determinative $0\% \to 100\%$ progress bar.
    - Clean dialogue audio (.wav) automatically bound into an isolated Sequencer take.
 2. **Tab 2 — Directing Slate:**
-   - **5 Calibrated Cinematic Dials:** *Framing Scale* (MCU/CU/Wide), *Facial Nuance*, *Physical Action*, *Subtext Masking*, and *Pre-Speech Lead Time*.
+   - **5 Calibrated Cinematic Dials:** *Framing Scale* (Wide, Medium Close-Up [MCU], Close-Up [CU]), *Facial Nuance*, *Physical Action*, *Subtext Masking*, and *Pre-Speech Lead Time*.
    - **Hold-to-Talk Voice Directing:** Speak or type natural language acting notes.
    - **Timecoded Multi-Beat Syntax:** Direct evolving dramatic beats (`[0s-7s] She is defensive... [7s-14s] Breaks down in grief`) seamlessly within a single Level Sequence.
    - **Channel Preservation Locks:** Preserve dialogue audio, speech phonemes, gaze, or body layers key-for-key.
@@ -93,7 +93,7 @@ The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **p
    - Instant A/B take auditioning and non-destructive layer switching directly in Sequencer.
    - Transparent structured JSON performance plan inspection and take management.
 4. **Tab 4 — Render Studio:**
-   - Performer-aware automated CineCamera framing with calibrated shot sizes (Wide, Medium Close-Up, Close-Up, Extreme Close-Up) and lenses (35mm, 50mm, 85mm, 105mm).
+   - Performer-aware automated CineCamera framing with calibrated shot sizes (Wide, Medium Close-Up [MCU], Close-Up [CU], Extreme Close-Up [ECU]) and lenses (35mm, 50mm, 85mm, 105mm).
    - Cinematic camera angles: Dutch tilt, Low angle, Profile, Eye-level.
    - In-editor batch Movie Render Queue (MRQ) automation producing final graded MP4 deliverables with muxed audio.
 
@@ -116,7 +116,7 @@ Unlike cloud GenAI services or API-dependent tools, MPHD runs **100% locally and
 - **Zero Cloud Calls:** No latency roundtrips or external server dependencies.
 - **Zero API Keys or Accounts:** No OpenAI, Anthropic, or proprietary cloud accounts required.
 - **Studio IP & Privacy First:** Unreleased screenplays, actor likenesses, and voice recordings never leave your workstation.
-- **Deterministic IR:** Generates deterministic JSON performance plans conforming to strict schema contracts.
+- **Deterministic Intermediate Representation (IR):** Generates deterministic JSON performance plans conforming to strict schema contracts.
 
 ---
 
@@ -134,8 +134,8 @@ Here's a summary of changes from the original V1 release, and what will be relea
 | **Facial & Speech Realism** | Basic blendshape activation with potential tearing | **Duchenne co-activation matrices**, soft-knee viseme protection, pre-speech breath onset guard, sustained posture holding |
 | **Directorial Controls** | Single "Intensity" slider ($0.0 - 1.0$) | **5 Calibrated Cinematic Dials:** Framing Scale, Facial Nuance, Physical Action, Subtext Masking (guise vs. leakage), Pre-Speech Lead Time |
 | **Multi-Beat Directing** | Single prompt per take | **Timecoded Multi-Beat Syntax** (`[0s-7s]... [7s-14s]...`) compiled into a single seamless Level Sequence |
-| **Virtual Cinematography** | Manual editor viewport review | **Render Studio (Tab 4):** Shot sizes (Wide, MCU, CU, ECU), angles (Dutch, Low, Profile), lenses (35–105mm), automated CineCamera cuts & batch MRQ to MP4 |
-| **Multi-Actor & External MoCap** | Conceptual future | **Bravo Architecture:** External baseline/MoCap ingestion, non-destructive additive Control Rig layers, screenplay ingestion & proxemics |
+| **Virtual Cinematography** | Manual editor viewport review | **Render Studio (Tab 4):** Shot sizes (Wide, Medium Close-Up [MCU], Close-Up [CU], Extreme Close-Up [ECU]), angles (Dutch tilt, Low angle, Profile, Eye-level), lenses (35–105mm), automated CineCamera cuts & batch Movie Render Queue (MRQ) to MP4 |
+| **Multi-Actor & External MoCap** | Conceptual future | **Bravo Architecture:** External baseline / Motion Capture (MoCap) ingestion, non-destructive additive Control Rig layers, screenplay ingestion & proxemics |
 
 *Note: The features above represent active implementations rolling out across our milestone releases.*
 
@@ -158,14 +158,14 @@ Here's a summary of changes from the original V1 release, and what will be relea
 - [ ] **Phase 3: Bravo Cycle — Multi-Character Scene Directing & Soundstage Staging**
   - **Screenplay Ingestion & Scene Breakdown:** Native Fountain / `.fdx` screenplay parser extracting characters, dialogue, action beats, props, and scene mood into a visual Scene Selector.
   - **Soundstage Auto-Placement & Staging:** Geometric solver for conversational proxemics, ground raycasting, eye-line matching vectors, and 180° camera rule constraints.
-  - **DP Camera Coverage Package:** Automatic suggestion and generation of Master Two-Shots, OTS, MCU singles, and emotional close-up coverage.
+  - **DP Camera Coverage Package:** Automatic suggestion and generation of Master Two-Shots, Over-the-Shoulder (OTS), Medium Close-Up (MCU) singles, and emotional Close-Up (CU) coverage.
   - **Multi-Character Relational Directing:** Compound natural language parsing for multi-actor relational notes (*"Julia and Todd turn away... Julia stops first"*), Master Sequence take branching, and cross-character take mixing.
 
 - [ ] **Phase 4: Fab Marketplace Release, Studio Validation & Documentation**
   - **Studio & Virtual Production Previz Testing:** Real-world validation with indie filmmakers and virtual production stages.
-  - **Comprehensive Filmmaker Video Walkthroughs:** Step-by-step video tutorials covering voice directing, dramatic subtext tuning, multi-beat take iteration, and batch MRQ delivery.
+  - **Comprehensive Filmmaker Video Walkthroughs:** Step-by-step video tutorials covering voice directing, dramatic subtext tuning, multi-beat take iteration, and batch Movie Render Queue (MRQ) delivery.
   - **Complete Sample Project & Cinematic Demo Scenes:** Turnkey Unreal Engine sample project featuring pre-calibrated MetaHumans, multi-beat Level Sequences, and CineCamera rigs.
-  - **Technical Documentation & API Reference:** Complete user manual and open Performance Plan JSON Schema documentation for studio pipeline and DCC integration.
+  - **Technical Documentation & API Reference:** Complete user manual and open Performance Plan JSON Schema documentation for studio pipeline and Digital Content Creation (DCC) toolchain integration.
   - **Fab Marketplace Launch:** Official release on Epic's Fab marketplace.
 
 ---
@@ -203,7 +203,7 @@ In the Unreal Editor, navigate to **Edit &rarr; Plugins** and ensure the followi
 - **MetaHuman** & **MetaHuman Animator** (Character support & baseline Audio2Face generation)
 - **Control Rig** (`ControlRig` — Skeletal layer blending & anatomical coupling)
 - **Python Editor Script Plugin** (`PythonScriptPlugin` — Automated Sequencer track generation)
-- **Movie Render Queue** (`MovieRenderPipeline` — Tab 4 batch cinematography export)
+- **Movie Render Queue** (`MovieRenderPipeline` / MRQ — Tab 4 batch cinematography export)
 
 ### 3. Configure Python Project Settings
 1. Navigate to **Edit &rarr; Project Settings &rarr; Plugins &rarr; Python**.
@@ -228,7 +228,7 @@ Once installed, open your scene with a MetaHuman actor placed in the level (`BP_
    - Calibrate the 5 cinematic dials (*Framing Scale, Facial Nuance, Physical Action, Subtext Masking, Pre-Speech Lead*).
    - Click **Generate Take** to synthesize the new non-destructive Level Sequence take (`LS_ALT_...`).
 3. **Tab 3 — Take Review Station:** Audition alternate takes instantly and A/B compare performances directly on your MetaHuman in Sequencer.
-4. **Tab 4 — Render Studio:** Choose a cinematic CineCamera framing preset (Wide, MCU, Close-Up, ECU) and click **Batch Render Takes** to export final MP4 deliverables.
+4. **Tab 4 — Render Studio:** Choose a cinematic CineCamera framing preset (Wide, Medium Close-Up [MCU], Close-Up [CU], Extreme Close-Up [ECU]) and click **Batch Render Takes** to export final MP4 deliverables via Movie Render Queue (MRQ).
 
 ---
 
