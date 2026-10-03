@@ -233,6 +233,20 @@ Once installed, open your scene with a MetaHuman actor placed in the level (`BP_
 
 ---
 
+## 📐 Open Performance Plan Specification (IR)
+
+MetaHuman Performance Director is architected upon an open, deterministic **Intermediate Representation (IR)** data contract conforming to **JSON Schema Draft 2020-12**. This allows pipeline TDs, digital content creation (DCC) tools, and external AI agents to generate, validate, and inspect directorial performance plans programmatically.
+
+- 🌐 **Canonical Published Schema (`$id`):** [`https://frontiermindworks.com/schemas/v1/performance_plan.schema.json`](https://frontiermindworks.com/schemas/v1/performance_plan.schema.json)
+- 📖 **Interactive Schema Documentation & Versioning Policy:** [`https://frontiermindworks.com/schemas/v1`](https://frontiermindworks.com/schemas/v1)
+- 📂 **Local Repository Schema:** [`schemas/performance_plan.schema.json`](schemas/performance_plan.schema.json)
+- 🧪 **Canonical Worked Examples:**
+  - [`schemas/examples/01_single_beat_minimal.json`](schemas/examples/01_single_beat_minimal.json) — Minimal single-beat note with anticipatory gaze saccades.
+  - [`schemas/examples/02_multi_beat_sequence.json`](schemas/examples/02_multi_beat_sequence.json) — Timecoded multi-beat progression across emotional states.
+  - [`schemas/examples/03_channel_locks_and_subtext.json`](schemas/examples/03_channel_locks_and_subtext.json) — Subtextual masking with locked dialogue audio and lip-sync channels.
+
+---
+
 ## 📖 Citation & Attribution
 
 If you use **MetaHuman Performance Director** in your academic research, virtual production pipeline, game development, or creative workflows, please cite it using the metadata below:
