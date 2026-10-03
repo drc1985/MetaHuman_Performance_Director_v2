@@ -185,16 +185,50 @@ Here's a summary of changes from the original V1 release, and what will be relea
 
 ---
 
-## 🚀 Running the Unreal Engine Demo
+## 📦 Installation & Setup
 
-1. **Verify Plugins:** Ensure `MetaHuman`, `MetaHuman Animator`, `ControlRig`, `PythonScriptPlugin`, and `MovieRenderPipeline` are enabled.
-2. **Open the Demo Map:** In the Unreal Editor Content Browser, open your designated demo level (e.g. `Lvl_IntroRoom`).
-3. **Verify the Performer:** Ensure `BP_MH_DemoActor` is placed in the level.
-4. **Open the Performance Director Panel:** Navigate to **Window &rarr; MetaHuman Performance Director**.
-5. **Direct a Take:**
-   - Input a directorial note (e.g., *"She is nervous, but trying to appear confident."*)
-   - Adjust directorial dials (*Framing Scale*, *Facial Nuance*, *Subtext Masking*, etc.)
-   - Click **Generate Take** to synthesize the new Sequencer take!
+### 1. Clone or Copy the Plugin
+Clone or copy this repository into your Unreal Engine project's `Plugins` directory:
+
+```bash
+# Navigate to your Unreal project root
+cd MyUnrealProject/Plugins
+
+# Clone the plugin repository
+git clone https://github.com/drc1985/MetaHuman_Performance_Director_v2.git MetaHumanPerformanceDirector
+```
+
+### 2. Enable Required Unreal Engine Plugins
+In the Unreal Editor, navigate to **Edit &rarr; Plugins** and ensure the following built-in plugins are enabled:
+- **MetaHuman** & **MetaHuman Animator** (Character support & baseline Audio2Face generation)
+- **Control Rig** (`ControlRig` — Skeletal layer blending & anatomical coupling)
+- **Python Editor Script Plugin** (`PythonScriptPlugin` — Automated Sequencer track generation)
+- **Movie Render Queue** (`MovieRenderPipeline` — Tab 4 batch cinematography export)
+
+### 3. Configure Python Project Settings
+1. Navigate to **Edit &rarr; Project Settings &rarr; Plugins &rarr; Python**.
+2. Check **Enable Developer Mode** (ensures in-editor Python scripts execute seamlessly without sandbox warnings).
+3. Restart the Unreal Editor.
+
+---
+
+## 🚀 4-Tab Quickstart Workflow
+
+Once installed, open your scene with a MetaHuman actor placed in the level (`BP_<CharacterName>`) and open the director interface via **Window &rarr; MetaHuman Performance Director**:
+
+```
+[ Tab 1: Baseline ]  ──►  [ Tab 2: Direct Performance ]  ──►  [ Tab 3: Review Takes ]  ──►  [ Tab 4: Render Studio ]
+ Audio Ingestion &          5 Dials, Voice Input &             A/B Take Auditioning &       Framing Presets &
+ Progress Bar (0→100%)      Multi-Beat Timecode Syntax         Structured Plan Review       Batch MRQ Export to MP4
+```
+
+1. **Tab 1 — Generate Baseline:** Select your dialogue audio (`.wav`) and click **Generate Audio2Face Baseline** (monitored via the determinate $0\% \to 100\%$ progress bar).
+2. **Tab 2 — Direct Performance:** 
+   - Type or speak acting notes (*"She is guarded, hiding heartbreak. Glance away nervously"*).
+   - Calibrate the 5 cinematic dials (*Framing Scale, Facial Nuance, Physical Action, Subtext Masking, Pre-Speech Lead*).
+   - Click **Generate Take** to synthesize the new non-destructive Level Sequence take (`LS_ALT_...`).
+3. **Tab 3 — Take Review Station:** Audition alternate takes instantly and A/B compare performances directly on your MetaHuman in Sequencer.
+4. **Tab 4 — Render Studio:** Choose a cinematic CineCamera framing preset (Wide, MCU, Close-Up, ECU) and click **Batch Render Takes** to export final MP4 deliverables.
 
 ---
 
