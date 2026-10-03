@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    name: Code Quality & Regression Tests
+    name: Code Quality & Regression Tests (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,7 +22,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
 
       - name: Install Validation Dependencies
         run: |
@@ -36,13 +35,13 @@ jobs:
 
       - name: 2. Python Lint & Static Analysis (ruff)
         run: |
-          ruff check Content/Python/ --select=E9,F63,F7,F82 --target-version=py311
+          python -m ruff check Content/Python/ --select=E9,F63,F7,F82
           echo "Python static analysis passed."
 
       - name: 3. Validate Public Performance Plan JSON Schema
         run: |
           python -c "import json, jsonschema; schema = json.load(open('schemas/performance_plan.schema.json', encoding='utf-8')); jsonschema.Draft7Validator.check_schema(schema); print('Performance Plan JSON Schema is valid Draft-7.')"
 
-      - name: 4. Run Public Unit Test Suite
+      - name: 4. Run Public Unit Test Suite (pytest)
         run: |
-          python -m unittest discover -s Content/Python/tests/ -v
+          python -m pytest Content/Python/tests/ -v
