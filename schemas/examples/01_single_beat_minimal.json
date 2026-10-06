@@ -29,7 +29,7 @@
     },
     {
       "channel": "facial_expression",
-      "behavior_id": "eyebrow_subtle_raise",
+      "behavior_id": "soft_defensive_brow",
       "description": "Inner brow raise signaling nervous vulnerability.",
       "weight": 0.65,
       "preserve_original": false,

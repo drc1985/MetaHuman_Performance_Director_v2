@@ -23,7 +23,7 @@
   "instructions": [
     {
       "channel": "facial_expression",
-      "behavior_id": "jaw_clench_suppression",
+      "behavior_id": "tight_jaw_micro_tension",
       "description": "Masseter tension and tight lip compression during cold facade.",
       "weight": 0.9,
       "preserve_original": false,
@@ -39,7 +39,7 @@
     },
     {
       "channel": "gaze",
-      "behavior_id": "downward_gaze_avoidance",
+      "behavior_id": "downward_glance_then_reluctant_return",
       "description": "Downward ocular shift accompanying emotional vulnerability.",
       "weight": 0.7,
       "preserve_original": false,

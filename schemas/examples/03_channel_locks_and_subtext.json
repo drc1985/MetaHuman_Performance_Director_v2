@@ -25,7 +25,7 @@
   "instructions": [
     {
       "channel": "facial_expression",
-      "behavior_id": "social_smile_polite",
+      "behavior_id": "subtle_eye_tension_masked_smile",
       "description": "Zygomaticus major activation without full Duchenne orbicularis oculi engagement.",
       "weight": 0.8,
       "preserve_original": false,
@@ -33,7 +33,7 @@
     },
     {
       "channel": "gaze",
-      "behavior_id": "ocular_micro_tremor",
+      "behavior_id": "darting_saccadic_scanning",
       "description": "High-frequency cognitive saccades revealing internal psychological friction.",
       "weight": 0.75,
       "preserve_original": false,
