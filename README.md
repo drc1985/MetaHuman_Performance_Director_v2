@@ -202,9 +202,11 @@ Here's a summary of changes from the original V1 release, and what will be relea
   - Non-destructive Sequencer take isolation, take A/B switching, and soft-knee viseme preservation.
   - Offline heuristic semantic parser behind an open JSON performance plan contract.
 
-- [ ] **Phase 2: Alpha Polish — Curated Behavior Library & Data-Calibrated Proceduralism**
-  - **Data-Calibrated Procedural Synthesis:** Leverage captured actor data to biologically calibrate procedural curve generation (muscle co-activation matrices, biological kinematic profiles, and ground-truth dial calibration).
-  - **Fine-Tuned Local Small Language Model (SLM):** Replace the keyword heuristic parser with a specialized offline SLM running locally on workstation hardware (DirectML / ONNX Runtime)—serving strictly as the offline dramatic intent dramaturge compiling complex subtext into the open JSON Performance Plan, keeping all biomechanical and RigLogic curve synthesis 100% deterministic within C++.
+- [ ] **Phase 2: Alpha Polish — Expanded Behavior Library & Empirical Calibration**
+  - **Somatic Behavior Registry (150+ Performance Recipes):** Formalize a comprehensive library of 150+ whole-body dramatic behaviors across 9 somatic channels, standardizing muscle co-activation ratios, speech-shielded viseme headroom, and autonomic respiration patterns.
+  - **Fine-Tuned Local Small Language Model (SLM):** Develop and integrate a specialized offline SLM running locally on workstation hardware (DirectML / ONNX Runtime)—serving strictly as the offline dramatic dramaturge compiling natural directorial intent into open JSON Performance Plans, keeping all character curve synthesis 100% deterministic within C++.
+  - **Empirical Performance Capture Calibration:** Biologically calibrate procedural relaxation profiles, micro-tremors, and somatic holds against dedicated high-density performer capture data.
+  - **Directorial Plan Provenance & Iteration History:** Instrument local take metadata to track directorial adjustments across takes, enabling non-destructive auditing and seamless performance refinement.
 
 - [ ] **Phase 3: Bravo Cycle — Multi-Character Scene Directing & Soundstage Staging**
   - **Screenplay Ingestion & Scene Breakdown:** Native Fountain / `.fdx` screenplay parser extracting characters, dialogue, action beats, props, and scene mood into a visual Scene Selector.
