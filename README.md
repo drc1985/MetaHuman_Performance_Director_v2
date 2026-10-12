@@ -10,6 +10,18 @@
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
 
+## 🎬 Overview
+
+Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time lighting, and virtual production sets for independent filmmakers. But directing virtual human actors has remained locked behind a technical wall: tweaking raw facial curves, keyframing 200+ blendshapes, or waiting days for animation revisions strips away the spontaneous creative rhythm of a director.
+
+**MetaHuman Performance Director (MPHD)** closes the gap between filmmaking intuition and technical execution:
+
+- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input**. Our semantic parser compiles dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) into a structured performance contract, which our native C++ runtime deterministically synthesizes into calibrated RigLogic curves and somatic postures.
+- **Dedicated Directorial Dials:** Fine-tune performance dynamics independently from your dramatic notes. Five calibrated cinematic dials let you shape **Framing Scale** (subtle ocular micro-cues for close-ups vs. projected energy for wide shots), **Facial Nuance**, **Physical Action** (cervical neck and posture energy), **Subtext Masking** (intentional emotional concealment with authentic micro-leakage), and **Pre-Speech Lead Time** (anticipatory breaths and cognitive gaze saccades before speaking).
+- **Non-Destructive Alternate Takes & Channel Locks:** Generate fully editable takes in seconds, A/B compare performances on the fly directly in Sequencer, and selectively lock channels—preserving pristine dialogue audio and speech lip-sync key-for-key while freely iterating on emotional nuance.
+
+---
+
 ## 📦 What's in This Repository
 
 This repository provides the open-source architectural foundation and working single-performer core of **MetaHuman Performance Director (MPHD)** for Unreal Engine 5.8. It implements the complete end-to-end directorial workflow to demonstrate our core systems and performance schema.
@@ -91,18 +103,6 @@ Unlike black-box generative tools that attempt to hallucinate animation curves d
   *The foundational single-prompt prototype submitted for the 2026 Epic MegaGrant.*
 - 🌐 **Project Updates & Status Hub:** [![Live Portal](https://img.shields.io/badge/🌐%20Explore-Devlog%20%26%20Roadmap-orange?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector)  
   *Explore interactive devlogs, live milestone roadmap, and the complete 8-dimension architecture evolution table.*
-
----
-
-## 🎬 Overview
-
-Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time lighting, and virtual production sets for independent filmmakers. But directing virtual human actors has remained locked behind a technical wall: tweaking raw facial curves, keyframing 200+ blendshapes, or waiting days for animation revisions strips away the spontaneous creative rhythm of a director.
-
-**MetaHuman Performance Director (MPHD)** closes the gap between filmmaking intuition and technical execution:
-
-- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input**. Our semantic parser compiles dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) into a structured performance contract, which our native C++ runtime deterministically synthesizes into calibrated RigLogic curves and somatic postures.
-- **Dedicated Directorial Dials:** Fine-tune performance dynamics independently from your dramatic notes. Five calibrated cinematic dials let you shape **Framing Scale** (subtle ocular micro-cues for close-ups vs. projected energy for wide shots), **Facial Nuance**, **Physical Action** (cervical neck and posture energy), **Subtext Masking** (intentional emotional concealment with authentic micro-leakage), and **Pre-Speech Lead Time** (anticipatory breaths and cognitive gaze saccades before speaking).
-- **Non-Destructive Alternate Takes & Channel Locks:** Generate fully editable takes in seconds, A/B compare performances on the fly directly in Sequencer, and selectively lock channels—preserving pristine dialogue audio and speech lip-sync key-for-key while freely iterating on emotional nuance.
 
 ---
 
