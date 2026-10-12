@@ -10,6 +10,12 @@
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
 
+**Created & Architected by [David Cobbins](https://www.linkedin.com/in/davidcobbins) • [Frontier Mindworks](https://frontiermindworks.com)**
+
+> **Independent Project Notice:** MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.
+
+---
+
 ## Overview: Directing Performance, Not Prompting Animation
 
 In real cinema, an actor’s performance is never about generic physical movement—it is about **dramatic intention, internal emotional conflict, and psychological subtext**. When a director says *"She is hiding her heartbreak behind a cold smile, but her eyes betray her,"* they are not asking for a motion clip; they are directing an internal human state.
@@ -90,12 +96,6 @@ Unlike black-box generative tools that attempt to hallucinate animation curves d
 │   [Included in Public Repo: Sequencer & MRQ Automation]         │
 └─────────────────────────────────────────────────────────────────┘
 ```
-
----
-
-**Created & Architected by [David Cobbins](https://www.linkedin.com/in/davidcobbins) • [Frontier Mindworks](https://frontiermindworks.com)**
-
-> **Independent Project Notice:** MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.
 
 ---
 
