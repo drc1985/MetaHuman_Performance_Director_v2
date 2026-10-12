@@ -10,15 +10,21 @@
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
 
-## Overview
+## Overview: Directing Performance, Not Prompting Animation
 
-Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time lighting, and virtual production sets for independent filmmakers. But directing virtual human actors has remained locked behind a technical wall: tweaking raw facial curves, keyframing 200+ blendshapes, or waiting days for animation revisions strips away the spontaneous creative rhythm of a director.
+In real cinema, an actor’s performance is never about generic physical movement—it is about **dramatic intention, internal emotional conflict, and psychological subtext**. When a director says *"She is hiding her heartbreak behind a cold smile, but her eyes betray her,"* they are not asking for a motion clip; they are directing an internal human state.
 
-**MetaHuman Performance Director (MPHD)** closes the gap between filmmaking intuition and technical execution:
+Traditional digital tools force filmmakers into two extremes:
+1. **The Technical FACS/Curve Trap:** Manually keyframing 200+ facial blendshapes, tweaking raw RigLogic curves, and losing the spontaneous emotional flow of directing a scene.
+2. **The Generic "Text-to-Animation" Black Box:** Prompting an AI model that hallucinates disconnected, robotic locomotion clips with lifeless, glassy stares and zero dramatic nuance.
 
-- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input**. Our semantic parser compiles dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) into a structured performance contract, which our native C++ runtime deterministically synthesizes into calibrated RigLogic curves and somatic postures.
-- **Dedicated Directorial Dials:** Fine-tune performance dynamics independently from your dramatic notes. Five calibrated cinematic dials let you shape **Framing Scale** (subtle ocular micro-cues for close-ups vs. projected energy for wide shots), **Facial Nuance**, **Physical Action** (cervical neck and posture energy), **Subtext Masking** (intentional emotional concealment with authentic micro-leakage), and **Pre-Speech Lead Time** (anticipatory breaths and cognitive gaze saccades before speaking).
-- **Non-Destructive Alternate Takes & Channel Locks:** Generate fully editable takes in seconds, A/B compare performances on the fly directly in Sequencer, and selectively lock channels—preserving pristine dialogue audio and speech lip-sync key-for-key while freely iterating on emotional nuance.
+**MetaHuman Performance Director (MPHD)** is fundamentally a **filmmaking tool for dramatic performance**. It bridges the gap between directorial intuition and photoreal cinematic execution inside Unreal Engine 5.8:
+
+- **Directing Dramatic Subtext & Psychological Space Underneath Dialogue:** Acoustic waveforms for *"I love you"* and *"I will kill you"* sound nearly identical to an audio solver, yet dramatically they demand completely opposite human somatic realities. Powered by the **Auteur Drama Engine (ADE)**, MPHD models what happens *beneath* spoken words: Stanislavskian inner monologues, Chekhovian psychological gestures, and emotional masking directly in the face—simulating masseter jaw clenching, nervous ocular avoidance saccades, and involuntary breath catches.
+- **High-Fidelity Facial Emotion & Neuromuscular Co-Activation:** Emotions in the human face are interconnected biological events. When a character smiles with true relief versus forced politeness, MPHD co-activates the *orbicularis oculi* (eye crinkles) and *zygomaticus major* (mouth corners) in anatomically calibrated ratios, eliminating artificial mouth-only warping. Autonomic ocular micro-drift and cognitive hesitation blinks keep characters alive even in complete stillness.
+- **The Complete Vertebral & Somatic Chain:** A performance does not stop at the jawline. MPHD synthesizes autonomic diaphragm breathing rhythms that elevate during anxiety and release into deep restorative sighs during moments of vulnerability. Directed posture slumps, guarded cervical neck drops, and shoulder counter-rotations sustain naturally across speech beats without snapping back to rest poses.
+- **Non-Destructive Takes & Channel Preservation Locks:** Audition evolving multi-beat dramatic arcs (`[0s-7s] Guarded... [7s-14s] Vulnerable admission`) within a single take. Use **Channel Preservation Locks** to lock master dialogue audio and phonetic speech lip-sync key-for-key, freely iterating on emotional nuance without breaking sync.
+- **Performer-Aware Virtual Cinematography:** Automated CineCamera framing presets (Wide, MCU, CU, ECU) lock optical focus onto the performer's pupil plane with calibrated focal lengths and Lumen eye catchlights for instant cinematic review.
 
 ---
 
