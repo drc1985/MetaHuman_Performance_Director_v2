@@ -31,6 +31,50 @@ This repository provides the open-source architectural foundation and working si
 
 ---
 
+## 🏗️ Architecture: Decoupled 4-Stage Directorial Pipeline
+
+Unlike black-box generative tools that attempt to hallucinate animation curves directly from text prompts, MPHD operates as a **decoupled, deterministic directorial compiler**:
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│              STAGE 1: DIRECTORIAL INTENT FRONT-END              │
+│            Director Voice / Text Input + 5 Calibrated Dials     │
+│            [Included in Public Repo: Slate UI Module]           │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│             STAGE 2: INTENT COMPILER & DRAMATURGE               │
+│   Translates dramatic subtext & temporal beats into structured  │
+│   instructions conforming to an open JSON schema.               │
+│   • Public Repo: Fast C++ Rule-Based Semantic Parser            │
+│   • Active Dev:  Fine-Tuned Local Small Language Model (SLM)    │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼ [Open JSON Performance Plan Contract]
+┌─────────────────────────────────────────────────────────────────┐
+│      STAGE 3: DETERMINISTIC C++ RIGLOGIC & SOMATIC ENGINE       │
+│ Procedural mathematical solvers synthesizing biological motion: │
+│   • Deterministic 48-Channel RigLogic Synthesis                 │
+│   • Anatomical Soft-Knee Clamping & Anti-Tearing (soft_knee)    │
+│   • Duchenne Co-Activation & Contralateral Asymmetry            │
+│   • Autonomic Saccadic Gaze & Vertebral Breathing Cycles        │
+│   [Included in Public Repo: C++ Core Runtime]                   │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│           STAGE 4: UNREAL SEQUENCER & CINEMATOGRAPHY            │
+│  Non-destructive integration with native Epic Games toolsets:   │
+│   • Non-Destructive Level Sequence Takes (LS_ALT...)            │
+│   • Instant A/B Take Auditioning & Channel Preservation Locks   │
+│   • Performer-Aware CineCamera Framing & Batch MRQ Export to MP4│
+│   [Included in Public Repo: Sequencer & MRQ Automation]         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 **Created & Architected by [David Cobbins](https://www.linkedin.com/in/davidcobbins) • [Frontier Mindworks](https://frontiermindworks.com)**
 
 > ℹ️ **Independent Project Notice:** MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.
@@ -56,7 +100,7 @@ Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time l
 
 **MetaHuman Performance Director (MPHD)** closes the gap between filmmaking intuition and technical execution:
 
-- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input** powered by local Natural Language Processing / Understanding (NLP/NLU)—translating dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) directly into calibrated RigLogic animation.
+- **Natural Language Directing (Voice or Text):** Direct digital actors the same way you direct live talent on set. Type acting notes or speak them directly using integrated **voice input**. Our semantic parser compiles dramatic intent (*"She is guarded, hiding her heartbreak. Have her glance away nervously before answering"*) into a structured performance contract, which our native C++ runtime deterministically synthesizes into calibrated RigLogic curves and somatic postures.
 - **Dedicated Directorial Dials:** Fine-tune performance dynamics independently from your dramatic notes. Five calibrated cinematic dials let you shape **Framing Scale** (subtle ocular micro-cues for close-ups vs. projected energy for wide shots), **Facial Nuance**, **Physical Action** (cervical neck and posture energy), **Subtext Masking** (intentional emotional concealment with authentic micro-leakage), and **Pre-Speech Lead Time** (anticipatory breaths and cognitive gaze saccades before speaking).
 - **Non-Destructive Alternate Takes & Channel Locks:** Generate fully editable takes in seconds, A/B compare performances on the fly directly in Sequencer, and selectively lock channels—preserving pristine dialogue audio and speech lip-sync key-for-key while freely iterating on emotional nuance.
 
@@ -129,7 +173,7 @@ Here's a summary of changes from the original V1 release, and what will be relea
 
 | Core Dimension | Original / v1 Build | Current Production Build (Alpha & ADE) |
 | :--- | :--- | :--- |
-| **Directorial Architecture** | Basic prompt-to-blendshape scalar tool | **Auteur Drama Engine (ADE)** — Psychophysical acting engine (Stanislavski subtext, Brechtian somatic presence) |
+| **Directorial Architecture** | Heuristic single-prompt prototype | Native C++ Psychophysical Directing Runtime & Sequencer OS (Auteur Drama Engine) |
 | **Editor Workflow & UI** | Single-window prompt & intensity slider | **4-Tab Director Slate UI:**<br>1. **Generate Baseline** (determinate $0\% \to 100\%$ progress bar)<br>2. **Direct Performance** (5 dials + voice)<br>3. **Review Takes** (A/B take auditioning)<br>4. **Render Studio** (Cinematography & MRQ) |
 | **Anatomical & Kinetic Scope** | Facial RigLogic curves & basic neck rotation | **Full Vertebral & Somatic Chain:** Pelvis, Spine 01–04, Clavicles + Upper Arm coupling ($k=0.90$), Cervical Neck, Diaphragm breathing cycles & emotional sighs |
 | **Facial & Speech Realism** | Basic blendshape activation with potential tearing | **Duchenne co-activation matrices**, soft-knee viseme protection, pre-speech breath onset guard, sustained posture holding |
@@ -154,7 +198,7 @@ Here's a summary of changes from the original V1 release, and what will be relea
 
 - [ ] **Phase 2: Alpha Polish — Curated Behavior Library & Data-Calibrated Proceduralism**
   - **Data-Calibrated Procedural Synthesis:** Leverage captured actor data to biologically calibrate procedural curve generation (muscle co-activation matrices, biological kinematic profiles, and ground-truth dial calibration).
-  - **Fine-Tuned Local Small Language Model (SLM):** Replace the keyword heuristic parser with a specialized offline SLM running locally on workstation hardware (DirectML / ONNX Runtime).
+  - **Fine-Tuned Local Small Language Model (SLM):** Replace the keyword heuristic parser with a specialized offline SLM running locally on workstation hardware (DirectML / ONNX Runtime)—serving strictly as the offline dramatic intent dramaturge compiling complex subtext into the open JSON Performance Plan, keeping all biomechanical and RigLogic curve synthesis 100% deterministic within C++.
 
 - [ ] **Phase 3: Bravo Cycle — Multi-Character Scene Directing & Soundstage Staging**
   - **Screenplay Ingestion & Scene Breakdown:** Native Fountain / `.fdx` screenplay parser extracting characters, dialogue, action beats, props, and scene mood into a visual Scene Selector.
