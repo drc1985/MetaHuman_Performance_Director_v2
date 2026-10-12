@@ -10,7 +10,7 @@
 [![Studio](https://img.shields.io/badge/Studio-Frontier%20Mindworks-0052cc.svg)](https://frontiermindworks.com)
 [![MegaGrants](https://img.shields.io/badge/Epic%20MegaGrants-2026%20Submission-purple)](https://www.unrealengine.com/megagrants)
 
-## 🎬 Overview
+## Overview
 
 Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time lighting, and virtual production sets for independent filmmakers. But directing virtual human actors has remained locked behind a technical wall: tweaking raw facial curves, keyframing 200+ blendshapes, or waiting days for animation revisions strips away the spontaneous creative rhythm of a director.
 
@@ -22,7 +22,7 @@ Unreal Engine has unlocked Hollywood-grade photoreal cinematography, real-time l
 
 ---
 
-## 📦 What's in This Repository
+## What's in This Repository
 
 This repository provides the open-source architectural foundation and working single-performer core of **MetaHuman Performance Director (MPHD)** for Unreal Engine 5.8. It implements the complete end-to-end directorial workflow to demonstrate our core systems and performance schema.
 
@@ -43,7 +43,7 @@ This repository provides the open-source architectural foundation and working si
 
 ---
 
-## 🏗️ Architecture: Decoupled 4-Stage Directorial Pipeline
+## Architecture: Decoupled 4-Stage Directorial Pipeline
 
 Unlike black-box generative tools that attempt to hallucinate animation curves directly from text prompts, MPHD operates as a **decoupled, deterministic directorial compiler**:
 
@@ -89,24 +89,24 @@ Unlike black-box generative tools that attempt to hallucinate animation curves d
 
 **Created & Architected by [David Cobbins](https://www.linkedin.com/in/davidcobbins) • [Frontier Mindworks](https://frontiermindworks.com)**
 
-> ℹ️ **Independent Project Notice:** MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.
+> **Independent Project Notice:** MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.
 
 ---
 
-## 📺 Demonstration & Video Walkthrough
+## Demonstration & Video Walkthrough
 
 [![MetaHuman Performance Director - October 2026 ADE Showcase](https://frontiermindworks.com/MetaHumanPerformanceDirector/demolinkscreencap.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)
 
-- 🚀 **Latest ADE Showcase Video (October 2026):** [![Watch Latest Showcase](https://img.shields.io/badge/▶%20Watch-Production%20Showcase-brightgreen?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)  
+- **Latest ADE Showcase Video (October 2026):** [![Watch Latest Showcase](https://img.shields.io/badge/Watch-Production%20Showcase-brightgreen?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)  
   *Features the new 4-Tab Director Slate, 5 calibrated cinematic dials, timecoded multi-beat directing, and somatic vertebral breathing.*
-- 🎞️ **Original Grant Submission Video (Initial v0.1.0 Draft):** [![Watch Initial Draft](https://img.shields.io/badge/🎞%20Watch-Grant%20Submission%20Prototype-blue?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)  
+- **Original Grant Submission Video (Initial v0.1.0 Draft):** [![Watch Initial Draft](https://img.shields.io/badge/Watch-Grant%20Submission%20Prototype-blue?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)  
   *The foundational single-prompt prototype submitted for the 2026 Epic MegaGrant.*
-- 🌐 **Project Updates & Status Hub:** [![Live Portal](https://img.shields.io/badge/🌐%20Explore-Devlog%20%26%20Roadmap-orange?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector)  
+- **Project Updates & Status Hub:** [![Live Portal](https://img.shields.io/badge/Explore-Devlog%20%26%20Roadmap-orange?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector)  
   *Explore interactive devlogs, live milestone roadmap, and the complete 8-dimension architecture evolution table.*
 
 ---
 
-## 🧠 The Auteur Drama Engine (ADE)
+## The Auteur Drama Engine (ADE)
 
 Traditional audio-driven facial animation systems solve phonetic lip-sync, but they suffer from the **"I love you / I will kill you" paradox**: acoustic waveforms for identical words sound identical, yet dramatically they demand completely opposite somatic realities.
 
@@ -118,7 +118,7 @@ The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **p
 
 ---
 
-## 🎛️ The 4-Tab Filmmaker Workflow
+## The 4-Tab Filmmaker Workflow
 
 ```
 [ Tab 1: Baseline ]  ──►  [ Tab 2: Directing Slate ]  ──►  [ Tab 3: Take Review ]  ──►  [ Tab 4: Render Studio ]
@@ -144,7 +144,7 @@ The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **p
 
 ---
 
-## 🧬 Somatic & Biomechanical Engine
+## Somatic & Biomechanical Engine
 
 - **Kinetic Vertebral Chain:** Propagates motion organically through Pelvis $\to$ Spine 01–04 $\to$ Neck $\to$ Head, eliminating static mannequin stiffness.
 - **Clavicle & Upper Arm Coupling ($k=0.90$):** $100\%$ clavicle displacement coupled to upper arm kinematics to prevent shoulder disarticulation during emotional gestures and posture slumps.
@@ -154,7 +154,7 @@ The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **p
 
 ---
 
-## 🔒 100% Local & Offline — Zero Cloud Dependencies
+## 100% Local & Offline — Zero Cloud Dependencies
 
 Unlike cloud GenAI services or API-dependent tools, MPHD runs **100% locally and offline inside Unreal Engine**:
 
@@ -165,7 +165,7 @@ Unlike cloud GenAI services or API-dependent tools, MPHD runs **100% locally and
 
 ---
 
-## 📢 Evolution & Release Roadmap
+## Evolution & Release Roadmap
 
 We've been working on significant updates that will be released over the coming months. Some of those updates have been released in GitHub in an unfinished state.
 
@@ -186,7 +186,7 @@ Here's a summary of changes from the original V1 release, and what will be relea
 
 ---
 
-## 🗺️ Milestone Roadmap
+## Milestone Roadmap
 
 - [x] **Phase 1: Alpha Cycle — Working Single-Performer Prototype (Demonstrable in UE 5.8)**
   - Native UE 5.8 Slate director panel (voice or typed notes, 5 directorial dials, channel locks).
@@ -215,7 +215,7 @@ Here's a summary of changes from the original V1 release, and what will be relea
 
 ---
 
-## 📋 System Requirements
+## System Requirements
 
 | Requirement | Supported Version / Specification | Notes |
 | :--- | :--- | :--- |
@@ -230,7 +230,7 @@ Here's a summary of changes from the original V1 release, and what will be relea
 
 ---
 
-## 📦 Installation & Setup
+## Installation & Setup
 
 ### 1. Clone or Copy the Plugin
 Clone or copy this repository into your Unreal Engine project's `Plugins` directory:
@@ -257,7 +257,7 @@ In the Unreal Editor, navigate to **Edit &rarr; Plugins** and ensure the followi
 
 ---
 
-## 🚀 4-Tab Quickstart Workflow
+## 4-Tab Quickstart Workflow
 
 Once installed, open your scene with a MetaHuman actor placed in the level (`BP_<CharacterName>`) and open the director interface via **Window &rarr; MetaHuman Performance Director**:
 
@@ -277,21 +277,21 @@ Once installed, open your scene with a MetaHuman actor placed in the level (`BP_
 
 ---
 
-## 📐 Open Performance Plan Specification (IR)
+## Open Performance Plan Specification (IR)
 
 MetaHuman Performance Director is architected upon an open, deterministic **Intermediate Representation (IR)** data contract conforming to **JSON Schema Draft 2020-12**. This allows pipeline TDs, digital content creation (DCC) tools, and external AI agents to generate, validate, and inspect directorial performance plans programmatically.
 
-- 🌐 **Canonical Published Schema (`$id`):** [`https://frontiermindworks.com/schemas/v1/performance_plan.schema.json`](https://frontiermindworks.com/schemas/v1/performance_plan.schema.json)
-- 📖 **Interactive Schema Documentation & Versioning Policy:** [`https://frontiermindworks.com/schemas/v1`](https://frontiermindworks.com/schemas/v1)
-- 📂 **Local Repository Schema:** [`schemas/performance_plan.schema.json`](schemas/performance_plan.schema.json)
-- 🧪 **Canonical Worked Examples:**
+- **Canonical Published Schema (`$id`):** [`https://frontiermindworks.com/schemas/v1/performance_plan.schema.json`](https://frontiermindworks.com/schemas/v1/performance_plan.schema.json)
+- **Interactive Schema Documentation & Versioning Policy:** [`https://frontiermindworks.com/schemas/v1`](https://frontiermindworks.com/schemas/v1)
+- **Local Repository Schema:** [`schemas/performance_plan.schema.json`](schemas/performance_plan.schema.json)
+- **Canonical Worked Examples:**
   - [`schemas/examples/01_single_beat_minimal.json`](schemas/examples/01_single_beat_minimal.json) — Minimal single-beat note with anticipatory gaze saccades.
   - [`schemas/examples/02_multi_beat_sequence.json`](schemas/examples/02_multi_beat_sequence.json) — Timecoded multi-beat progression across emotional states.
   - [`schemas/examples/03_channel_locks_and_subtext.json`](schemas/examples/03_channel_locks_and_subtext.json) — Subtextual masking with locked dialogue audio and lip-sync channels.
 
 ---
 
-## 📖 Citation & Attribution
+## Citation & Attribution
 
 If you use **MetaHuman Performance Director** in your academic research, virtual production pipeline, game development, or creative workflows, please cite it using the metadata below:
 
@@ -309,7 +309,7 @@ If you use **MetaHuman Performance Director** in your academic research, virtual
 
 ---
 
-## 👤 Author & Studio
+## Author & Studio
 
 **David Cobbins**  
 Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com)
@@ -322,7 +322,7 @@ Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.co
 
 ---
 
-## 📄 License & Legal Disclaimer
+## License & Legal Disclaimer
 
 Released under the permissive [MIT License](LICENSE). Copyright © 2026 David Cobbins.
 
