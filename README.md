@@ -150,6 +150,42 @@ The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **p
 
 ---
 
+## Directorial Scenarios & Practical Use Cases
+
+MPHD is built around real-world filmmaking and game cinematics bottlenecks. Here is how directors and creators use the toolchain in practice:
+
+### 1. Rescuing Flat Speech Lip-Sync into an Authentic Performance
+* **The Scenario:** You have voiceover audio and basic lip-sync running on your MetaHuman, but the character has a lifeless, glassy stare and feels like an animatronic robot.
+* **The Workflow:** Keep the pristine phonetic lip-sync and dialogue track 100% locked. In the Directing Slate (Tab 2), dial in **Subtext Masking** and enter your acting note: *"She is defensive and holding back tears. Tight jaw clench, subtle eye dart away from the camera before forcing direct contact."*
+* **The Directorial Result:** The performance instantly layers involuntary micro-tension, ocular saccades, and natural breathing cycles underneath the dialogue—without touching or desyncing the spoken words.
+
+### 2. Directing Facial Performance Over Existing Body MoCap / FBX
+* **The Scenario:** You imported an FBX full-body performance from a motion capture suit or an animation library, but the face is blank, generic, or emotionally mismatched to the dramatic scene.
+* **The Workflow:** Load the existing animation into Sequencer and lock the skeletal body track. Use the 5 calibrated cinematic dials and voice/text notes to direct the facial performance and cervical neck independently.
+* **The Directorial Result:** MPHD generates non-destructive RigLogic facial curves and emotional subtext that play seamlessly over the existing body motion, preserving hand-keyed poses and foot plants.
+
+### 3. Auditioning Alternate Dramatic Choices for Producers & Clients
+* **The Scenario:** In review, a director or client wants to explore different emotional tones: *"What if this line is delivered with cold defiance instead of vulnerable grief?"*
+* **The Workflow:** Enter alternate directorial notes into the Slate. MPHD generates clean, non-destructive alternate Level Sequences (`LS_ALT_Defiant`, `LS_ALT_Grief`, `LS_ALT_Subtle`) in seconds.
+* **The Directorial Result:** Instantly switch between takes directly in the Unreal Sequencer viewport during the meeting. Compare performances side-by-side without risking the master sequence or throwing away prior work.
+
+### 4. Directing Multi-Beat Emotional Arcs in a Single Shot
+* **The Scenario:** In a 15-second monologue, an actor begins guarded and defensive, gets caught off-guard in the middle, and collapses into vulnerability by the end.
+* **The Workflow:** Use timecoded multi-beat syntax:
+  ```text
+  [0s-5s]   Guarded posture, dismissive glances, guarded eye-contact.
+  [5s-9.5s] Caught off guard, sudden ocular saccade, momentary breath freeze.
+  [9.5s-15s] Cervical drop, vulnerable gaze down, exhaling long restorative sigh.
+  ```
+* **The Directorial Result:** Instead of slicing multiple animation clips and manually wrestling with blend weights, MPHD compiles one continuous, organically evolving performance arc.
+
+### 5. Rapid Pitch Decks, Scene Previz & Video Deliverables
+* **The Scenario:** You need five framed cinematic shots and coverage angles of your virtual actor exported as video files for a morning production pitch or dailies review.
+* **The Workflow:** Switch to **Render Studio (Tab 4)**. Select framing presets (Medium Close-Up, Close-Up, Dutch angle), choose calibrated focal lengths (50mm / 85mm), and click *Batch Render*.
+* **The Directorial Result:** Unreal's Movie Render Queue automatically renders every framed take with cinematic depth of field and muxed dialogue audio into final 1080p/4K MP4 deliverables.
+
+---
+
 ## Somatic & Biomechanical Engine
 
 - **Kinetic Vertebral Chain:** Propagates motion organically through Pelvis $\to$ Spine 01–04 $\to$ Neck $\to$ Head, eliminating static mannequin stiffness.
