@@ -356,12 +356,13 @@ If you use **MetaHuman Performance Director** in your academic research, virtual
 ## Author & Studio
 
 **David Cobbins**  
-Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com)
+Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com) • Research Project Leader & Creative Producer, [USC-ICT](https://ict.usc.edu/about-us/leadership/research-leadership/david-cobbins/)
 
 - **LinkedIn:** [davidcobbins](https://www.linkedin.com/in/davidcobbins)
 - **GitHub:** [@drc1985](https://github.com/drc1985)
 - **Portfolio & Lab:** [frontiermindworks.com](https://frontiermindworks.com)
 - **Project Updates & Status:** [frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
+- **USC-ICT Research Leadership & MxR Lab (10+ Years):** [David Cobbins Profile](https://ict.usc.edu/about-us/leadership/research-leadership/david-cobbins/)
 - **Epic MegaGrants 2026:** Official Submission
 
 ---
