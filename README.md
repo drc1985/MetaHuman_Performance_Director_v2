@@ -189,7 +189,7 @@ MPHD is built around real-world filmmaking and game cinematics bottlenecks. Here
 ## Somatic & Biomechanical Engine
 
 - **Kinetic Vertebral Chain:** Propagates motion organically through Pelvis $\to$ Spine 01–04 $\to$ Neck $\to$ Head, eliminating static mannequin stiffness.
-- **Clavicle & Upper Arm Coupling ($k=0.90$):** $100\%$ clavicle displacement coupled to upper arm kinematics to prevent shoulder disarticulation during emotional gestures and posture slumps.
+- **Clavicle & Upper Arm Coupling ($k=0.72$):** $100\%$ clavicle displacement coupled to upper arm kinematics ($k=0.72$ for standard MetaHuman proportions; $0.90$ for athletic or stylized builds) to prevent shoulder disarticulation during emotional gestures and posture slumps.
 - **Diaphragm Breathing Cycles & Emotional Sighs:** Autonomic breathing rhythms that accelerate during anxiety and deep restorative sighs during emotional releases.
 - **Duchenne Co-Activation:** Biologically linked zygomaticus major and orbicularis oculi muscle groups ensure authentic smiles rather than artificial mouth-only warping.
 - **Soft-Knee Viseme Protection:** Non-linear saturation curves (`_soft_knee_saturate`) prevent blendshape overshoot and mouth tearing during active speech.
@@ -217,7 +217,7 @@ Here's a summary of changes from the original V1 release, and what will be relea
 | :--- | :--- | :--- |
 | **Directorial Architecture** | Heuristic single-prompt prototype | Native C++ Psychophysical Directing Runtime & Sequencer OS (Auteur Drama Engine) |
 | **Editor Workflow & UI** | Single-window prompt & intensity slider | **4-Tab Director Slate UI:**<br>1. **Generate Baseline** (determinate $0\% \to 100\%$ progress bar)<br>2. **Direct Performance** (5 dials + voice)<br>3. **Review Takes** (A/B take auditioning)<br>4. **Render Studio** (Cinematography & MRQ) |
-| **Anatomical & Kinetic Scope** | Facial RigLogic curves & basic neck rotation | **Full Vertebral & Somatic Chain:** Pelvis, Spine 01–04, Clavicles + Upper Arm coupling ($k=0.90$), Cervical Neck, Diaphragm breathing cycles & emotional sighs |
+| **Anatomical & Kinetic Scope** | Facial RigLogic curves & basic neck rotation | **Full Vertebral & Somatic Chain:** Pelvis, Spine 01–04, Clavicles + Upper Arm coupling ($k=0.72$), Cervical Neck, Diaphragm breathing cycles & emotional sighs |
 | **Facial & Speech Realism** | Basic blendshape activation with potential tearing | **Duchenne co-activation matrices**, soft-knee viseme protection, pre-speech breath onset guard, sustained posture holding |
 | **Directorial Controls** | Single "Intensity" slider ($0.0 - 1.0$) | **5 Calibrated Cinematic Dials:** Framing Scale, Facial Nuance, Physical Action, Subtext Masking (guise vs. leakage), Pre-Speech Lead Time |
 | **Multi-Beat Directing** | Single prompt per take | **Timecoded Multi-Beat Syntax** (`[0s-7s]... [7s-14s]...`) compiled into a single seamless Level Sequence |
