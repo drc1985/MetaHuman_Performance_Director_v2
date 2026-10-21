@@ -355,15 +355,21 @@ If you use **MetaHuman Performance Director** in your academic research, virtual
 
 ## Author & Studio
 
+### Author Background & Research Leadership
 **David Cobbins**  
-Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com) • Research Project Leader & Creative Producer, [USC-ICT](https://ict.usc.edu/about-us/leadership/research-leadership/david-cobbins/)
+Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.com)  
+Research Project Leader & Creative Producer, [USC-ICT](https://ict.usc.edu/about-us/leadership/research-leadership/david-cobbins/) (Mixed Reality Lab)
 
 - **LinkedIn:** [davidcobbins](https://www.linkedin.com/in/davidcobbins)
 - **GitHub:** [@drc1985](https://github.com/drc1985)
-- **Portfolio & Lab:** [frontiermindworks.com](https://frontiermindworks.com)
+- **USC-ICT Leadership Profile:** [David Cobbins](https://ict.usc.edu/about-us/leadership/research-leadership/david-cobbins/)
+
+### Project & Studio Links
+- **Studio & Lab:** [frontiermindworks.com](https://frontiermindworks.com)
 - **Project Updates & Status:** [frontiermindworks.com/MetaHumanPerformanceDirector](https://frontiermindworks.com/MetaHumanPerformanceDirector)
-- **USC-ICT Research Leadership & MxR Lab (10+ Years):** [David Cobbins Profile](https://ict.usc.edu/about-us/leadership/research-leadership/david-cobbins/)
 - **Epic MegaGrants 2026:** Official Submission
+
+> **Institutional Disclosure:** MetaHuman Performance Director (MPHD) is an independent Frontier Mindworks project, developed on personal time and equipment, and is not affiliated with, sponsored by, or endorsed by the University of Southern California (USC) or the USC Institute for Creative Technologies (USC-ICT).
 
 ---
 
@@ -371,4 +377,4 @@ Founder & Principal Architect, [Frontier Mindworks](https://frontiermindworks.co
 
 Released under the permissive [MIT License](LICENSE). Copyright © 2026 David Cobbins.
 
-> **MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent project and is not affiliated with or endorsed by Epic Games.**
+> **MetaHuman and Unreal Engine are trademarks of Epic Games, Inc. MetaHuman Performance Director is an independent Frontier Mindworks project, developed on personal time and equipment, and is not affiliated with, sponsored by, or endorsed by Epic Games, Inc., the University of Southern California (USC), or USC-ICT.**
