@@ -228,7 +228,7 @@ Here's a summary of changes from the original V1 release, and what will be relea
 
 ---
 
-## Milestone Roadmap
+## Milestone Roadmap & Grant Funding Goals
 
 - [x] **Phase 1: Alpha Cycle — Working Single-Performer Prototype (Demonstrable in UE 5.8)**
   - Native UE 5.8 Slate director panel (voice or typed notes, 5 directorial dials, channel locks).
