@@ -35,7 +35,7 @@ class PerformancePlanSchemaTests(unittest.TestCase):
     def test_local_schema_is_valid_draft_2020_12(self):
         self.assertEqual(self.local_schema.get("$schema"), "https://json-schema.org/draft/2020-12/schema")
         self.assertEqual(self.local_schema.get("$id"), "https://frontiermindworks.com/schemas/v1/performance_plan.schema.json")
-        self.assertEqual(self.local_schema.get("version"), "0.3.1")
+        self.assertEqual(self.local_schema.get("version"), "0.3.2")
 
     def test_all_local_example_plans_conform_to_schema(self):
         example_files = sorted(glob.glob(str(LOCAL_EXAMPLES_DIR / "*.json")))

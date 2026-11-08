@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://frontiermindworks.com/schemas/v1/performance_plan.schema.json",
   "title": "MetaHuman Performance Director Plan",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "object",
   "required": [
     "plan_id",
