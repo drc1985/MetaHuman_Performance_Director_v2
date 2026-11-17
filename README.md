@@ -101,7 +101,7 @@ Unlike black-box generative tools that attempt to hallucinate animation curves d
 
 ## Demonstration & Video Walkthrough
 
-[![MetaHuman Performance Director - November 2026 Engineering Preview](https://frontiermindworks.com/MetaHumanPerformanceDirector/demolinkscreencap.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoNov.mp4)
+[![MetaHuman Performance Director - November 2026 Engineering Preview](https://frontiermindworks.com/MetaHumanPerformanceDirector/demolinkscreencap_nov.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoNov.mp4)
 
 - **Latest Engineering Preview Video (November 2026):** [![Watch November Preview](https://img.shields.io/badge/Watch-November%202026%20Preview-00d4ff?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoNov.mp4)  
   *Features autonomic biology (ADE hemodynamics & lacrimal tear system), selective natural language performance overrides on existing mocap, the Performance Cue Chip Studio, and expanded 6×9 virtual cinematography.*
