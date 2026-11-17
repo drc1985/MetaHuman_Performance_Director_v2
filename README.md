@@ -135,18 +135,6 @@ Unlike black-box generative tools that attempt to hallucinate animation curves d
 
 ---
 
-## The Auteur Drama Engine (ADE)
-
-Traditional audio-driven facial animation systems solve phonetic lip-sync, but they suffer from the **"I love you / I will kill you" paradox**: acoustic waveforms for identical words sound identical, yet dramatically they demand completely opposite somatic realities.
-
-The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **psychophysical acting engine**:
-
-1. **Stanislavskian Inner Monologue & Dramatic Subtext:** Synthesizes the psychological space *underneath* spoken dialogue—masking overt emotion while surfacing authentic micro-leakage (masseter jaw clenching, ocular avoidance saccades, breath suppression).
-2. **Brechtian Somatic Presence:** Characters do not freeze between lines. They maintain continuous vertebral breathing cycles, postural weight transfers, clavicle counter-rotations, and sustained physical attitude.
-3. **Chekhovian Psychological Gesture:** Pre-speech lead times (0–1000ms) inject anticipatory gaze saccades, breath intake onsets, and cervical preparation before the first syllable is uttered.
-
----
-
 ## The 4-Tab Filmmaker Workflow
 
 ```
@@ -170,6 +158,39 @@ The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **p
    - Performer-aware automated CineCamera framing with calibrated shot sizes (Wide, Medium Close-Up [MCU], Close-Up [CU], Extreme Close-Up [ECU]) and lenses (35mm, 50mm, 85mm, 105mm).
    - Cinematic camera angles: Dutch tilt, Low angle, Profile, Eye-level.
    - In-editor batch Movie Render Queue (MRQ) automation producing final graded MP4 deliverables with muxed audio.
+
+---
+
+## The Auteur Drama Engine (ADE)
+
+Traditional audio-driven facial animation systems solve phonetic lip-sync, but they suffer from the **"I love you / I will kill you" paradox**: acoustic waveforms for identical words sound identical, yet dramatically they demand completely opposite somatic realities.
+
+The **Auteur Drama Engine (ADE)** powers MetaHuman Performance Director as a **psychophysical acting engine**:
+
+1. **Stanislavskian Inner Monologue & Dramatic Subtext:** Synthesizes the psychological space *underneath* spoken dialogue—masking overt emotion while surfacing authentic micro-leakage (masseter jaw clenching, ocular avoidance saccades, breath suppression).
+2. **Brechtian Somatic Presence:** Characters do not freeze between lines. They maintain continuous vertebral breathing cycles, postural weight transfers, clavicle counter-rotations, and sustained physical attitude.
+3. **Chekhovian Psychological Gesture:** Pre-speech lead times (0–1000ms) inject anticipatory gaze saccades, breath intake onsets, and cervical preparation before the first syllable is uttered.
+
+---
+
+## Somatic & Biomechanical Engine
+
+- **Kinetic Vertebral Chain:** Propagates motion organically through Pelvis $\to$ Spine 01–04 $\to$ Neck $\to$ Head, eliminating static mannequin stiffness.
+- **Clavicle & Upper Arm Coupling ($k=0.72$):** $100\%$ clavicle displacement coupled to upper arm kinematics ($k=0.72$ for standard MetaHuman proportions; $0.90$ for athletic or stylized builds) to prevent shoulder disarticulation during emotional gestures and posture slumps.
+- **Diaphragm Breathing Cycles & Emotional Sighs:** Autonomic breathing rhythms that accelerate during anxiety and deep restorative sighs during emotional releases.
+- **Duchenne Co-Activation:** Biologically linked zygomaticus major and orbicularis oculi muscle groups ensure authentic smiles rather than artificial mouth-only warping.
+- **Soft-Knee Viseme Protection:** Non-linear saturation curves (`_soft_knee_saturate`) prevent blendshape overshoot and mouth tearing during active speech.
+
+---
+
+## 100% Local & Offline — Zero Cloud Dependencies
+
+Unlike cloud GenAI services or API-dependent tools, MPHD runs **100% locally and offline inside Unreal Engine**:
+
+- **Zero Cloud Calls:** No latency roundtrips or external server dependencies.
+- **Zero API Keys or Accounts:** No OpenAI, Anthropic, or proprietary cloud accounts required.
+- **Studio IP & Privacy First:** Unreleased screenplays, actor likenesses, and voice recordings never leave your workstation.
+- **Deterministic Intermediate Representation (IR):** Generates deterministic JSON performance plans conforming to strict schema contracts.
 
 ---
 
@@ -217,27 +238,6 @@ MPHD is built around real-world filmmaking and game cinematics bottlenecks. Here
   [3.8s-6.0s] Snap out of it—breathe! Blink the blur out of your eyes, suck in a ragged gasp of air, and set your jaw.
   ```
 * **The Directorial Result:** The engine preserves 100% of the original Mixamo body physics and foot contacts, while instantly synthesizing agonizing facial trauma, jaw displacement, mechanical lip blanching, and shock-induced respiration directly over the impact.
-
----
-
-## Somatic & Biomechanical Engine
-
-- **Kinetic Vertebral Chain:** Propagates motion organically through Pelvis $\to$ Spine 01–04 $\to$ Neck $\to$ Head, eliminating static mannequin stiffness.
-- **Clavicle & Upper Arm Coupling ($k=0.72$):** $100\%$ clavicle displacement coupled to upper arm kinematics ($k=0.72$ for standard MetaHuman proportions; $0.90$ for athletic or stylized builds) to prevent shoulder disarticulation during emotional gestures and posture slumps.
-- **Diaphragm Breathing Cycles & Emotional Sighs:** Autonomic breathing rhythms that accelerate during anxiety and deep restorative sighs during emotional releases.
-- **Duchenne Co-Activation:** Biologically linked zygomaticus major and orbicularis oculi muscle groups ensure authentic smiles rather than artificial mouth-only warping.
-- **Soft-Knee Viseme Protection:** Non-linear saturation curves (`_soft_knee_saturate`) prevent blendshape overshoot and mouth tearing during active speech.
-
----
-
-## 100% Local & Offline — Zero Cloud Dependencies
-
-Unlike cloud GenAI services or API-dependent tools, MPHD runs **100% locally and offline inside Unreal Engine**:
-
-- **Zero Cloud Calls:** No latency roundtrips or external server dependencies.
-- **Zero API Keys or Accounts:** No OpenAI, Anthropic, or proprietary cloud accounts required.
-- **Studio IP & Privacy First:** Unreleased screenplays, actor likenesses, and voice recordings never leave your workstation.
-- **Deterministic Intermediate Representation (IR):** Generates deterministic JSON performance plans conforming to strict schema contracts.
 
 ---
 
