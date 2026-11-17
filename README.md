@@ -101,14 +101,37 @@ Unlike black-box generative tools that attempt to hallucinate animation curves d
 
 ## Demonstration & Video Walkthrough
 
-[![MetaHuman Performance Director - October 2026 ADE Showcase](https://frontiermindworks.com/MetaHumanPerformanceDirector/demolinkscreencap.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)
+[![MetaHuman Performance Director - November 2026 Engineering Preview](https://frontiermindworks.com/MetaHumanPerformanceDirector/demolinkscreencap.png)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoNov.mp4)
 
-- **Latest ADE Showcase Video (October 2026):** [![Watch Latest Showcase](https://img.shields.io/badge/Watch-Production%20Showcase-brightgreen?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)  
-  *Features the new 4-Tab Director Slate, 5 calibrated cinematic dials, timecoded multi-beat directing, and somatic vertebral breathing.*
+- **Latest Engineering Preview Video (November 2026):** [![Watch November Preview](https://img.shields.io/badge/Watch-November%202026%20Preview-00d4ff?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoNov.mp4)  
+  *Features autonomic biology (ADE hemodynamics & lacrimal tear system), selective natural language performance overrides on existing mocap, the Performance Cue Chip Studio, and expanded 6×9 virtual cinematography.*
+- **October 2026 ADE Showcase Video:** [![Watch October Showcase](https://img.shields.io/badge/Watch-October%202026%20Showcase-brightgreen?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/DemoOct.mp4)  
+  *Features the 4-Tab Director Slate, 5 calibrated cinematic dials, timecoded multi-beat directing, and somatic vertebral breathing.*
 - **Original Grant Submission Video (Initial v0.1.0 Draft):** [![Watch Initial Draft](https://img.shields.io/badge/Watch-Grant%20Submission%20Prototype-blue?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector/MetaHumanPerformanceDirector.mp4)  
   *The foundational single-prompt prototype submitted for the 2026 Epic MegaGrant.*
 - **Project Updates & Status Hub:** [![Live Portal](https://img.shields.io/badge/Explore-Devlog%20%26%20Roadmap-orange?style=flat-square)](https://frontiermindworks.com/MetaHumanPerformanceDirector)  
-  *Explore interactive devlogs, live milestone roadmap, and the complete 8-dimension architecture evolution table.*
+  *Explore interactive devlogs, live milestone roadmap, and the complete 10-dimension architecture evolution table.*
+
+---
+
+## November 2026 Engineering Preview: Autonomic Biology & Directorial Editing
+
+> **Engineering Preview Notice:** The capabilities highlighted below represent active engineering milestones demonstrated in our November 2026 showcase video. While foundational releases are open-source on GitHub, these advanced biological shaders, performance-override compilers, and expanded cinematography modules are currently in private staging and rolling out across upcoming production releases.
+
+- **Autonomic Biology (The Micro-Realm):**
+  - **ADE Hemodynamics:** Real-time oxygenated capillary flushing responding dynamically to dramatic subtext (shame, fury, exertion), paired with mechanical blanching where compressed lip and jaw tissue naturally pale under muscle pressure.
+  - **Lacrimal Fluid System:** Dynamic tear meniscus ribbon pooling along `EyeEdge_L/R`, drop in corneal micro-roughness for glassy specular reflections, and saliva moisture glints along the lip vermilion border during speech transitions.
+- **Directorial Performance Editing for Filmmakers:**
+  - **Natural Language Limb Overrides:** Ingest existing body takes (mocap, FBX, Mixamo) and direct physical blocking corrections in plain English (*"Keep the performance identical, but place hands at their sides"*) without touching an IK Rig, wrestling with Control Rig curve tangles, or scheduling expensive mocap re-shoots.
+  - **Additive Subtext Layering:** Layer nuanced facial RigLogic curves, involuntary jaw clenches, and autonomic breathing cycles additively over existing motion capture assets with zero destructive overwrite.
+- **Tactile Performance Cue Chip Studio:**
+  - Complete authoring surface in Tab 2: review parsed intent, delete unwanted cues with one click (`×` affordance drops from plan contract), browse the searchable behavior taxonomy, and track visual provenance badges (*Parsed*, *Adjusted*, *Added*).
+- **Expanded Virtual Cinematography (Render Studio):**
+  - **6 Calibrated Shot Sizes:** Wide, Cowboy (mid-thigh), Medium (waist-up), Medium Close-Up (MCU), Dramatic Close-Up (CU), and Extreme Close-Up (ECU) anchored to a cinematic 33% eye-line default.
+  - **Dynamic Camera Kinematics:** Coordinated Vertigo Dolly Zoom (dolly back while focal length expands, locking face scale while warping room perspective), Lateral Slider, Orbit, and Crane moves.
+  - **6×9 Coverage Matrix & Live Lens Control:** Live numeric lens zooming (18mm–135mm) and multi-angle Cartesian batch render queue with automated ground-collision guards.
+- **Automated MRQ Delivery & Critique Mode:**
+  - Automated CineCamera cut tracks, headless Movie Render Queue execution with multi-pass spatial/temporal anti-aliasing and warm-up frames, automated dialogue audio WAV muxing, and Critique Mode diagnostics offering 1-click camera legibility corrections.
 
 ---
 
@@ -184,6 +207,17 @@ MPHD is built around real-world filmmaking and game cinematics bottlenecks. Here
 * **The Workflow:** Switch to **Render Studio (Tab 4)**. Select framing presets (Medium Close-Up, Close-Up, Dutch angle), choose calibrated focal lengths (50mm / 85mm), and click *Batch Render*.
 * **The Directorial Result:** Unreal's Movie Render Queue automatically renders every framed take with cinematic depth of field and muxed dialogue audio into final 1080p/4K MP4 deliverables.
 
+### 6. Transforming Generic Mocap & Combat Assets into Visceral Acting
+* **The Scenario:** You download a combat or stunt animation from Mixamo or an asset library—the punch recoil and body physics are great, but the MetaHuman’s face is a completely blank, dead mannequin with zero pain, shock, or consequence.
+* **The Workflow:** Load the FBX take into Sequencer and lock the skeletal body track. In Tab 2, direct the emotional trauma in director-style language:
+  ```text
+  [0.0s-1.2s] Stay guarded, locked in. Trap the air in your chest and bite down hard on your back teeth.
+  [1.2s-2.2s] Boom, take the hit! Violent asymmetric wince, bite down hard on teeth, eyes slam shut in blinding shock.
+  [2.2s-3.8s] You're out on your feet. Head snaps back, jaw goes completely dead, eyes roll back dazed.
+  [3.8s-6.0s] Snap out of it—breathe! Blink the blur out of your eyes, suck in a ragged gasp of air, and set your jaw.
+  ```
+* **The Directorial Result:** The engine preserves 100% of the original Mixamo body physics and foot contacts, while instantly synthesizing agonizing facial trauma, jaw displacement, mechanical lip blanching, and shock-induced respiration directly over the impact.
+
 ---
 
 ## Somatic & Biomechanical Engine
@@ -218,10 +252,13 @@ Here's a summary of changes from the original V1 release, and what will be relea
 | **Directorial Architecture** | Heuristic single-prompt prototype | Native C++ Psychophysical Directing Runtime & Sequencer OS (Auteur Drama Engine) |
 | **Editor Workflow & UI** | Single-window prompt & intensity slider | **4-Tab Director Slate UI:**<br>1. **Generate Baseline** (determinate $0\% \to 100\%$ progress bar)<br>2. **Direct Performance** (5 dials + voice)<br>3. **Review Takes** (A/B take auditioning)<br>4. **Render Studio** (Cinematography & MRQ) |
 | **Anatomical & Kinetic Scope** | Facial RigLogic curves & basic neck rotation | **Full Vertebral & Somatic Chain:** Pelvis, Spine 01–04, Clavicles + Upper Arm coupling ($k=0.72$), Cervical Neck, Diaphragm breathing cycles & emotional sighs |
+| **Autonomic Biology & Shaders** | Static default skin & dry ocular materials | **ADE Hemodynamics & Lacrimal Fluid System:** Dynamic capillary flushing, mechanical lip blanching under compression, specular tear meniscus pooling, vermilion lip moisture |
+| **Performance Editing on Existing Takes** | None (blank-canvas text generation only) | **Selective Natural Language Overrides:** Ingest existing FBX/mocap and alter limb blocking (*"place hands at sides"*) or layer visceral pain/subtext without manual Control Rig re-keying |
+| **Intent Control & Tactile Authoring** | Opaque black-box generation | **Performance Cue Chip Studio:** Tactile editing surface, explicit `×` deletion, searchable behavior taxonomy, provenance badges (*Parsed* / *Adjusted* / *Added*) |
 | **Facial & Speech Realism** | Basic blendshape activation with potential tearing | **Duchenne co-activation matrices**, soft-knee viseme protection, pre-speech breath onset guard, sustained posture holding |
 | **Directorial Controls** | Single "Intensity" slider ($0.0 - 1.0$) | **5 Calibrated Cinematic Dials:** Framing Scale, Facial Nuance, Physical Action, Subtext Masking (guise vs. leakage), Pre-Speech Lead Time |
 | **Multi-Beat Directing** | Single prompt per take | **Timecoded Multi-Beat Syntax** (`[0s-7s]... [7s-14s]...`) compiled into a single seamless Level Sequence |
-| **Virtual Cinematography** | Manual editor viewport review | **Render Studio (Tab 4):** Shot sizes (Wide, Medium Close-Up [MCU], Close-Up [CU], Extreme Close-Up [ECU]), angles (Dutch tilt, Low angle, Profile, Eye-level), lenses (35–105mm), automated CineCamera cuts & batch Movie Render Queue (MRQ) to MP4 |
+| **Virtual Cinematography & MRQ** | Manual editor viewport review | **Render Studio (Tab 4):** 6 shot sizes (Wide, Cowboy, Medium, MCU, CU, ECU), 9 angles, dynamic moves (Vertigo Dolly Zoom, Orbit, Slider), live manual lens (18–135mm), 6×9 batch MRQ coverage matrix to MP4 |
 | **Multi-Actor & External MoCap** | Conceptual future | **Bravo Architecture:** External baseline / Motion Capture (MoCap) ingestion, non-destructive additive Control Rig layers, screenplay ingestion & proxemics |
 
 *Note: The features above represent active implementations rolling out across our milestone releases.*
