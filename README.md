@@ -16,6 +16,15 @@
 
 ---
 
+## Table of Contents
+
+- **Start Here:** [Overview](#overview-directing-performance-not-prompting-animation) · [What's in This Repository](#whats-in-this-repository) · [Demo & Video Walkthrough](#demonstration--video-walkthrough) · [November 2026 Preview](#november-2026-engineering-preview-autonomic-biology--directorial-editing)
+- **System & Engine:** [4-Stage Architecture](#architecture-decoupled-4-stage-directorial-pipeline) · [4-Tab Workflow](#the-4-tab-filmmaker-workflow) · [Auteur Drama Engine (ADE)](#the-auteur-drama-engine-ade) · [Somatic Engine](#somatic--biomechanical-engine) · [100% Local & Offline](#100-local--offline--zero-cloud-dependencies)
+- **Production & Roadmap:** [Directorial Scenarios (1–6)](#directorial-scenarios--practical-use-cases) · [Evolution Table](#evolution--release-roadmap) · [Milestone Roadmap & Grant Goals](#milestone-roadmap--grant-funding-goals)
+- **Setup & Reference:** [System Requirements](#system-requirements) · [Installation](#installation--setup) · [4-Tab Quickstart](#4-tab-quickstart-workflow) · [Open JSON Spec](#open-performance-plan-specification-ir) · [Citation](#citation--attribution) · [Author & Studio](#author--studio) · [License](#license--legal-disclaimer)
+
+---
+
 ## Overview: Directing Performance, Not Prompting Animation
 
 In real cinema, an actor’s performance is never about generic physical movement—it is about **dramatic intention, internal emotional conflict, and psychological subtext**. When a director says *"She is hiding her heartbreak behind a cold smile, but her eyes betray her,"* they are not asking for a motion clip; they are directing an internal human state.
